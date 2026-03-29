@@ -1,6 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, Laptop, Search, User, LogOut, LayoutDashboard, Menu, X } from 'lucide-react'
+import {
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Search,
+  ShoppingCart,
+  User,
+  X,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -8,29 +16,86 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 import { authService } from '@/features/auth/services/authService'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from '@/hooks/use-toast'
+import { SitePreferences } from '@/components/layout/SitePreferences'
+import { useI18n } from '@/contexts/i18n'
+
+function isTypingElement(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false
+  const tag = target.tagName.toLowerCase()
+  return (
+    target.isContentEditable ||
+    tag === 'input' ||
+    tag === 'textarea' ||
+    tag === 'select'
+  )
+}
 
 export function Header() {
   const navigate = useNavigate()
   const { user, isAdmin } = useAuth()
   const { toggleCart, getTotalItems } = useCartStore()
+  const { t } = useI18n()
+
   const [searchQuery, setSearchQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  const desktopSearchRef = useRef<HTMLInputElement | null>(null)
+  const mobileSearchRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 6)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        setIsUserMenuOpen(false)
+        return
+      }
+
+      if (
+        event.key === '/' &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !isTypingElement(event.target)
+      ) {
+        event.preventDefault()
+
+        if (window.innerWidth < 1024) {
+          setIsMenuOpen(true)
+          window.setTimeout(() => mobileSearchRef.current?.focus(), 40)
+        } else {
+          desktopSearchRef.current?.focus()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
 
   const totalItems = getTotalItems()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/products?q=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery('')
-    }
+    if (!searchQuery.trim()) return
+
+    navigate(`/products?q=${encodeURIComponent(searchQuery.trim())}`)
+    setSearchQuery('')
+    setIsMenuOpen(false)
   }
 
   const handleLogout = async () => {
     try {
       await authService.logout()
-      toast({ title: 'Logged out successfully' })
+      toast({ title: t('user.signOut') })
       navigate('/')
     } catch {
       toast({ title: 'Failed to log out', variant: 'destructive' })
@@ -39,94 +104,118 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center gap-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Laptop className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-slate-900 hidden sm:block">LaptopStore</span>
+    <header
+      className={cn(
+        'sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl transition-shadow',
+        scrolled && 'shadow-[0_10px_24px_rgba(15,23,42,0.14)] dark:shadow-[0_10px_24px_rgba(0,0,0,0.35)]',
+      )}
+    >
+      <div className="hidden border-b border-border bg-gradient-to-r from-sky-50 to-cyan-50 text-slate-600 dark:from-slate-900 dark:to-slate-900 dark:text-slate-300 md:block">
+        <div className="mx-auto max-w-[1260px] px-6 py-2 text-xs">
+          {t('header.promo')}
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
+        <div className="flex h-14 items-center gap-3 sm:h-16">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0">
+            <span
+              className="inline-block h-6 w-6 rounded-md bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700"
+              aria-hidden="true"
+            />
+            <span className="font-display text-[15px] font-bold tracking-tight text-foreground sm:text-base">
+              LaptopStore
+            </span>
           </Link>
 
-          {/* Nav links - desktop */}
-          <nav className="hidden md:flex items-center gap-6 ml-4">
-            <Link to="/" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-              Home
+          <nav className="ml-5 hidden items-center gap-6 md:flex">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+              {t('nav.store')}
             </Link>
-            <Link to="/products" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-              Laptops
+            <Link to="/products" className="text-sm text-muted-foreground hover:text-foreground">
+              {t('nav.laptops')}
+            </Link>
+            <Link to="/products?sortBy=newest" className="text-sm text-muted-foreground hover:text-foreground">
+              {t('nav.newArrivals')}
             </Link>
           </nav>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-md hidden sm:flex">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <form onSubmit={handleSearch} className="ml-auto hidden w-full max-w-sm lg:block">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
+                ref={desktopSearchRef}
                 type="search"
-                placeholder="Search laptops..."
+                placeholder={t('header.search')}
+                title={t('header.searchHint')}
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-9 h-9"
+                onChange={event => setSearchQuery(event.target.value)}
+                className="h-9 rounded-full border-border bg-background/90 pl-9 text-sm"
               />
             </div>
           </form>
 
-          <div className="flex items-center gap-2 ml-auto">
-            {/* Cart button */}
+          <div className="ml-auto flex items-center gap-1 sm:gap-2 lg:ml-3">
+            <div className="hidden lg:block">
+              <SitePreferences compact />
+            </div>
+
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative text-foreground hover:bg-accent"
               onClick={toggleCart}
-              aria-label="Shopping cart"
+              aria-label={t('header.cart')}
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-medium">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}
             </Button>
 
-            {/* User menu */}
             {user ? (
               <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onClick={() => setIsUserMenuOpen(value => !value)}
                   aria-label="User menu"
+                  className="text-foreground hover:bg-accent"
                 >
                   <User className="h-5 w-5" />
                 </Button>
                 {isUserMenuOpen && (
                   <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border bg-background shadow-lg z-20 overflow-hidden">
-                      <div className="px-4 py-3 border-b">
-                        <p className="text-sm font-medium text-slate-900 truncate">{user.email}</p>
-                        {isAdmin && <p className="text-xs text-blue-600 font-medium">Administrator</p>}
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-border bg-background shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+                      <div className="border-b border-border px-4 py-3">
+                        <p className="truncate text-sm font-medium text-foreground">{user.email}</p>
+                        {isAdmin && (
+                          <p className="mt-0.5 text-xs font-semibold text-primary">{t('user.administrator')}</p>
+                        )}
                       </div>
-                      <div className="py-1">
+                      <div className="py-1.5">
                         {isAdmin && (
                           <Link
                             to="/admin"
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent transition-colors"
                             onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted"
                           >
                             <LayoutDashboard className="h-4 w-4" />
-                            Admin Dashboard
+                            {t('user.adminDashboard')}
                           </Link>
                         )}
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent transition-colors text-destructive"
+                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10"
                         >
                           <LogOut className="h-4 w-4" />
-                          Sign out
+                          {t('user.signOut')}
                         </button>
                       </div>
                     </div>
@@ -134,51 +223,91 @@ export function Header() {
                 )}
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Sign in</Link>
+              <div className="hidden items-center gap-1 sm:flex">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="rounded-full text-foreground hover:bg-accent"
+                >
+                  <Link to="/login">{t('auth.signIn')}</Link>
                 </Button>
-                <Button size="sm" asChild>
-                  <Link to="/signup">Sign up</Link>
+                <Button size="sm" asChild className="rounded-full bg-primary hover:bg-primary/90">
+                  <Link to="/signup">{t('auth.signUp')}</Link>
                 </Button>
               </div>
             )}
 
-            {/* Mobile menu toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-foreground hover:bg-accent md:hidden"
+              onClick={() => setIsMenuOpen(value => !value)}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t py-4 space-y-3">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="border-t border-border py-4 md:hidden">
+            <form onSubmit={handleSearch} className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
+                  ref={mobileSearchRef}
                   type="search"
-                  placeholder="Search laptops..."
+                  placeholder={t('header.search')}
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-9 h-9"
+                  onChange={event => setSearchQuery(event.target.value)}
+                  className="h-10 rounded-full border-border bg-background/90 pl-9"
                 />
               </div>
-              <Button type="submit" size="sm">Search</Button>
             </form>
-            <nav className="flex flex-col gap-2">
-              <Link to="/" className="text-sm font-medium py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Home</Link>
-              <Link to="/products" className="text-sm font-medium py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Laptops</Link>
+
+            <div className="mb-3">
+              <SitePreferences />
+            </div>
+
+            <nav className="flex flex-col gap-1">
+              <Link
+                to="/"
+                className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.store')}
+              </Link>
+              <Link
+                to="/products"
+                className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.laptops')}
+              </Link>
+              <Link
+                to="/products?sortBy=newest"
+                className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('nav.newArrivals')}
+              </Link>
               {!user && (
                 <>
-                  <Link to="/login" className="text-sm font-medium py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Sign in</Link>
-                  <Link to="/signup" className="text-sm font-medium py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Sign up</Link>
+                  <Link
+                    to="/login"
+                    className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-muted"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {t('auth.signIn')}
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="rounded-xl px-3 py-2 text-sm text-foreground hover:bg-muted"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {t('auth.signUp')}
+                  </Link>
                 </>
               )}
             </nav>

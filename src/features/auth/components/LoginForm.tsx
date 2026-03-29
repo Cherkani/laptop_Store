@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Laptop, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Laptop, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { authService } from '../services/authService'
 import { toast } from '@/hooks/use-toast'
 
@@ -33,73 +32,158 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <Laptop className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900">LaptopStore</span>
-          </div>
+    <div className="min-h-screen flex bg-white">
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#1d1d1f] items-center justify-center overflow-hidden">
+        {/* Abstract background shapes */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl" />
+          <div className="absolute bottom-1/4 right-0 w-80 h-80 rounded-full bg-purple-600/15 blur-3xl" />
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-blue-400/10 blur-3xl" />
         </div>
 
-        <Card className="shadow-xl border-0">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-center">Sign in</CardTitle>
-            <CardDescription className="text-center">
-              Enter your email and password to access your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
-                    required
-                    autoComplete="current-password"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <><Loader2 className="animate-spin" /> Signing in...</> : 'Sign In'}
-              </Button>
-            </form>
+        <div className="relative z-10 max-w-md px-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-8">
+            <Laptop className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
+            Welcome back.
+          </h2>
+          <p className="text-lg text-gray-400 leading-relaxed">
+            Sign in to access your account, track orders, and discover the
+            latest premium laptops.
+          </p>
 
-            <div className="mt-4 text-center text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link to="/signup" className="text-primary hover:underline font-medium">
-                Sign up
-              </Link>
+          {/* Floating cards */}
+          <div className="mt-12 space-y-3">
+            {['MacBook Pro M4', 'Dell XPS 16', 'ThinkPad X1 Carbon'].map(
+              (name, i) => (
+                <div
+                  key={name}
+                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.06] border border-white/[0.08] backdrop-blur"
+                  style={{ opacity: 1 - i * 0.15 }}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                    <Laptop className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-white">{name}</p>
+                    <p className="text-xs text-gray-500">Premium Collection</p>
+                  </div>
+                </div>
+              ),
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
+              <Laptop className="w-5 h-5 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <span className="text-xl font-bold text-[#1d1d1f]">
+              LaptopStore
+            </span>
+          </div>
+
+          <div className="space-y-2 mb-8">
+            <h1 className="text-3xl font-bold text-[#1d1d1f] tracking-tight">
+              Sign in
+            </h1>
+            <p className="text-gray-500">
+              Enter your credentials to access your account.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-[#1d1d1f]"
+              >
+                Email address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={e =>
+                  setFormData(p => ({ ...p, email: e.target.value }))
+                }
+                required
+                autoComplete="email"
+                className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-[#1d1d1f]"
+              >
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={e =>
+                    setFormData(p => ({ ...p, password: e.target.value }))
+                  }
+                  required
+                  autoComplete="current-password"
+                  className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 pr-12 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-[15px] font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/25 transition-all"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" /> Signing
+                  in...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Don't have an account?{' '}
+            <Link
+              to="/signup"
+              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+            >
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

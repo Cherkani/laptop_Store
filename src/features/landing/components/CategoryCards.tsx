@@ -1,71 +1,78 @@
 import { Link } from 'react-router-dom'
-import { Gamepad2, Briefcase, GraduationCap, Palette } from 'lucide-react'
+import { ArrowRight, Briefcase, Clapperboard, Code2, Gamepad2 } from 'lucide-react'
+import { ScrollReveal } from './ScrollReveal'
 
 const categories = [
   {
-    title: 'Gaming',
-    description: 'High-performance gaming laptops with RTX graphics',
-    icon: Gamepad2,
-    color: 'from-purple-500 to-indigo-600',
-    bg: 'bg-purple-50',
-    iconColor: 'text-purple-600',
-    href: '/products?gpu=NVIDIA RTX',
-  },
-  {
-    title: 'Business',
-    description: 'Professional laptops built for productivity',
-    icon: Briefcase,
-    color: 'from-blue-500 to-cyan-600',
-    bg: 'bg-blue-50',
-    iconColor: 'text-blue-600',
-    href: '/products?brand=Dell&brand=Lenovo&brand=HP',
-  },
-  {
-    title: 'Student',
-    description: 'Lightweight and affordable for academic life',
-    icon: GraduationCap,
-    color: 'from-emerald-500 to-teal-600',
-    bg: 'bg-emerald-50',
-    iconColor: 'text-emerald-600',
-    href: '/products?priceMax=1000',
-  },
-  {
-    title: 'Creative',
-    description: 'Color-accurate displays for designers & editors',
-    icon: Palette,
-    color: 'from-pink-500 to-rose-600',
-    bg: 'bg-pink-50',
-    iconColor: 'text-pink-600',
+    title: 'For creators',
+    description: 'High-resolution displays, fast GPUs, and strong battery life.',
+    icon: Clapperboard,
     href: '/products?brand=Apple&brand=ASUS',
+    bg: 'from-[#fcfdff] to-[#eef5ff]',
+  },
+  {
+    title: 'For developers',
+    description: 'Compile quickly and run multiple tools with confidence.',
+    icon: Code2,
+    href: '/products?ram=16GB&ram=32GB',
+    bg: 'from-[#fbfbfd] to-[#f1f1f6]',
+  },
+  {
+    title: 'For business',
+    description: 'Reliable devices built for productivity and portability.',
+    icon: Briefcase,
+    href: '/products?brand=Dell&brand=Lenovo&brand=HP',
+    bg: 'from-[#f9fcff] to-[#e8f5f2]',
+  },
+  {
+    title: 'For gaming',
+    description: 'Powerful graphics and high refresh-rate panels.',
+    icon: Gamepad2,
+    href: '/products?gpu=NVIDIA RTX',
+    bg: 'from-[#fdfdff] to-[#f2eeff]',
   },
 ]
 
 export function CategoryCards() {
   return (
-    <section className="py-16 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Browse by Type</p>
-          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900">Find What You Need</h2>
-          <p className="text-muted-foreground mt-2">Curated collections for every use case</p>
-        </div>
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollReveal>
+          <div className="mb-8 sm:mb-10 lg:mb-12">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#607086]">
+              Categories
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-[#1d1d1f] sm:text-4xl lg:text-5xl">
+              Shop by workflow.
+            </h2>
+            <p className="mt-2 text-base text-[#5d6675] sm:text-lg">
+              Find a laptop that matches the way you work.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map(cat => (
-            <Link
-              key={cat.title}
-              to={cat.href}
-              className="group relative overflow-hidden rounded-2xl border bg-white p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className={`w-12 h-12 rounded-xl ${cat.bg} flex items-center justify-center mb-4`}>
-                <cat.icon className={`w-6 h-6 ${cat.iconColor}`} />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                {cat.title}
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{cat.description}</p>
-              <div className={`absolute bottom-0 left-0 h-1 w-0 bg-gradient-to-r ${cat.color} transition-all duration-300 group-hover:w-full`} />
-            </Link>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {categories.map((category, index) => (
+            <ScrollReveal key={category.title} delay={index * 80}>
+              <Link
+                to={category.href}
+                className={`group lift-card block rounded-3xl bg-gradient-to-br ${category.bg} p-7 ring-1 ring-black/5`}
+              >
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#1d1d1f] shadow-sm ring-1 ring-black/5">
+                  <category.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 text-2xl font-bold tracking-tight text-[#172033]">
+                  {category.title}
+                </h3>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#556074] sm:text-base">
+                  {category.description}
+                </p>
+                <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-[#0f5dcf]">
+                  Browse collection
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                </div>
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </div>

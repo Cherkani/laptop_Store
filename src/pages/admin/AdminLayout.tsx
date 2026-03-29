@@ -1,29 +1,54 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, Plus, LogOut, Laptop, ChevronRight, BarChart3, Layers } from 'lucide-react'
+import {
+  BarChart3,
+  ChevronRight,
+  ClipboardList,
+  FileText,
+  Laptop,
+  Layers,
+  LayoutDashboard,
+  LogOut,
+  Package,
+  Plus,
+  Receipt,
+  Settings2,
+  ShoppingBag,
+  SlidersHorizontal,
+  Wallet,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { authService } from '@/features/auth/services/authService'
 import { toast } from '@/hooks/use-toast'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { SitePreferences } from '@/components/layout/SitePreferences'
+import { useI18n } from '@/contexts/i18n'
 
-const navGroups = [
+const navGroupsData = [
   {
-    label: 'Overview',
+    labelKey: 'admin.group.pilotage',
     items: [
-      { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+      { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
+      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
+      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
     ],
   },
   {
-    label: 'Catalog',
+    labelKey: 'admin.group.commercial',
     items: [
-      { to: '/admin/products', label: 'Products', icon: Package, exact: false },
-      { to: '/admin/products?action=new', label: 'Add Product', icon: Plus, exact: false },
+      { to: '/admin/ventes', labelKey: 'admin.nav.sales', icon: ShoppingBag, exact: true },
+      { to: '/admin/devis', labelKey: 'admin.nav.quotes', icon: FileText, exact: true },
+      { to: '/admin/factures', labelKey: 'admin.nav.invoices', icon: Receipt, exact: true },
+      { to: '/admin/bons-livraison', labelKey: 'admin.nav.delivery', icon: ClipboardList, exact: true },
+      { to: '/admin/paiements', labelKey: 'admin.nav.payments', icon: Wallet, exact: true },
     ],
   },
   {
-    label: 'Operations',
+    labelKey: 'admin.group.catalog',
     items: [
-      { to: '/admin/inventory', label: 'Inventory', icon: Layers, exact: true },
-      { to: '/admin/reports', label: 'Reports', icon: BarChart3, exact: true },
+      { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package, exact: false },
+      { to: '/admin/products?action=new', labelKey: 'admin.nav.addProduct', icon: Plus, exact: false },
+      { to: '/admin/inventory', labelKey: 'admin.nav.stock', icon: Layers, exact: true },
+      { to: '/admin/reports', labelKey: 'admin.nav.reports', icon: BarChart3, exact: true },
     ],
   },
 ]
@@ -32,6 +57,7 @@ export function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { profile } = useAuth()
+  const { t } = useI18n()
 
   const isActive = (to: string, exact: boolean) => {
     const [path] = to.split('?')
@@ -42,7 +68,7 @@ export function AdminLayout() {
   const handleLogout = async () => {
     try {
       await authService.logout()
-      toast({ title: 'Logged out' })
+      toast({ title: t('admin.logout') })
       navigate('/')
     } catch {
       toast({ title: 'Failed to log out', variant: 'destructive' })
@@ -50,43 +76,44 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
-      {/* Sidebar */}
-      <aside className="w-60 bg-slate-900 text-slate-300 flex flex-col shrink-0 overflow-y-auto">
-        {/* Logo */}
-        <div className="px-5 py-5 border-b border-slate-700">
-          <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+    <div className="flex h-screen overflow-hidden bg-background">
+      <aside className="w-72 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-slate-800/50">
+        <div className="px-5 py-5 border-b border-slate-800/70">
+          <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/30">
               <Laptop className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white leading-none">LaptopStore</p>
-              <p className="text-xs text-slate-400 mt-0.5">Admin Panel</p>
+              <p className="text-sm font-bold text-white leading-none">LaptopStore Pro</p>
+              <p className="text-xs text-slate-400 mt-0.5">Admin Backoffice</p>
             </div>
           </Link>
         </div>
 
-        {/* Nav groups */}
+        <div className="px-3 py-3 border-b border-slate-800/70">
+          <SitePreferences className="justify-between" />
+        </div>
+
         <nav className="flex-1 px-3 py-4 space-y-5">
-          {navGroups.map(group => (
-            <div key={group.label}>
-              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold px-3 mb-2">
-                {group.label}
+          {navGroupsData.map(group => (
+            <div key={group.labelKey}>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold px-3 mb-2">
+                {t(group.labelKey)}
               </p>
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {group.items.map(item => (
                   <Link
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                      'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                       isActive(item.to, item.exact)
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-700/30'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/90',
                     )}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 ))}
               </div>
@@ -94,36 +121,34 @@ export function AdminLayout() {
           ))}
         </nav>
 
-        {/* Footer */}
-        <div className="px-3 py-4 border-t border-slate-700 space-y-0.5">
+        <div className="px-3 py-4 border-t border-slate-800/70 space-y-1">
           <Link
             to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <ChevronRight className="h-4 w-4" />
-            View Store
+            {t('admin.viewStore')}
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-red-300 hover:bg-slate-800 transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Sign out
+            {t('admin.logout')}
           </button>
           <div className="px-3 pt-3 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
               {(profile?.full_name ?? 'A').charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-slate-300 truncate">{profile?.full_name ?? 'Admin'}</p>
-              <p className="text-xs text-slate-500">Administrator</p>
+              <p className="text-xs font-medium text-slate-200 truncate">{profile?.full_name ?? 'Admin'}</p>
+              <p className="text-xs text-slate-500">{t('user.administrator')}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7fb] via-[#f8fafc] to-[#eef3fb] dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
         <Outlet />
       </main>
     </div>

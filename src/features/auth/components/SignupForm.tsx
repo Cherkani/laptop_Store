@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Laptop, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Laptop, Eye, EyeOff, Loader2, ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { authService } from '../services/authService'
 import { toast } from '@/hooks/use-toast'
 
@@ -12,23 +11,35 @@ export function SignupForm() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState({ email: '', password: '', fullName: '' })
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.password.length < 6) {
-      toast({ title: 'Password must be at least 6 characters', variant: 'destructive' })
+      toast({
+        title: 'Password must be at least 6 characters',
+        variant: 'destructive',
+      })
       return
     }
     setIsLoading(true)
     try {
       await authService.signup(formData)
-      toast({ title: 'Account created!', description: 'Welcome to LaptopStore.', variant: 'default' })
+      toast({
+        title: 'Account created!',
+        description: 'Welcome to LaptopStore.',
+        variant: 'default',
+      })
       navigate('/')
     } catch (err) {
       toast({
         title: 'Signup failed',
-        description: err instanceof Error ? err.message : 'Something went wrong',
+        description:
+          err instanceof Error ? err.message : 'Something went wrong',
         variant: 'destructive',
       })
     } finally {
@@ -36,84 +47,202 @@ export function SignupForm() {
     }
   }
 
+  const benefits = [
+    'Track orders and deliveries',
+    'Save favorites and wishlists',
+    'Exclusive member-only deals',
+    'Priority customer support',
+  ]
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <Laptop className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900">LaptopStore</span>
-          </div>
+    <div className="min-h-screen flex bg-white">
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#1d1d1f] items-center justify-center overflow-hidden">
+        {/* Abstract background shapes */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/3 -right-20 w-96 h-96 rounded-full bg-purple-600/20 blur-3xl" />
+          <div className="absolute bottom-1/3 left-0 w-80 h-80 rounded-full bg-blue-600/15 blur-3xl" />
+          <div className="absolute top-2/3 left-1/2 w-64 h-64 rounded-full bg-emerald-400/10 blur-3xl" />
         </div>
 
-        <Card className="shadow-xl border-0">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-center">Create account</CardTitle>
-            <CardDescription className="text-center">
-              Join LaptopStore to find your perfect laptop
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={e => setFormData(p => ({ ...p, fullName: e.target.value }))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Min. 6 characters"
-                    value={formData.password}
-                    onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
-                    required
-                    minLength={6}
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? <><Loader2 className="animate-spin" /> Creating account...</> : 'Create Account'}
-              </Button>
-            </form>
+        <div className="relative z-10 max-w-md px-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-8">
+            <Laptop className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
+            Join LaptopStore.
+          </h2>
+          <p className="text-lg text-gray-400 leading-relaxed mb-10">
+            Create your account and unlock a premium laptop shopping experience.
+          </p>
 
-            <div className="mt-4 text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign in
-              </Link>
+          {/* Benefits list */}
+          <div className="space-y-4 text-left">
+            {benefits.map(benefit => (
+              <div
+                key={benefit}
+                className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.06] border border-white/[0.08]"
+              >
+                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                </div>
+                <span className="text-sm font-medium text-gray-300">
+                  {benefit}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
+              <Laptop className="w-5 h-5 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <span className="text-xl font-bold text-[#1d1d1f]">
+              LaptopStore
+            </span>
+          </div>
+
+          <div className="space-y-2 mb-8">
+            <h1 className="text-3xl font-bold text-[#1d1d1f] tracking-tight">
+              Create account
+            </h1>
+            <p className="text-gray-500">
+              Get started with your free LaptopStore account.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label
+                htmlFor="fullName"
+                className="text-sm font-medium text-[#1d1d1f]"
+              >
+                Full name
+              </Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="John Doe"
+                value={formData.fullName}
+                onChange={e =>
+                  setFormData(p => ({ ...p, fullName: e.target.value }))
+                }
+                required
+                className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-[#1d1d1f]"
+              >
+                Email address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={e =>
+                  setFormData(p => ({ ...p, email: e.target.value }))
+                }
+                required
+                className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-[#1d1d1f]"
+              >
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 6 characters"
+                  value={formData.password}
+                  onChange={e =>
+                    setFormData(p => ({ ...p, password: e.target.value }))
+                  }
+                  required
+                  minLength={6}
+                  className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 pr-12 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {formData.password.length > 0 && (
+                <div className="flex items-center gap-2 mt-1.5">
+                  <div className="flex-1 h-1 rounded-full bg-gray-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        formData.password.length >= 8
+                          ? 'w-full bg-emerald-500'
+                          : formData.password.length >= 6
+                            ? 'w-2/3 bg-amber-500'
+                            : 'w-1/3 bg-red-400'
+                      }`}
+                    />
+                  </div>
+                  <span className="text-[11px] text-gray-400">
+                    {formData.password.length >= 8
+                      ? 'Strong'
+                      : formData.password.length >= 6
+                        ? 'Good'
+                        : 'Weak'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-[15px] font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/25 transition-all"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" /> Creating
+                  account...
+                </>
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

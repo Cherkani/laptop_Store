@@ -1,73 +1,62 @@
-import { Truck, RotateCcw, Headphones, Award, Zap, Star } from 'lucide-react'
+import { Award, RotateCcw, ShieldCheck, Truck } from 'lucide-react'
+import { ScrollReveal } from './ScrollReveal'
 
 const features = [
   {
-    icon: Truck,
-    title: 'Free Shipping',
-    description: 'Free delivery on all orders over $999. Express shipping available.',
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
-  },
-  {
-    icon: RotateCcw,
-    title: '30-Day Returns',
-    description: 'Not satisfied? Return your laptop within 30 days for a full refund.',
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-50',
-  },
-  {
-    icon: Headphones,
-    title: 'Expert Support',
-    description: '24/7 technical support from our team of laptop specialists.',
-    color: 'text-purple-600',
-    bg: 'bg-purple-50',
-  },
-  {
-    icon: Star,
-    title: 'Curated Selection',
-    description: 'Every laptop is hand-picked and reviewed by our experts for quality.',
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
+    icon: ShieldCheck,
+    title: 'Quality verified',
+    description: 'Every laptop passes a strict multi-point diagnostic before it ships.',
   },
   {
     icon: Award,
-    title: 'Warranty Included',
-    description: 'Every laptop comes with manufacturer warranty and our service guarantee.',
-    color: 'text-red-600',
-    bg: 'bg-red-50',
+    title: 'Warranty included',
+    description: 'Clear coverage terms with support from real specialists.',
   },
   {
-    icon: Zap,
-    title: 'Top Performance',
-    description: 'We only sell laptops tested for reliability and top performance.',
-    color: 'text-cyan-600',
-    bg: 'bg-cyan-50',
+    icon: Truck,
+    title: 'Fast delivery',
+    description: 'Carefully packed orders with tracked shipping across the country.',
+  },
+  {
+    icon: RotateCcw,
+    title: 'Easy returns',
+    description: '30-day returns so you can buy with confidence.',
   },
 ]
 
 export function WhyUs() {
   return (
-    <section className="py-16 lg:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Why LaptopStore</p>
-          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900">Everything You Need</h2>
-          <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
-            We're committed to making your laptop buying experience exceptional, from browsing to delivery.
-          </p>
-        </div>
+    <section className="py-12 sm:py-16 lg:py-20">
+      <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollReveal>
+          <div className="mb-8 sm:mb-10 lg:mb-12">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#607086]">
+              Why us
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-[#1d1d1f] sm:text-4xl lg:text-5xl">
+              The LaptopStore difference.
+            </h2>
+            <p className="mt-2 text-base text-[#5d6675] sm:text-lg">
+              More reasons to shop with confidence.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map(feature => (
-            <div key={feature.title} className="flex gap-4">
-              <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center shrink-0`}>
-                <feature.icon className={`w-6 h-6 ${feature.color}`} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, index) => (
+            <ScrollReveal key={feature.title} delay={index * 80}>
+              <div className="glass-card lift-card h-full rounded-3xl p-6">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e8f3ff] to-[#eaf9f7] text-[#0f5dcf]">
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-xl font-bold tracking-tight text-[#172033]">
+                  {feature.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#5b6472]">
+                  {feature.description}
+                </p>
               </div>
-              <div>
-                <h3 className="font-semibold text-slate-900">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{feature.description}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
