@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { LandingPage } from '@/pages/LandingPage'
 import { ProductsPage } from '@/pages/ProductsPage'
 import { ProductDetailPage } from '@/pages/ProductDetailPage'
+import { WorkflowAdvisorPage } from '@/pages/WorkflowAdvisorPage'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { SignupForm } from '@/features/auth/components/SignupForm'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
@@ -46,6 +47,7 @@ export default function App() {
             {/* Public routes */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/advisor/:workflow" element={<WorkflowAdvisorPage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/login" element={<LoginForm />} />
