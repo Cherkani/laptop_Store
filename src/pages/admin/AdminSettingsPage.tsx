@@ -9,7 +9,7 @@ const CORE_SETTING_KEYS = [
   {
     key: 'company_name',
     label: 'Nom de la société',
-    placeholder: 'LaptopStore',
+    placeholder: 'TechFiable',
     description: 'Utilisé dans les documents et le backoffice.',
   },
   {

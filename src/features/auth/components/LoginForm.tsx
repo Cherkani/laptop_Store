@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Laptop, Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react'
+import { Laptop, Eye, EyeOff, Loader2, ArrowRight, ShieldCheck, Truck, Headphones } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,125 +32,95 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex bg-white">
-      {/* Left decorative panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#1d1d1f] items-center justify-center overflow-hidden">
-        {/* Abstract background shapes */}
+    <div className="min-h-screen flex bg-gradient-to-br from-[#f8f9fa] via-white to-[#eef2f7]">
+      {/* Left inspirational panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0f0f0f] text-white items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl" />
-          <div className="absolute bottom-1/4 right-0 w-80 h-80 rounded-full bg-purple-600/15 blur-3xl" />
-          <div className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full bg-blue-400/10 blur-3xl" />
+          <div className="absolute top-10 -left-14 h-64 w-64 rounded-full bg-[#0f5dcf]/30 blur-3xl" />
+          <div className="absolute bottom-6 right-0 h-72 w-72 rounded-full bg-[#e63946]/25 blur-3xl" />
         </div>
-
-        <div className="relative z-10 max-w-md px-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-8">
-            <Laptop className="w-8 h-8 text-white" />
+        <div className="relative z-10 max-w-lg px-12 py-10 space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+            <Laptop className="h-4 w-4" />
+            Espace client
           </div>
-          <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
-            Welcome back.
-          </h2>
-          <p className="text-lg text-gray-400 leading-relaxed">
-            Sign in to access your account, track orders, and discover the
-            latest premium laptops.
+          <h2 className="text-4xl font-bold leading-tight">Rejoignez la sélection premium.</h2>
+          <p className="text-lg text-white/70 leading-relaxed">
+            Suivez vos commandes, gardez vos favoris et accédez aux offres pros sur les laptops Windows et Mac reconditionnés.
           </p>
-
-          {/* Floating cards */}
-          <div className="mt-12 space-y-3">
-            {['MacBook Pro M4', 'Dell XPS 16', 'ThinkPad X1 Carbon'].map(
-              (name, i) => (
-                <div
-                  key={name}
-                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/[0.06] border border-white/[0.08] backdrop-blur"
-                  style={{ opacity: 1 - i * 0.15 }}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                    <Laptop className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-white">{name}</p>
-                    <p className="text-xs text-gray-500">Premium Collection</p>
-                  </div>
-                </div>
-              ),
-            )}
+          <div className="mt-8 grid grid-cols-3 gap-3">
+            {['MacBook Pro', 'Dell XPS', 'ThinkPad'].map((name, i) => (
+              <div
+                key={name}
+                className="rounded-2xl bg-white/8 border border-white/10 p-3 backdrop-blur"
+                style={{ opacity: 1 - i * 0.12 }}
+              >
+                <p className="text-sm font-semibold">{name}</p>
+                <p className="text-[11px] text-white/60">Reconditionné certifié</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-[0_18px_45px_rgba(15,23,42,0.08)] border border-slate-100 px-6 py-8">
           {/* Mobile logo */}
-          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-              <Laptop className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-2.5 mb-8">
+            <div className="w-9 h-9 rounded-xl bg-[#0f5dcf] flex items-center justify-center text-white">
+              <Laptop className="w-5 h-5" />
             </div>
-            <span className="text-xl font-bold text-[#1d1d1f]">
-              LaptopStore
-            </span>
+            <div>
+              <p className="text-sm font-semibold text-slate-500">TechFiable</p>
+              <p className="text-xs text-slate-400">Accès sécurisé</p>
+            </div>
           </div>
 
-          <div className="space-y-2 mb-8">
-            <h1 className="text-3xl font-bold text-[#1d1d1f] tracking-tight">
-              Sign in
-            </h1>
-            <p className="text-gray-500">
-              Enter your credentials to access your account.
-            </p>
+          <div className="space-y-2 mb-6">
+            <h1 className="text-3xl font-bold text-[#0f172a] tracking-tight">Connexion</h1>
+            <p className="text-gray-500">Identifiez-vous pour retrouver vos commandes et vos favoris.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-sm font-medium text-[#1d1d1f]"
-              >
-                Email address
+              <Label htmlFor="email" className="text-sm font-semibold text-[#0f172a]">
+                Email
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="vous@email.com"
                 value={formData.email}
-                onChange={e =>
-                  setFormData(p => ({ ...p, email: e.target.value }))
-                }
+                onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                 required
                 autoComplete="email"
-                className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+                className="h-12 rounded-xl border-slate-200 bg-slate-50/60 px-4 text-[15px] focus:bg-white focus:border-[#0f5dcf] focus:ring-[#0f5dcf]/20 transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-sm font-medium text-[#1d1d1f]"
-              >
-                Password
+              <Label htmlFor="password" className="text-sm font-semibold text-[#0f172a]">
+                Mot de passe
               </Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="Votre mot de passe"
                   value={formData.password}
-                  onChange={e =>
-                    setFormData(p => ({ ...p, password: e.target.value }))
-                  }
+                  onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
                   required
                   autoComplete="current-password"
-                  className="h-12 rounded-xl border-gray-200 bg-gray-50/50 px-4 pr-12 text-[15px] focus:bg-white focus:border-blue-600 focus:ring-blue-600/20 transition-colors"
+                  className="h-12 rounded-xl border-slate-200 bg-slate-50/60 px-4 pr-12 text-[15px] focus:bg-white focus:border-[#0f5dcf] focus:ring-[#0f5dcf]/20 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
@@ -158,29 +128,38 @@ export function LoginForm() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-[15px] font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/25 transition-all"
+              className="w-full h-12 rounded-xl bg-[#0f5dcf] hover:bg-[#0d4fb6] text-[15px] font-semibold text-white shadow-lg shadow-blue-500/20 transition-all"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="animate-spin mr-2 h-4 w-4" /> Signing
-                  in...
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  Connexion...
                 </>
               ) : (
                 <>
-                  Sign In
+                  Se connecter
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
             </Button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-gray-500">
-            Don't have an account?{' '}
-            <Link
-              to="/signup"
-              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-            >
-              Create one
+          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-slate-500">
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-600" /> Garantie 6 mois
+            </div>
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
+              <Truck className="h-4 w-4 text-orange-500" /> Livraison rapide
+            </div>
+            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
+              <Headphones className="h-4 w-4 text-[#0f5dcf]" /> Support WhatsApp
+            </div>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Pas encore de compte ?{' '}
+            <Link to="/signup" className="text-[#0f5dcf] hover:text-[#0d4fb6] font-semibold transition-colors">
+              Créer un compte
             </Link>
           </p>
         </div>

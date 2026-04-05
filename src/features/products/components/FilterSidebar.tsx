@@ -7,6 +7,7 @@ import { cn, formatPrice } from '@/lib/utils'
 import type { ProductFilters } from '../types'
 import {
   BRANDS,
+  OPERATING_SYSTEMS,
   PROCESSORS,
   RAM_OPTIONS,
   STORAGE_OPTIONS,
@@ -20,6 +21,7 @@ interface FilterSidebarProps {
   onToggle: (
     key:
       | 'brands'
+      | 'operatingSystems'
       | 'processors'
       | 'rams'
       | 'storages'
@@ -35,9 +37,11 @@ interface FilterSidebarProps {
 
 function FilterSection({
   title,
+  hint,
   children,
 }: {
   title: string
+  hint?: string
   children: React.ReactNode
 }) {
   return (
@@ -45,6 +49,7 @@ function FilterSection({
       <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
         {title}
       </h3>
+      {hint && <p className="text-[11px] text-gray-400">{hint}</p>}
       {children}
     </div>
   )
@@ -127,8 +132,45 @@ export function FilterSidebar({
 
       <div className="h-px bg-gray-100" />
 
+      {/* Operating System */}
+      <FilterSection title="Système d'exploitation">
+        <div className="space-y-1">
+          {OPERATING_SYSTEMS.map(os => (
+            <label
+              key={os}
+              className={cn(
+                'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
+                filters.operatingSystems.includes(os)
+                  ? 'bg-blue-50/80 text-[#1d1d1f]'
+                  : 'hover:bg-gray-50 text-gray-500',
+              )}
+            >
+              <Checkbox
+                id={os}
+                checked={filters.operatingSystems.includes(os)}
+                onCheckedChange={() => onToggle('operatingSystems', os)}
+                className="rounded"
+              />
+              <span
+                className={cn(
+                  'text-sm font-medium flex items-center gap-2',
+                  filters.operatingSystems.includes(os) ? 'text-[#0f172a]' : 'text-gray-600',
+                )}
+              >
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-white text-[10px] font-bold">
+                  {os === 'macOS' ? '' : 'Win'}
+                </span>
+                {os}
+              </span>
+            </label>
+          ))}
+        </div>
+      </FilterSection>
+
+      <div className="h-px bg-gray-100" />
+
       {/* Price Range */}
-      <FilterSection title="Price Range">
+      <FilterSection title="Tranche de prix">
         <div className="space-y-4 px-1">
           <Slider
             min={0}
@@ -174,18 +216,44 @@ export function FilterSidebar({
       <div className="h-px bg-gray-100" />
 
       {/* Brand */}
-      <FilterSection title="Brand">
-        <CheckboxGroup
-          items={BRANDS}
-          selected={filters.brands}
-          onToggle={v => onToggle('brands', v)}
-        />
+      <FilterSection title="Marque">
+        <div className="space-y-1 max-h-48 overflow-y-auto scrollbar-hide">
+          {BRANDS.map(brand => (
+            <label
+              key={brand}
+              className={cn(
+                'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
+                filters.brands.includes(brand)
+                  ? 'bg-blue-50/80 text-[#1d1d1f]'
+                  : 'hover:bg-gray-50 text-gray-500',
+              )}
+            >
+              <Checkbox
+                id={brand}
+                checked={filters.brands.includes(brand)}
+                onCheckedChange={() => onToggle('brands', brand)}
+                className="rounded"
+              />
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-gray-200 text-[11px] font-bold text-gray-700">
+                {brand === 'Apple' ? '' : brand.substring(0, 2).toUpperCase()}
+              </span>
+              <span
+                className={cn(
+                  'text-sm',
+                  filters.brands.includes(brand) ? 'font-semibold text-[#0f172a]' : 'font-normal text-gray-600',
+                )}
+              >
+                {brand}
+              </span>
+            </label>
+          ))}
+        </div>
       </FilterSection>
 
       <div className="h-px bg-gray-100" />
 
       {/* Processor */}
-      <FilterSection title="Processor">
+      <FilterSection title="Processeur">
         <CheckboxGroup
           items={PROCESSORS}
           selected={filters.processors}
@@ -196,7 +264,7 @@ export function FilterSidebar({
       <div className="h-px bg-gray-100" />
 
       {/* RAM */}
-      <FilterSection title="RAM">
+      <FilterSection title="Mémoire (RAM)">
         <CheckboxGroup
           items={RAM_OPTIONS}
           selected={filters.rams}
@@ -207,7 +275,7 @@ export function FilterSidebar({
       <div className="h-px bg-gray-100" />
 
       {/* Storage */}
-      <FilterSection title="Storage">
+      <FilterSection title="Stockage" hint="SSD NVMe conseillé pour la vitesse">
         <CheckboxGroup
           items={STORAGE_OPTIONS}
           selected={filters.storages}
@@ -218,7 +286,7 @@ export function FilterSidebar({
       <div className="h-px bg-gray-100" />
 
       {/* Graphics Card */}
-      <FilterSection title="Graphics Card">
+      <FilterSection title="Carte graphique" hint="RTX pour gaming/vidéo, intégrée pour bureautique">
         <CheckboxGroup
           items={GRAPHICS_OPTIONS}
           selected={filters.graphicsCards}
@@ -229,7 +297,7 @@ export function FilterSidebar({
       <div className="h-px bg-gray-100" />
 
       {/* Screen Size */}
-      <FilterSection title="Screen Size">
+      <FilterSection title="Taille d'écran" hint={'13-14" ultraportable / 15-17" confort visuel'}>
         <CheckboxGroup
           items={SCREEN_SIZES}
           selected={filters.screenSizes}

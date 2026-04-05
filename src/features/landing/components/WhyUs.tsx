@@ -34,7 +34,7 @@ export function WhyUs() {
               Why us
             </p>
             <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-[#1d1d1f] sm:text-4xl lg:text-5xl">
-              The LaptopStore difference.
+              The TechFiable difference.
             </h2>
             <p className="mt-2 text-base text-[#5d6675] sm:text-lg">
               More reasons to shop with confidence.

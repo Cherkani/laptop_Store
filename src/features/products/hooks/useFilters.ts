@@ -11,6 +11,7 @@ export function useFilters() {
     return {
       search: searchParams.get('q') ?? '',
       brands: searchParams.getAll('brand'),
+      operatingSystems: searchParams.getAll('os'),
       processors: searchParams.getAll('processor'),
       rams: searchParams.getAll('ram'),
       storages: searchParams.getAll('storage'),
@@ -31,6 +32,7 @@ export function useFilters() {
       const params = new URLSearchParams()
       if (next.search) params.set('q', next.search)
       next.brands.forEach(b => params.append('brand', b))
+      next.operatingSystems.forEach(os => params.append('os', os))
       next.processors.forEach(p => params.append('processor', p))
       next.rams.forEach(r => params.append('ram', r))
       next.storages.forEach(s => params.append('storage', s))
@@ -50,7 +52,7 @@ export function useFilters() {
     setSearchParams({}, { replace: true })
   }, [setSearchParams])
 
-  const toggleArrayFilter = useCallback(<K extends 'brands' | 'processors' | 'rams' | 'storages' | 'graphicsCards' | 'screenSizes'>(
+  const toggleArrayFilter = useCallback(<K extends 'brands' | 'operatingSystems' | 'processors' | 'rams' | 'storages' | 'graphicsCards' | 'screenSizes'>(
     key: K,
     value: string
   ) => {
@@ -64,6 +66,7 @@ export function useFilters() {
 
   const activeFilterCount = [
     filters.brands.length,
+    filters.operatingSystems.length,
     filters.processors.length,
     filters.rams.length,
     filters.storages.length,

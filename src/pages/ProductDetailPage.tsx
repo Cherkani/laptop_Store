@@ -271,23 +271,23 @@ export function ProductDetailPage() {
             {/* Price */}
             <div className="space-y-1">
               <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-3xl font-extrabold text-[#1d1d1f] tracking-tight">
+                <span className="text-4xl font-extrabold text-[#e63946] tracking-tight">
                   {formatPrice(product.price)}
                 </span>
                 {product.original_price && product.original_price > product.price && (
-                  <span className="text-xl font-medium text-gray-400 line-through">
+                  <span className="text-2xl font-medium text-gray-400 line-through">
                     {formatPrice(product.original_price)}
                   </span>
                 )}
                 {savings !== null && (
                   <span className="text-sm font-bold text-white bg-red-500 rounded-full px-3 py-1">
-                    Save {savings}%
+                    Vous économisez {savings}%
                   </span>
                 )}
               </div>
               {product.original_price && product.original_price > product.price && (
-                <p className="text-sm text-gray-400">
-                  vs. {formatPrice(product.original_price)} new retail price
+                <p className="text-sm text-gray-500">
+                  Vous gagnez {formatPrice(product.original_price - product.price)} par rapport au prix neuf.
                 </p>
               )}
             </div>

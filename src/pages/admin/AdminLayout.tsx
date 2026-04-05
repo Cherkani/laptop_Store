@@ -1,6 +1,8 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
+  Banknote,
   BarChart3,
+  Building2,
   ChevronRight,
   ClipboardList,
   FileText,
@@ -9,11 +11,14 @@ import {
   LayoutDashboard,
   LogOut,
   Package,
+  PiggyBank,
   Plus,
   Receipt,
   Settings2,
   ShoppingBag,
   SlidersHorizontal,
+  Truck,
+  Users,
   Wallet,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -40,6 +45,16 @@ const navGroupsData = [
       { to: '/admin/factures', labelKey: 'admin.nav.invoices', icon: Receipt, exact: true },
       { to: '/admin/bons-livraison', labelKey: 'admin.nav.delivery', icon: ClipboardList, exact: true },
       { to: '/admin/paiements', labelKey: 'admin.nav.payments', icon: Wallet, exact: true },
+    ],
+  },
+  {
+    labelKey: 'admin.group.crm',
+    items: [
+      { to: '/admin/clients', labelKey: 'admin.nav.clients', icon: Users, exact: true },
+      { to: '/admin/entreprises', labelKey: 'admin.nav.companies', icon: Building2, exact: true },
+      { to: '/admin/fournisseurs', labelKey: 'admin.nav.suppliers', icon: Truck, exact: true },
+      { to: '/admin/cash', labelKey: 'admin.nav.cashSales', icon: Banknote, exact: true },
+      { to: '/admin/treasury', labelKey: 'admin.nav.treasury', icon: PiggyBank, exact: true },
     ],
   },
   {
@@ -84,7 +99,7 @@ export function AdminLayout() {
               <Laptop className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white leading-none">LaptopStore Pro</p>
+              <p className="text-sm font-bold text-white leading-none">TechFiable Pro</p>
               <p className="text-xs text-slate-400 mt-0.5">Admin Backoffice</p>
             </div>
           </Link>

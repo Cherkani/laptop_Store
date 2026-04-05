@@ -17,6 +17,7 @@ import type { SortOption } from '@/features/products/types'
 
 export function ProductsPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const {
     filters,
     setFilters,
@@ -86,6 +87,33 @@ export function ProductsPage() {
                 <SelectItem value="name_asc">Name: A to Z</SelectItem>
               </SelectContent>
             </Select>
+
+            <div className="hidden items-center gap-2 lg:flex">
+              <button
+                className={cn(
+                  'flex h-9 w-9 items-center justify-center rounded-full border',
+                  viewMode === 'grid'
+                    ? 'border-[#0f5dcf] text-[#0f5dcf] bg-blue-50'
+                    : 'border-gray-200 text-gray-500 hover:bg-gray-50',
+                )}
+                onClick={() => setViewMode('grid')}
+                aria-label="Vue grille"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                className={cn(
+                  'flex h-9 w-9 items-center justify-center rounded-full border',
+                  viewMode === 'list'
+                    ? 'border-[#0f5dcf] text-[#0f5dcf] bg-blue-50'
+                    : 'border-gray-200 text-gray-500 hover:bg-gray-50',
+                )}
+                onClick={() => setViewMode('list')}
+                aria-label="Vue liste"
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -106,6 +134,7 @@ export function ProductsPage() {
               products={products}
               isLoading={isLoading}
               error={error as Error | null}
+              viewMode={viewMode}
             />
           </div>
         </div>

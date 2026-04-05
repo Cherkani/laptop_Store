@@ -6,9 +6,10 @@ interface ProductGridProps {
   products: ProductWithImages[]
   isLoading: boolean
   error: Error | null
+  viewMode?: 'grid' | 'list'
 }
 
-export function ProductGrid({ products, isLoading, error }: ProductGridProps) {
+export function ProductGrid({ products, isLoading, error, viewMode = 'grid' }: ProductGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -61,6 +62,32 @@ export function ProductGrid({ products, isLoading, error }: ProductGridProps) {
           Try adjusting your filters or search query to find what you're looking
           for.
         </p>
+      </div>
+    )
+  }
+
+  if (viewMode === 'list') {
+    return (
+      <div className="space-y-4">
+        {products.map(product => (
+          <div key={product.id} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <div className="grid gap-4 md:grid-cols-[240px_1fr] md:items-center">
+              <div className="overflow-hidden rounded-xl bg-gray-50">
+                <ProductCard product={product} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold text-[#0f172a]">{product.name}</h3>
+                <p className="text-sm text-gray-500 line-clamp-3">{product.description}</p>
+                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                  <span className="rounded-full bg-gray-100 px-3 py-1">{product.processor}</span>
+                  <span className="rounded-full bg-gray-100 px-3 py-1">{product.ram}</span>
+                  <span className="rounded-full bg-gray-100 px-3 py-1">{product.storage}</span>
+                  <span className="rounded-full bg-gray-100 px-3 py-1">{product.graphics_card}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     )
   }

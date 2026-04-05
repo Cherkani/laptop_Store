@@ -12,6 +12,7 @@ import { ProductDetailPage } from '@/pages/ProductDetailPage'
 import { WorkflowAdvisorPage } from '@/pages/WorkflowAdvisorPage'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { SignupForm } from '@/features/auth/components/SignupForm'
+import { AuthLayout } from '@/components/layout/AuthLayout'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminReportsPage } from '@/pages/admin/AdminReportsPage'
@@ -23,6 +24,11 @@ import { AdminDeliveryNotesPage } from '@/pages/admin/AdminDeliveryNotesPage'
 import { AdminPaymentsPage } from '@/pages/admin/AdminPaymentsPage'
 import { AdminSystemPage } from '@/pages/admin/AdminSystemPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
+import { AdminClientsPage } from '@/pages/admin/AdminClientsPage'
+import { AdminSuppliersPage } from '@/pages/admin/AdminSuppliersPage'
+import { AdminCompaniesPage } from '@/pages/admin/AdminCompaniesPage'
+import { AdminCashSalesPage } from '@/pages/admin/AdminCashSalesPage'
+import { AdminBalancePage } from '@/pages/admin/AdminBalancePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +56,10 @@ export default function App() {
               <Route path="/advisor/:workflow" element={<WorkflowAdvisorPage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
+            </Route>
+
+            {/* Auth routes without main header/footer */} 
+            <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginForm />} />
               <Route path="/signup" element={<SignupForm />} />
             </Route>
@@ -69,6 +79,11 @@ export default function App() {
               <Route path="factures" element={<AdminInvoicesPage />} />
               <Route path="bons-livraison" element={<AdminDeliveryNotesPage />} />
               <Route path="paiements" element={<AdminPaymentsPage />} />
+              <Route path="clients" element={<AdminClientsPage />} />
+              <Route path="entreprises" element={<AdminCompaniesPage />} />
+              <Route path="fournisseurs" element={<AdminSuppliersPage />} />
+              <Route path="cash" element={<AdminCashSalesPage />} />
+              <Route path="treasury" element={<AdminBalancePage />} />
               <Route path="systeme" element={<AdminSystemPage />} />
               <Route path="parametres" element={<AdminSettingsPage />} />
               <Route path="products" element={<AdminProductsPage />} />

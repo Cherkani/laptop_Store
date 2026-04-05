@@ -36,6 +36,102 @@ export interface Database {
         }
         Relationships: []
       }
+      clients: {
+        Row: {
+          id: string
+          name: string
+          cin: string | null
+          email: string | null
+          phone: string | null
+          address: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          cin?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          cin?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          id: string
+          name: string
+          ice: string | null
+          email: string | null
+          phone: string | null
+          address: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          ice?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          ice?: string | null
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          id: string
+          name: string
+          email: string | null
+          phone: string | null
+          address: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string | null
+          phone?: string | null
+          address?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           id: string
@@ -44,6 +140,7 @@ export interface Database {
           price: number
           original_price: number | null
           condition: string | null
+          os: string | null
           brand: string
           processor: string
           ram: string
@@ -64,6 +161,7 @@ export interface Database {
           price: number
           original_price?: number | null
           condition?: string | null
+          os?: string | null
           brand: string
           processor: string
           ram: string
@@ -84,6 +182,7 @@ export interface Database {
           price?: number
           original_price?: number | null
           condition?: string | null
+          os?: string | null
           brand?: string
           processor?: string
           ram?: string
@@ -201,12 +300,161 @@ export interface Database {
           }
         ]
       }
+      purchases: {
+        Row: {
+          id: string
+          product_id: string
+          supplier_id: string | null
+          qty: number
+          unit_price: number
+          additional_expenses: number
+          total_spent: number
+          purchase_price_per_unit: number
+          purchased_at: string
+          has_invoice: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          supplier_id?: string | null
+          qty: number
+          unit_price?: number
+          additional_expenses?: number
+          total_spent?: number
+          purchase_price_per_unit?: number
+          purchased_at?: string
+          has_invoice?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          supplier_id?: string | null
+          qty?: number
+          unit_price?: number
+          additional_expenses?: number
+          total_spent?: number
+          purchase_price_per_unit?: number
+          purchased_at?: string
+          has_invoice?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      balance_entries: {
+        Row: {
+          id: string
+          entry_type: string
+          description: string | null
+          amount: number
+          running_balance: number
+          occurred_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          entry_type: string
+          description?: string | null
+          amount: number
+          running_balance?: number
+          occurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          entry_type?: string
+          description?: string | null
+          amount?: number
+          running_balance?: number
+          occurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cash_sales: {
+        Row: {
+          id: string
+          client_id: string | null
+          company_id: string | null
+          description: string | null
+          amount_ht: number
+          tva: number
+          amount_ttc: number
+          occurred_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          client_id?: string | null
+          company_id?: string | null
+          description?: string | null
+          amount_ht?: number
+          tva?: number
+          amount_ttc?: number
+          occurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string | null
+          company_id?: string | null
+          description?: string | null
+          amount_ht?: number
+          tva?: number
+          amount_ttc?: number
+          occurred_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_sales_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       sales_records: {
         Row: {
           id: string
           client_name: string | null
           client_phone: string | null
           client_whatsapp: string | null
+          client_id: string | null
+          company_id: string | null
           source: string
           lead_title: string
           lead_message: string | null
@@ -229,6 +477,8 @@ export interface Database {
           client_name?: string | null
           client_phone?: string | null
           client_whatsapp?: string | null
+          client_id?: string | null
+          company_id?: string | null
           source?: string
           lead_title?: string
           lead_message?: string | null
@@ -251,6 +501,8 @@ export interface Database {
           client_name?: string | null
           client_phone?: string | null
           client_whatsapp?: string | null
+          client_id?: string | null
+          company_id?: string | null
           source?: string
           lead_title?: string
           lead_message?: string | null
@@ -268,7 +520,22 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sales_records_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_records_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       sales_record_items: {
         Row: {
@@ -479,9 +746,15 @@ export interface Database {
 }
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
+export type Client = Database['public']['Tables']['clients']['Row']
+export type Company = Database['public']['Tables']['companies']['Row']
+export type Supplier = Database['public']['Tables']['suppliers']['Row']
 export type Product = Database['public']['Tables']['products']['Row']
 export type ProductImage = Database['public']['Tables']['product_images']['Row']
 export type Specification = Database['public']['Tables']['specifications']['Row']
+export type Purchase = Database['public']['Tables']['purchases']['Row']
+export type BalanceEntry = Database['public']['Tables']['balance_entries']['Row']
+export type CashSale = Database['public']['Tables']['cash_sales']['Row']
 export type CartItem = Database['public']['Tables']['cart_items']['Row']
 export type SalesRecord = Database['public']['Tables']['sales_records']['Row']
 export type SalesRecordItem = Database['public']['Tables']['sales_record_items']['Row']

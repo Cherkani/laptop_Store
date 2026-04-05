@@ -4,7 +4,8 @@ import { WhyUs } from '@/features/landing/components/WhyUs'
 import { FeatureHighlights } from '@/features/landing/components/FeatureHighlights'
 import { CategoryCards } from '@/features/landing/components/CategoryCards'
 import { FeaturedProducts } from '@/features/landing/components/FeaturedProducts'
-import { NewsletterSection } from '@/features/landing/components/NewsletterSection'
+import { BrandStrip } from '@/features/landing/components/BrandStrip'
+import { BestSellers } from '@/features/landing/components/BestSellers'
 
 export function LandingPage() {
   return (
@@ -16,12 +17,13 @@ export function LandingPage() {
 
       <div className="relative z-10">
         <StoreHero />
+        <BrandStrip />
         <ProductLineup />
+        <BestSellers />
         <WhyUs />
         <FeatureHighlights />
         <CategoryCards />
         <FeaturedProducts />
-        <NewsletterSection />
       </div>
     </div>
   )

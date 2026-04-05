@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { ProductWithImages } from '@/types/database.types'
 import type { ProductFilters } from '../types'
+import { BRANDS } from '../types'
 
 export const productsService = {
   async getProducts(filters: ProductFilters): Promise<ProductWithImages[]> {
@@ -16,9 +17,24 @@ export const productsService = {
     if (filters.search) {
       query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%,brand.ilike.%${filters.search}%`)
     }
-    if (filters.brands.length > 0) {
-      query = query.in('brand', filters.brands)
+
+    // Map OS filter to brands to stay compatible even if products.os column is absent
+    let brandFilter = filters.brands
+    if (brandFilter.length === 0 && filters.operatingSystems.length > 0) {
+      const wantsMac = filters.operatingSystems.includes('macOS')
+      const wantsWindows = filters.operatingSystems.includes('Windows')
+      if (wantsMac && wantsWindows) {
+        brandFilter = BRANDS
+      } else if (wantsMac) {
+        brandFilter = ['Apple']
+      } else if (wantsWindows) {
+        brandFilter = BRANDS.filter(b => b !== 'Apple')
+      }
     }
+    if (brandFilter.length > 0) {
+      query = query.in('brand', brandFilter)
+    }
+
     if (filters.processors.length > 0) {
       query = query.in('processor', filters.processors)
     }

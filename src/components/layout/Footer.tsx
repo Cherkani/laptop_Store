@@ -35,7 +35,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 py-10 sm:grid-cols-4 lg:py-12">
           <div className="col-span-2 sm:col-span-1">
             <Link to="/" className="font-display text-lg font-bold tracking-tight text-foreground">
-              LaptopStore
+              TechFiable
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               {t('footer.about')}
@@ -92,7 +92,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-2 border-t border-border py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} LaptopStore. {t('footer.rights')}</p>
+          <p>&copy; {new Date().getFullYear()} TechFiable. {t('footer.rights')}</p>
           <p>{t('footer.tagline')}</p>
         </div>
       </div>

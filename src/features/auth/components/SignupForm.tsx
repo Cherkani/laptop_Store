@@ -31,7 +31,7 @@ export function SignupForm() {
       await authService.signup(formData)
       toast({
         title: 'Account created!',
-        description: 'Welcome to LaptopStore.',
+        description: 'Welcome to TechFiable.',
         variant: 'default',
       })
       navigate('/')
@@ -70,7 +70,7 @@ export function SignupForm() {
             <Laptop className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
-            Join LaptopStore.
+            Join TechFiable.
           </h2>
           <p className="text-lg text-gray-400 leading-relaxed mb-10">
             Create your account and unlock a premium laptop shopping experience.
@@ -104,7 +104,7 @@ export function SignupForm() {
               <Laptop className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold text-[#1d1d1f]">
-              LaptopStore
+              TechFiable
             </span>
           </div>
 
@@ -113,7 +113,7 @@ export function SignupForm() {
               Create account
             </h1>
             <p className="text-gray-500">
-              Get started with your free LaptopStore account.
+              Get started with your free TechFiable account.
             </p>
           </div>
 
