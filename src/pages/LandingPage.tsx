@@ -1,5 +1,4 @@
 import { StoreHero } from '@/features/landing/components/StoreHero'
-import { ProductLineup } from '@/features/landing/components/ProductLineup'
 import { WhyUs } from '@/features/landing/components/WhyUs'
 import { FeatureHighlights } from '@/features/landing/components/FeatureHighlights'
 import { CategoryCards } from '@/features/landing/components/CategoryCards'
@@ -14,7 +13,6 @@ export function LandingPage() {
     <div className="bg-[#0a0f1a]">
       <StoreHero />
       <BrandStrip />
-      <ProductLineup />
       <BestSellers />
       <WhyUs />
       <FeatureHighlights />
