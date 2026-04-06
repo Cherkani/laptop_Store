@@ -32,12 +32,16 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-[#f8f9fa] via-white to-[#eef2f7]">
+    <div className="min-h-screen flex bg-[#0b101a] text-white">
       {/* Left inspirational panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0f0f0f] text-white items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative text-white items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-10 -left-14 h-64 w-64 rounded-full bg-[#0f5dcf]/30 blur-3xl" />
-          <div className="absolute bottom-6 right-0 h-72 w-72 rounded-full bg-[#e63946]/25 blur-3xl" />
+          <img
+            src="/first%20backgroubd1.png"
+            alt="Performance laptop"
+            className="h-full w-full object-cover scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0b101a] via-[#0b101a]/70 to-[#0b101a]/80" />
         </div>
         <div className="relative z-10 max-w-lg px-12 py-10 space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
@@ -52,7 +56,7 @@ export function LoginForm() {
             {['MacBook Pro', 'Dell XPS', 'ThinkPad'].map((name, i) => (
               <div
                 key={name}
-                className="rounded-2xl bg-white/8 border border-white/10 p-3 backdrop-blur"
+                className="rounded-2xl bg-white/10 border border-white/10 p-3 backdrop-blur"
                 style={{ opacity: 1 - i * 0.12 }}
               >
                 <p className="text-sm font-semibold">{name}</p>
@@ -65,26 +69,26 @@ export function LoginForm() {
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md rounded-2xl bg-white shadow-[0_18px_45px_rgba(15,23,42,0.08)] border border-slate-100 px-6 py-8">
+        <div className="w-full max-w-md rounded-2xl bg-[#0f1726] border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.5)] px-6 py-8">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8">
             <div className="w-9 h-9 rounded-xl bg-[#0f5dcf] flex items-center justify-center text-white">
               <Laptop className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-500">TechFiable</p>
-              <p className="text-xs text-slate-400">Accès sécurisé</p>
+              <p className="text-sm font-semibold text-white/60">TechFiable</p>
+              <p className="text-xs text-white/50">Accès sécurisé</p>
             </div>
           </div>
 
           <div className="space-y-2 mb-6">
-            <h1 className="text-3xl font-bold text-[#0f172a] tracking-tight">Connexion</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Connexion</h1>
             <p className="text-gray-500">Identifiez-vous pour retrouver vos commandes et vos favoris.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-[#0f172a]">
+              <Label htmlFor="email" className="text-sm font-semibold text-white">
                 Email
               </Label>
               <Input
@@ -95,12 +99,12 @@ export function LoginForm() {
                 onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                 required
                 autoComplete="email"
-                className="h-12 rounded-xl border-slate-200 bg-slate-50/60 px-4 text-[15px] focus:bg-white focus:border-[#0f5dcf] focus:ring-[#0f5dcf]/20 transition-colors"
+                className="h-12 rounded-xl border-white/15 bg-white/5 px-4 text-[15px] focus:bg-[#0f1726] focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold text-[#0f172a]">
+              <Label htmlFor="password" className="text-sm font-semibold text-white">
                 Mot de passe
               </Label>
               <div className="relative">
@@ -112,12 +116,12 @@ export function LoginForm() {
                   onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
                   required
                   autoComplete="current-password"
-                  className="h-12 rounded-xl border-slate-200 bg-slate-50/60 px-4 pr-12 text-[15px] focus:bg-white focus:border-[#0f5dcf] focus:ring-[#0f5dcf]/20 transition-colors"
+                  className="h-12 rounded-xl border-white/15 bg-white/5 px-4 pr-12 text-[15px] focus:bg-[#0f1726] focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
                   aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -128,7 +132,7 @@ export function LoginForm() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 rounded-xl bg-[#0f5dcf] hover:bg-[#0d4fb6] text-[15px] font-semibold text-white shadow-lg shadow-blue-500/20 transition-all"
+              className="w-full h-12 rounded-xl bg-amber-500 hover:bg-amber-400 text-[#0a0f1a] text-[15px] font-semibold shadow-lg shadow-amber-500/25 transition-all"
             >
               {isLoading ? (
                 <>
@@ -144,21 +148,21 @@ export function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-slate-500">
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" /> Garantie 6 mois
+          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-white/60">
+            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-300" /> Garantie 6 mois
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
-              <Truck className="h-4 w-4 text-orange-500" /> Livraison rapide
+            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+              <Truck className="h-4 w-4 text-amber-300" /> Livraison rapide
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
-              <Headphones className="h-4 w-4 text-[#0f5dcf]" /> Support WhatsApp
+            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+              <Headphones className="h-4 w-4 text-amber-300" /> Support WhatsApp
             </div>
           </div>
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Pas encore de compte ?{' '}
-            <Link to="/signup" className="text-[#0f5dcf] hover:text-[#0d4fb6] font-semibold transition-colors">
+            <Link to="/signup" className="text-amber-300 hover:text-amber-200 font-semibold transition-colors">
               Créer un compte
             </Link>
           </p>
