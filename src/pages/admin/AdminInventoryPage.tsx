@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
 import { adminService } from '@/features/admin/services/adminService'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import type { Product, ProductImage } from '@/types/database.types'
 
@@ -217,7 +217,13 @@ export function AdminInventoryPage() {
                           <td className="px-6 py-3">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                                {img && <img src={img.image_url} alt="" className="w-full h-full object-cover" />}
+                                {img && (
+                                  <img
+                                    src={getImageSrc(img) ?? ''}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
                               </div>
                               <div>
                                 <p className="font-medium text-slate-900 truncate max-w-[180px]">{product.name}</p>

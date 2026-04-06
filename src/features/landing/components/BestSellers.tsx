@@ -3,71 +3,109 @@ import { cn } from '@/lib/utils'
 import { ProductCard } from '@/features/products/components/ProductCard'
 import { useProducts } from '@/features/products/hooks/useProducts'
 import { DEFAULT_FILTERS } from '@/features/products/types'
+import type { ProductWithImages } from '@/types/database.types'
 
-const tabs = [
-  { id: 'Windows', label: 'Windows' },
-  { id: 'macOS', label: 'macOS' },
-]
+type OS = 'Windows' | 'macOS'
+
+const WINDOWS_BRANDS = ['Tous', 'HP', 'Surface', 'Dell', 'Lenovo'] as const
+type WindowsBrand = (typeof WINDOWS_BRANDS)[number]
 
 export function BestSellers() {
-  const [activeTab, setActiveTab] = useState<'Windows' | 'macOS'>('Windows')
+  const [activeOS, setActiveOS] = useState<OS>('Windows')
+  const [windowsBrand, setWindowsBrand] = useState<WindowsBrand>('Tous')
 
-  const filters = useMemo(() => ({
-    ...DEFAULT_FILTERS,
-    operatingSystems: [activeTab],
-    sortBy: 'price_desc' as const,
-  }), [activeTab])
+  const filters = useMemo(
+    () => ({ ...DEFAULT_FILTERS, operatingSystems: [activeOS], sortBy: 'price_desc' as const }),
+    [activeOS],
+  )
 
   const { data: products = [], isLoading, error } = useProducts(filters)
-  const list = products.slice(0, 8)
+
+  const list = useMemo(() => {
+    let items = products as ProductWithImages[]
+    if (activeOS === 'Windows' && windowsBrand !== 'Tous') {
+      const search = windowsBrand === 'Surface' ? 'microsoft' : windowsBrand.toLowerCase()
+      items = items.filter(p => p.brand.toLowerCase().includes(search))
+    }
+    return items.slice(0, 8)
+  }, [products, activeOS, windowsBrand])
 
   return (
-    <section className="bg-[#f8f9fa] py-12 sm:py-16 lg:py-20">
+    <section className="bg-[#0a0f1a] py-14 sm:py-18 lg:py-24">
       <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6">
+
+        {/* Header row */}
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#e63946]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-400">
               Meilleures ventes
             </p>
-            <h2 className="mt-1 font-display text-3xl font-extrabold tracking-tight text-[#0f172a] sm:text-4xl">
+            <h2 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
               Top laptops par OS
             </h2>
           </div>
-          <div className="flex gap-2 rounded-full bg-white p-1 shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-            {tabs.map(tab => (
+
+          {/* OS Tab switcher */}
+          <div className="flex gap-1 rounded-xl border border-white/10 bg-white/[0.04] p-1">
+            {(['Windows', 'macOS'] as OS[]).map(os => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'Windows' | 'macOS')}
+                key={os}
+                onClick={() => {
+                  setActiveOS(os)
+                  setWindowsBrand('Tous')
+                }}
                 className={cn(
-                  'rounded-full px-4 py-2 text-sm font-semibold transition-all',
-                  activeTab === tab.id
-                    ? 'bg-[#0f5dcf] text-white shadow-sm'
-                    : 'text-[#0f172a] hover:text-[#0f5dcf]',
+                  'rounded-lg px-5 py-2 text-sm font-semibold transition-all duration-200',
+                  activeOS === os
+                    ? 'bg-[#0f5dcf] text-white shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
+                    : 'text-white/50 hover:text-white/80',
                 )}
               >
-                {tab.label}
+                {os}
               </button>
             ))}
           </div>
         </div>
 
+        {/* Windows brand sub-filters */}
+        {activeOS === 'Windows' && (
+          <div className="mb-7 flex flex-wrap gap-2">
+            {WINDOWS_BRANDS.map(brand => (
+              <button
+                key={brand}
+                onClick={() => setWindowsBrand(brand)}
+                className={cn(
+                  'rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95',
+                  windowsBrand === brand
+                    ? 'border-amber-500 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                    : 'border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20 hover:text-white/80',
+                )}
+              >
+                {brand}
+              </button>
+            ))}
+          </div>
+        )}
+
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
             Impossible de charger les produits : {error.message}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {(isLoading ? Array.from({ length: 4 }) : list).map((product, idx) => (
-            <div key={product ? (product as any).id : idx} className="h-full">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {(isLoading ? Array<ProductWithImages | null>(8).fill(null) : list).map((product, idx) => (
+            <div key={product ? product.id : idx} className="h-full">
               {isLoading ? (
-                <div className="h-full rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                  <div className="aspect-[4/3] rounded-xl bg-gray-100" />
-                  <div className="mt-4 h-3 w-24 rounded-full bg-gray-200" />
-                  <div className="mt-2 h-4 w-40 rounded-full bg-gray-200" />
+                <div className="h-full animate-pulse rounded-2xl border border-white/[0.06] bg-[#0f1726] p-4">
+                  <div className="aspect-[4/3] rounded-xl bg-white/[0.04]" />
+                  <div className="mt-4 h-2.5 w-16 rounded-full bg-white/[0.05]" />
+                  <div className="mt-2.5 h-4 w-36 rounded-full bg-white/[0.06]" />
+                  <div className="mt-2 h-2.5 w-28 rounded-full bg-white/[0.04]" />
+                  <div className="mt-4 h-6 w-24 rounded-full bg-white/[0.06]" />
                 </div>
               ) : (
-                <ProductCard product={product} />
+                <ProductCard product={product as ProductWithImages} />
               )}
             </div>
           ))}

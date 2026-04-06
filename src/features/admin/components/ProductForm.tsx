@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
 import { BRANDS, PROCESSORS, RAM_OPTIONS, STORAGE_OPTIONS, GRAPHICS_OPTIONS, SCREEN_SIZES } from '@/features/products/types'
 import type { ProductWithImages } from '@/types/database.types'
+import { getImageSrc } from '@/lib/utils'
 
 interface ProductFormProps {
   product?: ProductWithImages
@@ -19,7 +20,7 @@ interface ProductFormProps {
 
 interface ImagePreview {
   file?: File
-  url: string
+  url: string | null
   id?: string
   isPrimary: boolean
 }
@@ -52,7 +53,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
 
   const [images, setImages] = useState<ImagePreview[]>(
     product?.product_images?.sort((a, b) => a.display_order - b.display_order).map(img => ({
-      url: img.image_url,
+      url: getImageSrc(img),
       id: img.id,
       isPrimary: img.is_primary,
     })) ?? []
@@ -283,7 +284,11 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             {images.map((img, i) => (
               <div key={i} className="relative group">
                 <div className={`aspect-square rounded-lg overflow-hidden border-2 ${img.isPrimary ? 'border-blue-600' : 'border-transparent'}`}>
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  {img.url ? (
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">No image</div>
+                  )}
                 </div>
                 {img.isPrimary && (
                   <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-[10px] px-1 rounded leading-tight">Primary</span>

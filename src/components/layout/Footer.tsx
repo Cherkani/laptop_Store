@@ -26,30 +26,30 @@ export function Footer() {
   const { t } = useI18n()
 
   return (
-    <footer className="border-t border-border bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <footer className="border-t border-white/[0.07] bg-[#070c15]">
       <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
-        <p className="border-b border-border py-4 text-xs text-muted-foreground sm:text-sm">
+        <p className="border-b border-white/[0.07] py-4 text-xs text-white/35 sm:text-sm">
           {t('footer.disclaimer')}
         </p>
 
         <div className="grid grid-cols-2 gap-8 py-10 sm:grid-cols-4 lg:py-12">
           <div className="col-span-2 sm:col-span-1">
-            <Link to="/" className="font-display text-lg font-bold tracking-tight text-foreground">
+            <Link to="/" className="font-display text-lg font-bold tracking-tight text-white">
               TechFiable
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/45">
               {t('footer.about')}
             </p>
           </div>
 
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('footer.shop')}</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-white/35">{t('footer.shop')}</h3>
             <ul className="mt-4 space-y-2.5">
               {footerLinks.shop.map(link => (
                 <li key={link.key}>
                   <Link
                     to={link.to}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-white/50 transition-colors hover:text-white"
                   >
                     {t(link.key)}
                   </Link>
@@ -59,13 +59,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('footer.services')}</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-white/35">{t('footer.services')}</h3>
             <ul className="mt-4 space-y-2.5">
               {footerLinks.services.map(link => (
                 <li key={link.key}>
                   <a
                     href={link.to}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-white/50 transition-colors hover:text-white"
                   >
                     {t(link.key)}
                   </a>
@@ -75,13 +75,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{t('footer.company')}</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-white/35">{t('footer.company')}</h3>
             <ul className="mt-4 space-y-2.5">
               {footerLinks.company.map(link => (
                 <li key={link.key}>
                   <a
                     href={link.to}
-                    className="text-sm text-foreground/80 transition-colors hover:text-foreground"
+                    className="text-sm text-white/50 transition-colors hover:text-white"
                   >
                     {t(link.key)}
                   </a>
@@ -91,7 +91,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-border py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-t border-white/[0.07] py-5 text-xs text-white/30 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} TechFiable. {t('footer.rights')}</p>
           <p>{t('footer.tagline')}</p>
         </div>

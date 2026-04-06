@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useProduct } from '@/features/products/hooks/useProducts'
 import { useCartStore } from '@/store/cartStore'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { sendWhatsAppLead } from '@/features/products/services/leadCaptureService'
 import { useI18n } from '@/contexts/i18n'
@@ -180,9 +180,9 @@ export function ProductDetailPage() {
           <div className="space-y-4">
             {/* Main image */}
             <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-100 p-8 lg:p-12">
-              {images[selectedImage] ? (
+              {getImageSrc(images[selectedImage]) ? (
                 <img
-                  src={images[selectedImage].image_url}
+                  src={getImageSrc(images[selectedImage])!}
                   alt={product.name}
                   className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
                 />
@@ -213,11 +213,17 @@ export function ProductDetailPage() {
                         : 'border-gray-100 hover:border-gray-300'
                     }`}
                   >
-                    <img
-                      src={img.image_url}
-                      alt=""
-                      className="w-full h-full object-contain"
-                    />
+                    {getImageSrc(img) ? (
+                      <img
+                        src={getImageSrc(img)!}
+                        alt=""
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                        No image
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>

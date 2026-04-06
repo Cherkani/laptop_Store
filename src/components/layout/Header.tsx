@@ -23,6 +23,17 @@ import { toast } from '@/hooks/use-toast'
 import { SitePreferences } from '@/components/layout/SitePreferences'
 import { useI18n } from '@/contexts/i18n'
 
+const BRAND_LOGOS: Record<string, string> = {
+  ASUS: 'https://cdn.simpleicons.org/asus/ffffff',
+  Dell: 'https://cdn.simpleicons.org/dell/ffffff',
+  HP: 'https://cdn.simpleicons.org/hp/ffffff',
+  Lenovo: 'https://cdn.simpleicons.org/lenovo/ffffff',
+  MSI: 'https://cdn.simpleicons.org/msi/ffffff',
+  Acer: 'https://cdn.simpleicons.org/acer/ffffff',
+  Razer: 'https://cdn.simpleicons.org/razer/ffffff',
+  Apple: 'https://cdn.simpleicons.org/apple/ffffff',
+}
+
 const WINDOWS_BRANDS = ['ASUS', 'Dell', 'HP', 'Lenovo', 'MSI', 'Acer', 'Razer']
 const MAC_BRANDS = ['MacBook Air', 'MacBook Pro']
 
@@ -105,41 +116,63 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 border-b border-slate-200 bg-white/90 text-slate-900 backdrop-blur-xl transition-shadow',
-        scrolled && 'shadow-[0_10px_28px_rgba(0,0,0,0.08)]',
+        'sticky top-0 z-40 bg-[#0b101a]/95 text-slate-100 transition-shadow border-b border-white/[0.07] backdrop-blur-md',
+        scrolled && 'shadow-[0_8px_24px_rgba(0,0,0,0.5)]',
       )}
     >
       {/* Top info bar */}
-      <div className="border-b border-slate-200 bg-[#f8f9fa] text-slate-800">
+      <div className="border-b border-white/[0.06] bg-[#070c15]">
         <div className="mx-auto flex max-w-[1260px] items-center gap-4 px-4 py-2 text-[13px] sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-emerald-700 ring-1 ring-emerald-200">
-            <Phone className="h-3.5 w-3.5" />
-            <a href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="hover:text-emerald-900">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.05] px-3 py-1 text-white/70 ring-1 ring-white/10">
+            <Phone className="h-3.5 w-3.5 text-emerald-400" />
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white"
+            >
               WhatsApp {WHATSAPP_NUMBER}
             </a>
           </div>
-          <span className="hidden items-center gap-2 text-slate-500 sm:flex">
-            <span className="h-1 w-1 rounded-full bg-slate-400" />
+          <span className="hidden items-center gap-2 text-white/50 sm:flex">
+            <span className="h-1 w-1 rounded-full bg-white/30" />
             {HOURS}
           </span>
-          <span className="ml-auto text-xs font-semibold text-[#e63946]">
-            {t('header.promo') ?? 'Jusqu’à -30% sur une sélection reconditionnée'}
+          <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
+            {t('header.promo') ?? 'Premium laptops reconditionnés'}
           </span>
         </div>
       </div>
 
       {/* Main bar */}
       <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center gap-3 lg:h-[72px]">
-          <Link to="/" className="flex items-center gap-2.5 shrink-0 text-slate-900">
-            <span className="inline-block h-8 w-8 rounded-md bg-gradient-to-br from-[#0f5dcf] via-[#1445a6] to-[#0c1d3a] ring-2 ring-blue-200" aria-hidden="true" />
-            <span className="font-display text-lg font-bold tracking-tight">TechFiable</span>
+        <div className="flex h-16 items-center gap-3 lg:h-[68px]">
+          {/* Logo */}
+          <Link to="/" className="flex shrink-0 items-center gap-2.5 text-white">
+            <span
+              className="inline-block h-9 w-9 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+              aria-hidden="true"
+            />
+            <span className="font-display text-base font-extrabold tracking-tight text-white">
+              LaptopStore.ma
+            </span>
           </Link>
 
-          <nav className="ml-6 hidden items-center gap-4 lg:flex text-slate-900">
+          {/* Desktop nav */}
+          <nav className="ml-5 hidden items-center gap-0.5 lg:flex">
             {[
-              { label: 'Windows', key: 'windows' as const, brands: WINDOWS_BRANDS, href: '/products?os=Windows' },
-              { label: 'Mac', key: 'mac' as const, brands: MAC_BRANDS, href: '/products?os=macOS' },
+              {
+                label: 'PC Windows',
+                key: 'windows' as const,
+                brands: WINDOWS_BRANDS,
+                href: '/products?os=Windows',
+              },
+              {
+                label: 'Mac & MacBook',
+                key: 'mac' as const,
+                brands: MAC_BRANDS,
+                href: '/products?os=macOS',
+              },
             ].map(item => (
               <div
                 key={item.key}
@@ -148,82 +181,102 @@ export function Header() {
                 onMouseLeave={() => setOpenMega(null)}
               >
                 <button
-                  className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100"
+                  className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
                   onClick={() => setOpenMega(prev => (prev === item.key ? null : item.key))}
                 >
-                  {item.key === 'windows' ? 'PC Windows' : 'Mac & MacBook'}
-                  <ChevronDown className="h-4 w-4" />
+                  {item.label}
+                  <ChevronDown className="h-3.5 w-3.5 opacity-50" />
                 </button>
+
                 {openMega === item.key && (
-                  <div className="absolute left-0 top-full mt-2 w-[360px] rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-300/40">
+                  <div className="absolute left-0 top-full mt-1.5 w-[320px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f1726] shadow-2xl shadow-black/60">
                     <div className="p-4">
-                      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Marques</p>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
+                      <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-white/35">
+                        Marques
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
                         {item.brands.map(brand => (
                           <Link
                             key={brand}
                             to={`/products?os=${item.key === 'windows' ? 'Windows' : 'macOS'}&brand=${encodeURIComponent(brand.replace('MacBook ', 'Apple'))}`}
-                            className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-800 ring-1 ring-slate-200 hover:bg-white"
+                            className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] px-3 py-2 text-sm text-white/70 transition hover:border-white/15 hover:bg-white/[0.07] hover:text-white"
                           >
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-[12px] font-bold text-slate-900 ring-1 ring-slate-200">
-                              {item.key === 'mac' ? '' : brand.slice(0, 2).toUpperCase()}
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10">
+                              <img
+                                src={BRAND_LOGOS[item.key === 'mac' ? 'Apple' : brand] ?? BRAND_LOGOS['Apple']}
+                                alt={brand}
+                                className="h-4 w-4 object-contain opacity-70"
+                              />
                             </span>
                             <span className="truncate">{brand}</span>
                           </Link>
                         ))}
                       </div>
-                      <div className="mt-4 flex gap-2">
-                        <Link
-                          to={item.href}
-                          className="inline-flex flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-[#e63946] to-[#ff6b35] px-3 py-2 text-sm font-semibold text-white shadow-lg shadow-red-400/20"
-                        >
-                          Voir tout {item.key === 'windows' ? 'Windows' : 'Mac'}
-                        </Link>
-                      </div>
+                      <Link
+                        to={item.href}
+                        className="mt-4 flex items-center justify-center rounded-xl bg-amber-500 py-2.5 text-sm font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/20 transition hover:bg-amber-400"
+                      >
+                        Voir tout {item.key === 'windows' ? 'Windows' : 'Mac'}
+                      </Link>
                     </div>
                   </div>
                 )}
               </div>
             ))}
-            <Link to="/products?sortBy=newest" className="text-sm font-semibold text-slate-900 hover:text-[#0f5dcf]">
+
+            <Link
+              to="/products?sortBy=newest"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
               Nouveautés
             </Link>
-            <Link to="/products?brand=Apple" className="text-sm font-semibold text-slate-900 hover:text-[#0f5dcf]">
+            <Link
+              to="/products?sale=true"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
               Promotions
             </Link>
-            <Link to="/products" className="text-sm font-semibold text-slate-900 hover:text-[#0f5dcf]">
+            <Link
+              to="/products"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
               Marques
             </Link>
-            <Link to="/products" className="text-sm font-semibold text-slate-900 hover:text-[#0f5dcf]">
+            <Link
+              to="/products"
+              className="rounded-full px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
               À propos
             </Link>
           </nav>
 
-          <form onSubmit={handleSearch} className="ml-auto hidden w-full max-w-xl lg:block">
+          {/* Search */}
+          <form onSubmit={handleSearch} className="ml-auto hidden w-full max-w-sm lg:block xl:max-w-md">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
               <Input
                 ref={desktopSearchRef}
                 type="search"
                 placeholder="Chercher par marque, modèle, CPU..."
                 value={searchQuery}
                 onChange={event => setSearchQuery(event.target.value)}
-                className="h-11 rounded-full border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-[#0f5dcf]"
+                className="h-10 rounded-full border-white/10 bg-white/[0.06] pl-10 pr-4 text-sm text-white placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-amber-400/60"
               />
             </div>
           </form>
 
-          <div className="ml-auto flex items-center gap-1 sm:gap-2 lg:ml-4">
+          {/* Right icons */}
+          <div className="ml-auto flex items-center gap-1 lg:ml-3">
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-slate-900 hover:bg-slate-100"
+              className="relative text-white/80 hover:bg-white/10 hover:text-white"
               onClick={toggleCart}
               aria-label={t('header.cart')}
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#e63946] text-[11px] font-semibold text-white">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}
@@ -232,7 +285,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-900 hover:bg-slate-100"
+              className="text-white/80 hover:bg-white/10 hover:text-white"
               aria-label="Wishlist"
             >
               <Heart className="h-5 w-5" />
@@ -247,26 +300,30 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsUserMenuOpen(value => !value)}
+                  onClick={() => setIsUserMenuOpen(v => !v)}
                   aria-label="User menu"
-                  className="text-slate-900 hover:bg-slate-100"
+                  className="text-white/80 hover:bg-white/10 hover:text-white"
                 >
                   <User className="h-5 w-5" />
                 </Button>
                 {isUserMenuOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)} />
-                    <div className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-300/30">
-                      <div className="border-b border-slate-200 px-4 py-3">
-                        <p className="truncate text-sm font-medium text-slate-900">{user.email}</p>
-                        {isAdmin && <p className="mt-0.5 text-xs font-semibold text-emerald-600">{t('user.administrator')}</p>}
+                    <div className="absolute right-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-white/10 bg-[#0f1726] shadow-2xl shadow-black/50">
+                      <div className="border-b border-white/[0.07] px-4 py-3">
+                        <p className="truncate text-sm font-medium text-white">{user.email}</p>
+                        {isAdmin && (
+                          <p className="mt-0.5 text-xs font-semibold text-emerald-400">
+                            {t('user.administrator')}
+                          </p>
+                        )}
                       </div>
-                      <div className="py-1.5 text-slate-900">
+                      <div className="py-1.5">
                         {isAdmin && (
                           <Link
                             to="/admin"
                             onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white"
                           >
                             <LayoutDashboard className="h-4 w-4" />
                             {t('user.adminDashboard')}
@@ -274,7 +331,7 @@ export function Header() {
                         )}
                         <button
                           onClick={handleLogout}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300"
                         >
                           <LogOut className="h-4 w-4" />
                           {t('user.signOut')}
@@ -285,11 +342,20 @@ export function Header() {
                 )}
               </div>
             ) : (
-              <div className="hidden items-center gap-1 sm:flex text-slate-900">
-                <Button variant="ghost" size="sm" asChild className="rounded-full text-slate-900 hover:bg-slate-100">
+              <div className="hidden items-center gap-1 sm:flex">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="rounded-full text-white/80 hover:bg-white/10 hover:text-white"
+                >
                   <Link to="/login">{t('auth.signIn')}</Link>
                 </Button>
-                <Button size="sm" asChild className="rounded-full bg-[#0f5dcf] hover:bg-[#0d4fb6] text-white shadow-md shadow-blue-500/20">
+                <Button
+                  size="sm"
+                  asChild
+                  className="rounded-full bg-amber-500 text-[#0a0f1a] shadow-md shadow-amber-500/20 hover:bg-amber-400"
+                >
                   <Link to="/signup">{t('auth.signUp')}</Link>
                 </Button>
               </div>
@@ -298,8 +364,8 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-900 hover:bg-slate-100 lg:hidden"
-              onClick={() => setIsMenuOpen(value => !value)}
+              className="text-white/80 hover:bg-white/10 hover:text-white lg:hidden"
+              onClick={() => setIsMenuOpen(v => !v)}
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -307,18 +373,19 @@ export function Header() {
           </div>
         </div>
 
+        {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="border-t border-slate-200 py-4 lg:hidden">
+          <div className="border-t border-white/[0.07] py-4 lg:hidden">
             <form onSubmit={handleSearch} className="mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
                 <Input
                   ref={mobileSearchRef}
                   type="search"
                   placeholder={t('header.search')}
                   value={searchQuery}
                   onChange={event => setSearchQuery(event.target.value)}
-                  className="h-11 rounded-full border-slate-200 bg-white pl-10 pr-4 text-slate-900 placeholder:text-slate-400"
+                  className="h-11 rounded-full border-white/10 bg-white/[0.06] pl-10 pr-4 text-white placeholder:text-white/30"
                 />
               </div>
             </form>
@@ -327,51 +394,92 @@ export function Header() {
               <SitePreferences />
             </div>
 
-            <nav className="flex flex-col gap-1 text-slate-900">
-              <Link to="/" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
+            <nav className="flex flex-col gap-0.5">
+              <Link
+                to="/"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 {t('nav.store')}
               </Link>
-              <Link to="/products" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/products"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Laptops
               </Link>
-              <Link to="/products?os=Windows" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
-                Windows
+              <Link
+                to="/products?os=Windows"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                PC Windows
               </Link>
-              <Link to="/products?os=macOS" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
-                macOS
+              <Link
+                to="/products?os=macOS"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Mac & MacBook
               </Link>
-              <Link to="/products?sortBy=newest" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/products?sortBy=newest"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Nouveautés
               </Link>
-              <Link to="/products" className="rounded-xl px-3 py-2 text-sm hover:bg-white/5" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/products?sale=true"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Promotions
               </Link>
+              <Link
+                to="/products"
+                className="rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 hover:bg-white/[0.06] hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                À propos
+              </Link>
+
               {!user && (
                 <div className="mt-3 flex gap-2">
-                  <Button variant="ghost" className="flex-1 rounded-full bg-white/5 text-white" asChild onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    className="flex-1 rounded-full border border-white/10 text-white/70 hover:bg-white/[0.06] hover:text-white"
+                    asChild
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     <Link to="/login">{t('auth.signIn')}</Link>
                   </Button>
-                  <Button className="flex-1 rounded-full bg-[#0f5dcf] hover:bg-[#0d4fb6] text-white" asChild onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    className="flex-1 rounded-full bg-amber-500 text-[#0a0f1a] hover:bg-amber-400"
+                    asChild
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     <Link to="/signup">{t('auth.signUp')}</Link>
                   </Button>
                 </div>
               )}
             </nav>
 
-              <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-3 text-sm text-slate-800">
-                <MessageCircle className="h-4 w-4 text-emerald-600" />
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-900">Commander sur WhatsApp</p>
-                  <p className="text-xs text-slate-500">Réponse rapide {HOURS}</p>
-                </div>
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white"
-                >
-                  Discuter
-                </a>
+            <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm">
+              <MessageCircle className="h-4 w-4 shrink-0 text-emerald-400" />
+              <div className="flex-1">
+                <p className="font-semibold text-white">Commander sur WhatsApp</p>
+                <p className="text-xs text-white/50">Réponse rapide · {HOURS}</p>
+              </div>
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="shrink-0 rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-400"
+              >
+                Discuter
+              </a>
             </div>
           </div>
         )}

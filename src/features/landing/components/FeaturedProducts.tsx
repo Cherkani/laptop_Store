@@ -10,26 +10,26 @@ export function FeaturedProducts() {
   if (!isLoading && (!products || products.length === 0)) return null
 
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
-      <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-[#0a0f1a] py-14 sm:py-18 lg:py-24">
+      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="mb-8 flex items-end justify-between gap-4 sm:mb-10 lg:mb-12">
+          <div className="mb-10 flex items-end justify-between gap-4 lg:mb-14">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#607086]">
-                Recommended
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
+                Recommandés
               </p>
-              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-[#1d1d1f] sm:text-4xl lg:text-5xl">
-                Staff picks.
+              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+                Sélection de l'équipe.
               </h2>
-              <p className="mt-2 text-base text-[#5d6675] sm:text-lg">
-                Top recommendations from our team.
+              <p className="mt-2 text-base text-white/50 sm:text-lg">
+                Nos meilleures recommandations du moment.
               </p>
             </div>
             <Link
               to="/products"
-              className="hidden items-center gap-1.5 text-base font-semibold text-[#0f5dcf] hover:text-[#004999] sm:inline-flex"
+              className="hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-white/50 transition-colors hover:text-white sm:inline-flex"
             >
-              View all
+              Tout voir
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -37,10 +37,10 @@ export function FeaturedProducts() {
 
         {isLoading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-[#8e8e93]" />
+            <Loader2 className="h-7 w-7 animate-spin text-white/20" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {products?.slice(0, 8).map((product, index) => (
               <ScrollReveal key={product.id} delay={index * 60}>
                 <ProductCard product={product} />
@@ -52,9 +52,9 @@ export function FeaturedProducts() {
         <div className="mt-8 sm:hidden">
           <Link
             to="/products"
-            className="inline-flex items-center gap-1.5 text-base font-semibold text-[#0066cc] hover:text-[#004999]"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-400"
           >
-            View all laptops
+            Voir tous les laptops
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

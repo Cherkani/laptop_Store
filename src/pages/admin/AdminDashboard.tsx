@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
 
 type AdminProduct = Product & { product_images: ProductImage[] }
@@ -132,7 +132,7 @@ export function AdminDashboard() {
                     <div key={product.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 group transition-colors">
                       <div className="w-9 h-9 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
                         {img
-                          ? <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                          ? <img src={getImageSrc(img) ?? ''} alt="" className="w-full h-full object-cover" />
                           : <div className="w-full h-full" />
                         }
                       </div>

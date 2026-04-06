@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, Cpu, MemoryStick, HardDrive, MessageCircle, Star, Eye } from 'lucide-react'
+import { ShoppingCart, MessageCircle, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { cn, formatPrice } from '@/lib/utils'
+import { cn, formatPrice, getImageSrc } from '@/lib/utils'
 import type { ProductWithImages } from '@/types/database.types'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from '@/hooks/use-toast'
@@ -12,11 +12,11 @@ interface ProductCardProps {
   product: ProductWithImages
 }
 
-const CONDITION_STYLES: Record<string, { label: string; className: string; tone: 'recond' | 'new' }>= {
-  'Like New': { label: 'Reconditionné+', className: 'bg-orange-50 text-orange-700 border-orange-100', tone: 'recond' },
-  Excellent: { label: 'Reconditionné', className: 'bg-orange-50 text-orange-700 border-orange-100', tone: 'recond' },
-  Good: { label: 'Reconditionné', className: 'bg-orange-50 text-orange-700 border-orange-100', tone: 'recond' },
-  Fair: { label: 'Reconditionné', className: 'bg-orange-50 text-orange-700 border-orange-100', tone: 'recond' },
+const CONDITION_STYLES: Record<string, { label: string; className: string }> = {
+  'Like New': { label: 'Reconditionné+', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
+  Excellent: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
+  Good: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
+  Fair: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -25,10 +25,11 @@ export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore(s => s.addItem)
 
   const images =
-    product.product_images?.sort((a, b) => a.display_order - b.display_order) ??
-    []
+    product.product_images?.sort((a, b) => a.display_order - b.display_order) ?? []
   const primaryImage = images.find(i => i.is_primary) ?? images[0]
   const secondaryImage = images[1]
+  const primarySrc = getImageSrc(primaryImage)
+  const secondarySrc = getImageSrc(secondaryImage)
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -36,25 +37,20 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsAdding(true)
     try {
       await addItem(product.id, 1)
-      toast({ title: 'Added to cart', description: product.name })
+      toast({ title: 'Ajouté au panier', description: product.name })
     } catch {
-      toast({ title: 'Failed to add to cart', variant: 'destructive' })
+      toast({ title: 'Erreur lors de l\'ajout', variant: 'destructive' })
     } finally {
       setIsAdding(false)
     }
   }
 
   const isOutOfStock = product.stock_quantity === 0
-  const condition = product.condition
-  const conditionStyle = condition ? CONDITION_STYLES[condition] : null
+  const conditionStyle = product.condition ? CONDITION_STYLES[product.condition] : null
 
-  // Savings calculation
   const savings =
     product.original_price && product.original_price > product.price
-      ? Math.round(
-          ((product.original_price - product.price) / product.original_price) *
-            100,
-        )
+      ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
       : null
 
   return (
@@ -64,176 +60,142 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="glass-card relative h-full overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgb(15,23,42,0.16)]">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0f1726] transition-all duration-300 hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
+
         {/* Image area */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#f8fbff] via-[#f4f8ff] to-[#eef5ff] p-6">
-          {primaryImage ? (
+        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#131e33] to-[#0d1523]">
+          {primarySrc ? (
             <>
               <img
-                src={primaryImage.image_url}
+                src={primarySrc}
                 alt={product.name}
                 className={cn(
-                  'w-full h-full object-contain transition-all duration-700 group-hover:scale-105',
+                  'h-full w-full object-contain p-5 transition-all duration-700 group-hover:scale-105',
                   isHovered && secondaryImage ? 'opacity-0' : 'opacity-100',
                 )}
                 loading="lazy"
               />
-              {secondaryImage && (
+              {secondarySrc && (
                 <img
-                  src={secondaryImage.image_url}
+                  src={secondarySrc}
                   alt={product.name}
                   className={cn(
-                    'absolute inset-6 w-[calc(100%-3rem)] h-[calc(100%-3rem)] object-contain transition-all duration-700',
-                    isHovered
-                      ? 'opacity-100 scale-105'
-                      : 'opacity-0 scale-100',
+                    'absolute inset-5 h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] object-contain transition-all duration-700',
+                    isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100',
                   )}
                   loading="lazy"
                 />
               )}
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-20 h-14 rounded-xl bg-gray-200/60 flex items-center justify-center">
-                <span className="text-2xl font-black text-gray-300">
-                  {product.brand?.[0]}
-                </span>
-              </div>
+            <div className="flex h-full items-center justify-center">
+              <span className="text-4xl font-black text-white/10">{product.brand?.[0]}</span>
             </div>
           )}
 
-          {/* Top badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-1.5">
-            {conditionStyle && (
-              <Badge className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${conditionStyle.className}`}>
+          {/* Badges top-left */}
+          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {conditionStyle ? (
+              <Badge className={`border text-[10px] font-semibold ${conditionStyle.className}`}>
                 {conditionStyle.label}
               </Badge>
-            )}
-            {!conditionStyle && (
-              <Badge className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white">
+            ) : (
+              <Badge className="border border-emerald-500/20 bg-emerald-500/15 text-[10px] font-semibold text-emerald-400">
                 Neuf
               </Badge>
             )}
             {product.is_featured && (
-              <Badge className="bg-[#0f5dcf] hover:bg-[#0f5dcf] text-[10px] font-semibold px-2.5 py-0.5 rounded-full shadow-sm">
+              <Badge className="border border-sky-500/20 bg-sky-500/15 text-[10px] font-semibold text-sky-400">
                 Coup de cœur
               </Badge>
             )}
           </div>
 
+          {/* Discount badge top-right */}
           {savings !== null && (
-            <div className="absolute top-4 right-4">
-              <span className="text-[11px] font-bold text-white bg-[#e63946] rounded-full px-2.5 py-1 shadow-sm">
-                -{savings}%
-              </span>
-            </div>
+            <span className="absolute right-3 top-3 rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
+              -{savings}%
+            </span>
           )}
-
-          {/* Quick add button */}
-          <div
-            className={cn(
-              'absolute bottom-4 right-4 transition-all duration-300',
-              isHovered
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-3',
-            )}
-          >
-            <Button
-              size="sm"
-              onClick={handleAddToCart}
-              disabled={isOutOfStock || isAdding}
-              className="rounded-full shadow-lg bg-[#0f5dcf] hover:bg-[#0a4dad] text-white px-4 h-9 text-xs font-semibold"
-            >
-              <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-              {isAdding ? 'Adding...' : 'Add'}
-            </Button>
-          </div>
         </div>
 
-        {/* Content */}
-          <div className="p-5 space-y-3">
-          {/* Brand + Name + Condition */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px] font-semibold text-[#617084] uppercase tracking-wider">
-                {product.brand}
-              </p>
-              <div className="flex items-center gap-1 text-amber-400">
-                <Star className="h-3 w-3 fill-amber-400" />
-                <span className="text-[11px] font-semibold">4.8</span>
-              </div>
+        {/* Card content */}
+        <div className="flex flex-1 flex-col gap-3 p-4">
+          {/* Brand + rating */}
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/35">
+              {product.brand}
+            </p>
+            <div className="flex items-center gap-1">
+              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+              <span className="text-[11px] font-semibold text-amber-400">4.8</span>
             </div>
-            <h3 className="font-semibold text-[15px] text-[#1d1d1f] leading-snug mt-0.5 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
-              {product.name}
-            </h3>
           </div>
 
-          {/* Spec pills */}
-          <div className="flex flex-wrap gap-1.5">
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-500 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-100">
-              <Cpu className="h-2.5 w-2.5" />
-              {product.processor}
-            </span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-500 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-100">
-              <MemoryStick className="h-2.5 w-2.5" />
-              {product.ram}
-            </span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-500 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-100">
-              <HardDrive className="h-2.5 w-2.5" />
-              {product.storage}
-            </span>
-          </div>
+          {/* Name */}
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white transition-colors duration-200 group-hover:text-amber-300">
+            {product.name}
+          </h3>
 
-          {/* Price row */}
-          <div className="flex items-end justify-between pt-1">
-            <div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-[#e63946] tracking-tight">
-                  {formatPrice(product.price)}
-                </span>
-                {product.original_price && product.original_price > product.price && (
-                  <span className="text-sm text-gray-400 line-through">
-                    {formatPrice(product.original_price)}
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-gray-400">TVA incluse · Paiement en 3x</p>
-            </div>
-            {product.screen_size && (
-              <span className="text-[11px] font-medium text-gray-400 bg-gray-50 rounded-full px-2 py-0.5">
-                {product.screen_size}
+          {/* Specs */}
+          <p className="line-clamp-1 text-[11px] text-white/35">
+            {product.processor} · {product.ram} · {product.storage}
+          </p>
+
+          {/* Price */}
+          <div className="mt-auto pt-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-extrabold tracking-tight text-white">
+                {formatPrice(product.price)}
               </span>
-            )}
+              {product.original_price && product.original_price > product.price && (
+                <span className="text-xs text-white/30 line-through">
+                  {formatPrice(product.original_price)}
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-white/30">TVA incluse · Paiement en 3x</p>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
+          {/* Screen size */}
+          {product.screen_size && (
+            <span className="w-fit rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-white/40">
+              {product.screen_size}
+            </span>
+          )}
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 pt-1">
             <Button
               size="sm"
               onClick={handleAddToCart}
               disabled={isOutOfStock || isAdding}
-              className="rounded-full bg-[#0f5dcf] hover:bg-[#0a4dad] text-white px-4 h-9 text-xs font-semibold"
+              className="flex-1 rounded-xl bg-amber-500 text-xs font-bold text-[#0a0f1a] shadow-md shadow-amber-500/20 hover:bg-amber-400 disabled:opacity-50"
             >
-              <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
+              <ShoppingCart className="mr-1.5 h-3.5 w-3.5" />
               {isAdding ? 'Ajout...' : 'Ajouter'}
             </Button>
             <a
               href="https://wa.me/212612345678"
               onClick={e => e.stopPropagation()}
-              className="inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-600 hover:text-emerald-700"
+              className="flex items-center gap-1 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-400 transition hover:bg-emerald-500/15 hover:text-emerald-300"
             >
-              <MessageCircle className="h-4 w-4" /> WhatsApp
+              <MessageCircle className="h-3.5 w-3.5" />
+              WhatsApp
             </a>
           </div>
-        </div>
 
-        {/* Hover view button */}
-        <div className={cn(
-          'pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/45 to-transparent opacity-0 transition-opacity duration-300',
-          isHovered && 'opacity-100'
-        )}>
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-[#0f172a] shadow-lg">
-            <Eye className="h-4 w-4" /> Voir le produit
-          </span>
+          {/* Voir le produit - shows on hover */}
+          <div
+            className={cn(
+              'overflow-hidden transition-all duration-300',
+              isHovered ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
+            )}
+          >
+            <div className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-semibold text-white/60">
+              Voir le produit →
+            </div>
+          </div>
         </div>
       </div>
     </Link>

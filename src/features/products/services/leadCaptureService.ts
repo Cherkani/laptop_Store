@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getImageSrc } from '@/lib/utils'
 import type { ProductWithImages } from '@/types/database.types'
 
 const FALLBACK_WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER || '').trim()
@@ -23,7 +24,7 @@ function sanitizeNumber(value: string) {
 
 function getPrimaryImageUrl(product: ProductWithImages) {
   const primary = product.product_images?.find(img => img.is_primary)
-  return primary?.image_url || product.product_images?.[0]?.image_url || null
+  return getImageSrc(primary) || getImageSrc(product.product_images?.[0]) || null
 }
 
 function buildLeadMessage({ product, quantity, productUrl }: LeadCaptureParams) {

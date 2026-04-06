@@ -202,7 +202,9 @@ export interface Database {
         Row: {
           id: string
           product_id: string
-          image_url: string
+          image_url: string | null
+          image_data: string | null
+          image_mime: string | null
           display_order: number
           is_primary: boolean
           created_at: string
@@ -210,7 +212,9 @@ export interface Database {
         Insert: {
           id?: string
           product_id: string
-          image_url: string
+          image_url?: string | null
+          image_data?: string | null
+          image_mime?: string | null
           display_order?: number
           is_primary?: boolean
           created_at?: string
@@ -218,7 +222,9 @@ export interface Database {
         Update: {
           id?: string
           product_id?: string
-          image_url?: string
+          image_url?: string | null
+          image_data?: string | null
+          image_mime?: string | null
           display_order?: number
           is_primary?: boolean
           created_at?: string

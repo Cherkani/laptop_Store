@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { useAdminProducts, useDeleteProduct } from '../hooks/useAdminProducts'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
 
 type ProductWithImages = Product & { product_images: ProductImage[] }
@@ -98,7 +98,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-xl bg-slate-100 overflow-hidden shrink-0 border">
                             {image
-                              ? <img src={image.image_url} alt={product.name} className="w-full h-full object-cover" />
+                              ? <img src={getImageSrc(image) ?? ''} alt={product.name} className="w-full h-full object-cover" />
                               : <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400 text-lg">□</div>
                             }
                           </div>

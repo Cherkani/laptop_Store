@@ -36,3 +36,11 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2)
 }
+
+type ImageLike = { image_url?: string | null; image_data?: string | null }
+
+// Returns the best usable src for a product image (prefers inline data URIs)
+export function getImageSrc(image?: ImageLike | null): string | null {
+  if (!image) return null
+  return image.image_data ?? image.image_url ?? null
+}

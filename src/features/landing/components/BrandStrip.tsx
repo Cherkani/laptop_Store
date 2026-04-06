@@ -1,44 +1,72 @@
 import { Link } from 'react-router-dom'
 
+// Simple Icons CDN — official brand SVG logos, white version via color param
 const brands = [
-  { name: 'Apple', logo: '' },
-  { name: 'Dell', logo: 'DE' },
-  { name: 'HP', logo: 'HP' },
-  { name: 'Lenovo', logo: 'LE' },
-  { name: 'ASUS', logo: 'AS' },
-  { name: 'MSI', logo: 'MS' },
-  { name: 'Acer', logo: 'AC' },
-  { name: 'Samsung', logo: 'SA' },
+  {
+    name: 'Apple',
+    logo: 'https://cdn.simpleicons.org/apple/ffffff',
+  },
+  {
+    name: 'Dell',
+    logo: 'https://cdn.simpleicons.org/dell/ffffff',
+  },
+  {
+    name: 'HP',
+    logo: 'https://cdn.simpleicons.org/hp/ffffff',
+  },
+  {
+    name: 'Lenovo',
+    logo: 'https://cdn.simpleicons.org/lenovo/ffffff',
+  },
+  {
+    name: 'ASUS',
+    logo: 'https://cdn.simpleicons.org/asus/ffffff',
+  },
+  {
+    name: 'MSI',
+    logo: 'https://cdn.simpleicons.org/msi/ffffff',
+  },
+  {
+    name: 'Acer',
+    logo: 'https://cdn.simpleicons.org/acer/ffffff',
+  },
+  {
+    name: 'Samsung',
+    logo: 'https://cdn.simpleicons.org/samsung/ffffff',
+  },
 ]
 
 export function BrandStrip() {
   return (
-    <section className="bg-[#0f0f0f] py-4">
-      <div className="mx-auto max-w-[1260px] overflow-hidden px-4 sm:px-6 lg:px-8">
-        <div className="flex animate-[marquee_18s_linear_infinite] gap-4 whitespace-nowrap text-white [--marquee-width:220px]">
-          {[...brands, ...brands].map((brand, idx) => (
+    <section className="border-y border-white/[0.06] bg-[#080d16] py-3.5">
+      <div className="overflow-hidden">
+        <div className="group flex w-max animate-[marquee_22s_linear_infinite] gap-3 whitespace-nowrap hover:[animation-play-state:paused]">
+          {[...brands, ...brands, ...brands].map((brand, idx) => (
             <Link
               key={`${brand.name}-${idx}`}
               to={`/products?brand=${encodeURIComponent(brand.name)}`}
-              className="group inline-flex h-12 min-w-[140px] items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold tracking-tight shadow-[0_8px_20px_rgba(0,0,0,0.25)] transition hover:bg-white/15"
+              className="inline-flex h-10 min-w-[130px] items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 text-xs font-semibold tracking-tight text-white/80 transition-all duration-200 hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300"
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-white ring-1 ring-white/10">
-                {brand.logo}
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className="h-4 w-4 object-contain opacity-70 transition-opacity duration-200 group-hover:opacity-100"
+                  loading="lazy"
+                />
               </span>
-              <span className="text-white group-hover:text-orange-200">{brand.name}</span>
+              {brand.name}
             </Link>
           ))}
         </div>
       </div>
 
-      <style>
-        {`
+      <style>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          100% { transform: translateX(calc(-100% / 3)); }
         }
-        `}
-      </style>
+      `}</style>
     </section>
   )
 }

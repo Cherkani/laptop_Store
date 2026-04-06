@@ -10,7 +10,7 @@ import {
   useSalesRecords,
   useUpdateSalesStatus,
 } from '@/features/admin/hooks/useBackoffice'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
 
 type AdminProduct = Product & { product_images: ProductImage[] }
@@ -59,7 +59,7 @@ export function AdminSalesPage() {
       status: 'new',
       subtotal: computedTotal,
       total: computedTotal,
-      image_url: primaryImage?.image_url ?? null,
+      image_url: getImageSrc(primaryImage),
       product_snapshot: [
         {
           product_id: selectedProduct.id,
@@ -67,14 +67,14 @@ export function AdminSalesPage() {
           brand: selectedProduct.brand,
           quantity: qty,
           unit_price: selectedProduct.price,
-          image_url: primaryImage?.image_url ?? null,
+          image_url: getImageSrc(primaryImage),
         },
       ],
       items: [
         {
           product_id: selectedProduct.id,
           product_name: selectedProduct.name,
-          image_url: primaryImage?.image_url ?? null,
+          image_url: getImageSrc(primaryImage),
           quantity: qty,
           unit_price: selectedProduct.price,
         },

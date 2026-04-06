@@ -6,25 +6,22 @@ import { CategoryCards } from '@/features/landing/components/CategoryCards'
 import { FeaturedProducts } from '@/features/landing/components/FeaturedProducts'
 import { BrandStrip } from '@/features/landing/components/BrandStrip'
 import { BestSellers } from '@/features/landing/components/BestSellers'
+import { PromoBanner } from '@/features/landing/components/PromoBanner'
+import { StockLocal } from '@/features/landing/components/StockLocal'
 
 export function LandingPage() {
   return (
-    <div className="theme-shell">
-      <div className="pointer-events-none absolute inset-x-0 top-24 z-0 h-[520px] overflow-hidden">
-        <div className="orb-float absolute left-[6%] top-0 h-52 w-52 rounded-full bg-[#59b8ff]/30 blur-3xl" />
-        <div className="orb-float-delay absolute right-[8%] top-12 h-64 w-64 rounded-full bg-[#4bd4c6]/20 blur-3xl" />
-      </div>
-
-      <div className="relative z-10">
-        <StoreHero />
-        <BrandStrip />
-        <ProductLineup />
-        <BestSellers />
-        <WhyUs />
-        <FeatureHighlights />
-        <CategoryCards />
-        <FeaturedProducts />
-      </div>
+    <div className="bg-[#0a0f1a]">
+      <StoreHero />
+      <BrandStrip />
+      <ProductLineup />
+      <BestSellers />
+      <WhyUs />
+      <FeatureHighlights />
+      <PromoBanner />
+      <CategoryCards />
+      <FeaturedProducts />
+      <StockLocal />
     </div>
   )
 }

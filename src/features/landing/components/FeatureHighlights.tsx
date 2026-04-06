@@ -4,65 +4,76 @@ import { ScrollReveal } from './ScrollReveal'
 const supportItems = [
   {
     icon: Headphones,
-    title: 'Pre-purchase guidance',
-    description: 'Quick recommendations based on your workflow and budget.',
+    title: 'Conseils pré-achat',
+    description: 'Recommandations rapides selon votre usage et budget.',
+    badge: 'Rapide',
+    badgeColor: 'bg-sky-500/15 text-sky-400',
   },
   {
     icon: Wrench,
-    title: 'Setup assistance',
-    description: 'Help with migration, setup, and first-day configuration.',
+    title: 'Assistance à la configuration',
+    description: 'Aide à la migration, la configuration et la première utilisation.',
+    badge: null,
+    badgeColor: '',
   },
   {
     icon: Briefcase,
-    title: 'Business orders',
-    description: 'Dedicated support for teams and bulk laptop purchases.',
+    title: 'Commandes entreprises',
+    description: 'Support dédié pour les équipes et achats groupés.',
+    badge: null,
+    badgeColor: '',
   },
 ]
 
 export function FeatureHighlights() {
   return (
-    <section className="py-12 sm:py-16 lg:py-20">
-      <div className="max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="bg-[#0a0f1a] py-14 sm:py-18 lg:py-24">
+      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <section className="glass-card rounded-[32px] p-6 sm:p-8 lg:p-10">
-            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#607086]">
+          <div className="overflow-hidden rounded-3xl border border-white/[0.07] bg-[#0f1726]">
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch">
+              {/* Left: text */}
+              <div className="flex flex-col justify-center p-8 lg:p-12">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
                   Support
                 </p>
-                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-[#1d1d1f] sm:text-4xl">
-                  Simple, expert help.
+                <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                  Une aide simple,{' '}
+                  <span className="bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                    experte.
+                  </span>
                 </h2>
-                <p className="mt-3 max-w-md text-sm text-[#5b6472] sm:text-base">
-                  Clear assistance before and after purchase. Fast answers, straightforward guidance.
+                <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/50 sm:text-base">
+                  Une assistance claire avant et après l'achat. Réponses rapides, conseils directs.
                 </p>
               </div>
 
-              <div className="divide-y divide-[#dde7f3] rounded-2xl border border-[#dbe6f1] bg-gradient-to-br from-[#f8fcff] via-[#f8fbff] to-[#f2f7ff]">
+              {/* Right: items */}
+              <div className="border-t border-white/[0.06] lg:border-l lg:border-t-0">
                 {supportItems.map((item, index) => (
                   <div
                     key={item.title}
-                    className="flex items-start gap-4 px-5 py-4 first:rounded-t-2xl last:rounded-b-2xl"
+                    className={`flex items-start gap-4 p-6 lg:p-7 ${
+                      index < supportItems.length - 1 ? 'border-b border-white/[0.06]' : ''
+                    }`}
                   >
-                    <div className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#0f5dcf] ring-1 ring-black/5">
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-white/60">
                       <item.icon className="h-4 w-4" />
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold tracking-tight text-[#122036]">
-                        {item.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-[#5b6472]">{item.description}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold tracking-tight text-white">{item.title}</h3>
+                      <p className="mt-1 text-sm text-white/45">{item.description}</p>
                     </div>
-                    {index === 0 && (
-                      <span className="ml-auto mt-1 rounded-full bg-[#dff1ff] px-2.5 py-1 text-[11px] font-semibold text-[#0f5dcf]">
-                        Fast
+                    {item.badge && (
+                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${item.badgeColor}`}>
+                        {item.badge}
                       </span>
                     )}
                   </div>
                 ))}
               </div>
             </div>
-          </section>
+          </div>
         </ScrollReveal>
       </div>
     </section>
