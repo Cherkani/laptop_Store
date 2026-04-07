@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-surface-raised via-blue-950 to-surface-raised text-on-surface">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-blue-600/20 blur-3xl" />
@@ -42,7 +42,7 @@ export function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" asChild className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+              <Button size="lg" asChild className="bg-blue-600 hover:bg-blue-700 text-on-surface px-8">
                 <Link to="/products">
                   Shop Now
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -52,24 +52,24 @@ export function HeroSection() {
                 size="lg"
                 variant="outline"
                 asChild
-                className="border-white/30 text-white hover:bg-white/10 backdrop-blur"
+                className="border-border text-on-surface hover:bg-muted backdrop-blur"
               >
                 <Link to="/products?sortBy=newest">View New Arrivals</Link>
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-8 pt-4 border-t border-white/10">
+            <div className="flex flex-wrap gap-8 pt-4 border-t border-border-subtle">
               <div>
-                <p className="text-2xl font-bold text-white">500+</p>
+                <p className="text-2xl font-bold text-on-surface">500+</p>
                 <p className="text-sm text-slate-400">Laptop Models</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">20+</p>
+                <p className="text-2xl font-bold text-on-surface">20+</p>
                 <p className="text-sm text-slate-400">Top Brands</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">50k+</p>
+                <p className="text-2xl font-bold text-on-surface">50k+</p>
                 <p className="text-sm text-slate-400">Happy Customers</p>
               </div>
             </div>
@@ -80,10 +80,10 @@ export function HeroSection() {
             <div className="relative w-full max-w-lg">
               {/* Main laptop mockup */}
               <div className="relative bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-6 shadow-2xl border border-slate-600/50">
-                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl aspect-video flex items-center justify-center">
+                <div className="bg-gradient-to-br from-slate-800 to-surface-raised rounded-xl aspect-video flex items-center justify-center">
                   <div className="text-center space-y-3">
                     <div className="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center">
-                      <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-7 h-7 text-on-surface" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -123,7 +123,7 @@ export function HeroSection() {
       </div>
 
       {/* Bottom features bar */}
-      <div className="relative border-t border-white/10 bg-white/5 backdrop-blur">
+      <div className="relative border-t border-border-subtle bg-muted/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex items-center gap-3 text-sm text-slate-300">

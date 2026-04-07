@@ -67,9 +67,9 @@ export function SignupForm() {
 
         <div className="relative z-10 max-w-md px-12 text-center">
           <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-8">
-            <Laptop className="w-8 h-8 text-white" />
+            <Laptop className="w-8 h-8 text-on-surface" />
           </div>
-          <h2 className="text-4xl font-bold text-white tracking-tight mb-4">
+          <h2 className="text-4xl font-bold text-on-surface tracking-tight mb-4">
             Join TechFiable.
           </h2>
           <p className="text-lg text-gray-400 leading-relaxed mb-10">
@@ -81,7 +81,7 @@ export function SignupForm() {
             {benefits.map(benefit => (
               <div
                 key={benefit}
-                className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/[0.06] border border-white/[0.08]"
+                className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-muted/50 border border-border-faint"
               >
                 <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                   <Check className="w-4 h-4 text-emerald-400" />
@@ -101,7 +101,7 @@ export function SignupForm() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-10 lg:hidden">
             <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-              <Laptop className="w-5 h-5 text-white" />
+              <Laptop className="w-5 h-5 text-on-surface" />
             </div>
             <span className="text-xl font-bold text-[#1d1d1f]">
               TechFiable

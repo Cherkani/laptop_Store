@@ -291,13 +291,13 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
                   )}
                 </div>
                 {img.isPrimary && (
-                  <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-[10px] px-1 rounded leading-tight">Primary</span>
+                  <span className="absolute bottom-1 left-1 bg-blue-600 text-on-surface text-[10px] px-1 rounded leading-tight">Primary</span>
                 )}
                 <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {!img.isPrimary && (
-                    <button type="button" onClick={() => setPrimary(i)} className="w-5 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center" title="Set primary">★</button>
+                    <button type="button" onClick={() => setPrimary(i)} className="w-5 h-5 bg-blue-600 rounded text-on-surface text-xs flex items-center justify-center" title="Set primary">★</button>
                   )}
-                  <button type="button" onClick={() => removeImage(i)} className="w-5 h-5 bg-red-500 rounded text-white flex items-center justify-center">
+                  <button type="button" onClick={() => removeImage(i)} className="w-5 h-5 bg-red-500 rounded text-on-surface flex items-center justify-center">
                     <X className="h-3 w-3" />
                   </button>
                 </div>

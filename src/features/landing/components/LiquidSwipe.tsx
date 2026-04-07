@@ -413,7 +413,7 @@ export function LiquidSwipeHero() {
       {/* ▸ Drag handle (the liquid bump button) */}
       <animated.div
         {...bind()}
-        className="absolute z-20 w-14 h-14 rounded-full border-2 bg-white/5 backdrop-blur-md flex items-center justify-center cursor-grab active:cursor-grabbing"
+        className="absolute z-20 w-14 h-14 rounded-full border-2 bg-muted/50 backdrop-blur-md flex items-center justify-center cursor-grab active:cursor-grabbing"
         style={{
           left: btnSpring.x,
           top: btnSpring.y,
@@ -437,7 +437,7 @@ export function LiquidSwipeHero() {
           onClick={() =>
             goToSlide((bgIndex - 1 + SLIDES.length) % SLIDES.length)
           }
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-subtle hover:text-on-surface transition-colors"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -451,7 +451,7 @@ export function LiquidSwipeHero() {
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 i === bgIndex
                   ? 'w-7 bg-white'
-                  : 'w-1.5 bg-white/30 hover:bg-white/50'
+                  : 'w-1.5 bg-white/30 hover:bg-muted/500'
               }`}
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === bgIndex ? 'true' : undefined}
@@ -461,7 +461,7 @@ export function LiquidSwipeHero() {
 
         <button
           onClick={advance}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white transition-colors"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-subtle hover:text-on-surface transition-colors"
           aria-label="Next slide"
         >
           <ChevronRight className="w-4 h-4" />
@@ -470,7 +470,7 @@ export function LiquidSwipeHero() {
 
       {/* ▸ Scroll indicator */}
       <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-10">
-        <ChevronDown className="w-5 h-5 text-white/15 animate-bounce" />
+        <ChevronDown className="w-5 h-5 text-on-surface-faint animate-bounce" />
       </div>
     </section>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BarChart3, Package, Tag, TrendingUp, TrendingDown, Layers, Star, Download } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { StockBadge, StockQuantity } from '@/components/shared/StockBadge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
@@ -408,18 +409,11 @@ export function AdminReportsPage() {
                         <td className="px-4 py-2.5 text-muted-foreground">{p.storage}</td>
                         <td className="px-4 py-2.5 font-semibold text-slate-900">{formatPrice(p.price)}</td>
                         <td className="px-4 py-2.5">
-                          <span className={`font-bold ${p.stock_quantity === 0 ? 'text-red-500' : p.stock_quantity <= 5 ? 'text-amber-500' : 'text-emerald-600'}`}>
-                            {p.stock_quantity}
-                          </span>
+                          <StockQuantity quantity={p.stock_quantity} />
                         </td>
-                        <td className="px-4 py-2.5 text-slate-700">{formatPrice(p.price * p.stock_quantity)}</td>
+                        <td className="px-4 py-2.5 text-on-surface-subtle">{formatPrice(p.price * p.stock_quantity)}</td>
                         <td className="px-4 py-2.5">
-                          {p.stock_quantity === 0
-                            ? <Badge variant="destructive" className="text-xs">Out</Badge>
-                            : p.stock_quantity <= 5
-                            ? <Badge variant="warning" className="text-xs">Low</Badge>
-                            : <Badge variant="success" className="text-xs">OK</Badge>
-                          }
+                          <StockBadge quantity={p.stock_quantity} short />
                         </td>
                       </tr>
                     ))}

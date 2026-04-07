@@ -38,14 +38,14 @@ const brands = [
 
 export function BrandStrip() {
   return (
-    <section className="border-y border-white/[0.06] bg-[#080d16] py-3.5">
+    <section className="border-y border-border-faint bg-surface-sunken py-3.5">
       <div className="overflow-hidden">
         <div className="group flex w-max animate-[marquee_22s_linear_infinite] gap-3 whitespace-nowrap hover:[animation-play-state:paused]">
           {[...brands, ...brands, ...brands].map((brand, idx) => (
             <Link
               key={`${brand.name}-${idx}`}
               to={`/products?brand=${encodeURIComponent(brand.name)}`}
-              className="inline-flex h-10 min-w-[130px] items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 text-xs font-semibold tracking-tight text-white/80 transition-all duration-200 hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300"
+              className="inline-flex h-10 min-w-[130px] items-center justify-center gap-2.5 rounded-full border border-border-subtle bg-surface-raised/60 px-4 text-xs font-semibold tracking-tight text-on-surface-muted transition-all duration-200 hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300"
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center">
                 <img

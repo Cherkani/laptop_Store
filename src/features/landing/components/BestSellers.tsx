@@ -4,6 +4,7 @@ import { ProductCard } from '@/features/products/components/ProductCard'
 import { useProducts } from '@/features/products/hooks/useProducts'
 import { DEFAULT_FILTERS } from '@/features/products/types'
 import type { ProductWithImages } from '@/types/database.types'
+import { Section } from '@/components/shared/Section'
 
 type OS = 'Windows' | 'macOS'
 
@@ -31,8 +32,7 @@ export function BestSellers() {
   }, [products, activeOS, windowsBrand])
 
   return (
-    <section className="bg-[#0a0f1a] py-14 sm:py-18 lg:py-24">
-      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
+    <Section>
 
         {/* Header row */}
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -40,13 +40,13 @@ export function BestSellers() {
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-400">
               Meilleures ventes
             </p>
-            <h2 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            <h2 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
               Top laptops par OS
             </h2>
           </div>
 
           {/* OS Tab switcher */}
-          <div className="flex gap-1 rounded-xl border border-white/10 bg-white/[0.04] p-1">
+          <div className="flex gap-1 rounded-xl border border-border-subtle bg-surface-raised/60 p-1">
             {(['Windows', 'macOS'] as OS[]).map(os => (
               <button
                 key={os}
@@ -57,8 +57,8 @@ export function BestSellers() {
                 className={cn(
                   'rounded-lg px-5 py-2 text-sm font-semibold transition-all duration-200',
                   activeOS === os
-                    ? 'bg-[#0f5dcf] text-white shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
-                    : 'text-white/50 hover:text-white/80',
+                    ? 'bg-[#0f5dcf] text-on-surface shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
+                    : 'text-on-surface-subtle hover:text-on-surface-muted',
                 )}
               >
                 {os}
@@ -78,7 +78,7 @@ export function BestSellers() {
                   'rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95',
                   windowsBrand === brand
                     ? 'border-amber-500 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
-                    : 'border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20 hover:text-white/80',
+                    : 'border-border-subtle bg-surface-raised/50 text-on-surface-subtle hover:border-border hover:text-on-surface-muted',
                 )}
               >
                 {brand}
@@ -97,12 +97,12 @@ export function BestSellers() {
           {(isLoading ? Array<ProductWithImages | null>(8).fill(null) : list).map((product, idx) => (
             <div key={product ? product.id : idx} className="h-full">
               {isLoading ? (
-                <div className="h-full animate-pulse rounded-2xl border border-white/[0.06] bg-[#0f1726] p-4">
-                  <div className="aspect-[4/3] rounded-xl bg-white/[0.04]" />
-                  <div className="mt-4 h-2.5 w-16 rounded-full bg-white/[0.05]" />
-                  <div className="mt-2.5 h-4 w-36 rounded-full bg-white/[0.06]" />
-                  <div className="mt-2 h-2.5 w-28 rounded-full bg-white/[0.04]" />
-                  <div className="mt-4 h-6 w-24 rounded-full bg-white/[0.06]" />
+                <div className="h-full animate-pulse rounded-2xl border border-border-faint bg-surface-raised p-4">
+                  <div className="aspect-[4/3] rounded-xl bg-surface-raised/60" />
+                  <div className="mt-4 h-2.5 w-16 rounded-full bg-surface-raised/70" />
+                  <div className="mt-2.5 h-4 w-36 rounded-full bg-muted/50" />
+                  <div className="mt-2 h-2.5 w-28 rounded-full bg-surface-raised/60" />
+                  <div className="mt-4 h-6 w-24 rounded-full bg-muted/50" />
                 </div>
               ) : (
                 <ProductCard product={product as ProductWithImages} />
@@ -110,7 +110,6 @@ export function BestSellers() {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+    </Section>
   )
 }

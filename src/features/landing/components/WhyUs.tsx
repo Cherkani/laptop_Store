@@ -1,5 +1,7 @@
 import { Award, RotateCcw, ShieldCheck, Truck } from 'lucide-react'
 import { ScrollReveal } from './ScrollReveal'
+import { Section } from '@/components/shared/Section'
+import { SectionHeader } from '@/components/shared/SectionHeader'
 
 const features = [
   {
@@ -34,43 +36,36 @@ const features = [
 
 export function WhyUs() {
   return (
-    <section className="bg-[#070c15] py-14 sm:py-18 lg:py-24">
-      <div className="pointer-events-none absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
-      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="mb-10 lg:mb-14">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
-              Pourquoi nous
-            </p>
-            <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              La différence TechFiable.
-            </h2>
-            <p className="mt-2 max-w-lg text-base text-white/50 sm:text-lg">
-              Plus de raisons de faire confiance à chaque achat.
-            </p>
-          </div>
-        </ScrollReveal>
+    <Section bg="bg-surface-sunken">
+      <ScrollReveal>
+        <SectionHeader
+          eyebrow="Pourquoi nous"
+          title="La différence TechFiable."
+          description="Plus de raisons de faire confiance à chaque achat."
+          align="left"
+          className="mb-10 lg:mb-14"
+        />
+      </ScrollReveal>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
             <ScrollReveal key={feature.title} delay={index * 80}>
-              <div className="group h-full rounded-2xl border border-white/[0.07] bg-[#0f1726] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+              <div className="group h-full rounded-2xl border border-border-faint bg-surface-raised p-6 transition-all duration-300 hover:-translate-y-1 hover:border-border-subtle hover:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
                 <div
                   className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${feature.bg}`}
                 >
                   <feature.icon className={`h-5 w-5 ${feature.color}`} />
                 </div>
-                <h3 className="mt-5 text-base font-bold tracking-tight text-white">
+                <h3 className="mt-5 text-base font-bold tracking-tight text-on-surface">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-2 text-sm leading-relaxed text-on-surface-subtle">
                   {feature.description}
                 </p>
               </div>
             </ScrollReveal>
           ))}
         </div>
-      </div>
-    </section>
+    </Section>
   )
 }

@@ -4,7 +4,7 @@ import { ScrollReveal } from './ScrollReveal'
 
 export function PromoBanner() {
   return (
-    <section className="relative overflow-hidden bg-[#070c15]">
+    <section className="relative overflow-hidden bg-surface-sunken">
       <div className="relative min-h-[300px] w-full overflow-hidden md:min-h-[440px]">
         {/* Background image */}
         <div className="absolute inset-0">
@@ -15,8 +15,8 @@ export function PromoBanner() {
             className="h-full w-full object-cover object-center opacity-40"
           />
           {/* Dark overlays for legibility */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070c15]/95 via-[#070c15]/70 to-[#070c15]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070c15] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-surface-sunken/95 via-surface-sunken/70 to-surface-sunken/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface-sunken via-transparent to-transparent" />
         </div>
 
         {/* Content */}
@@ -25,13 +25,13 @@ export function PromoBanner() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-500">
               Offres exclusives
             </p>
-            <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-on-surface sm:text-4xl md:text-5xl">
               Haute performance,{' '}
               <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
                 meilleur prix.
               </span>
             </h2>
-            <p className="mt-4 text-base text-white/60 md:text-lg">
+            <p className="mt-4 text-base text-on-surface-subtle md:text-lg">
               Seulement sur Laptopstore.ma — stock disponible, livraison rapide.
             </p>
             <Link

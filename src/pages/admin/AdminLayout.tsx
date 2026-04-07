@@ -92,20 +92,20 @@ export function AdminLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <aside className="w-72 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-slate-800/50">
-        <div className="px-5 py-5 border-b border-slate-800/70">
+      <aside className="w-72 bg-gradient-to-b from-surface-base via-surface-raised to-surface-base text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-border-faint">
+        <div className="px-5 py-5 border-b border-border-subtle">
           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div className="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/30">
-              <Laptop className="w-5 h-5 text-white" />
+              <Laptop className="w-5 h-5 text-on-surface" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white leading-none">TechFiable Pro</p>
+              <p className="text-sm font-bold text-on-surface leading-none">TechFiable Pro</p>
               <p className="text-xs text-slate-400 mt-0.5">Admin Backoffice</p>
             </div>
           </Link>
         </div>
 
-        <div className="px-3 py-3 border-b border-slate-800/70">
+        <div className="px-3 py-3 border-b border-border-subtle">
           <SitePreferences className="justify-between" />
         </div>
 
@@ -123,8 +123,8 @@ export function AdminLayout() {
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                       isActive(item.to, item.exact)
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-700/30'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/90',
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-on-surface shadow-md shadow-cyan-700/30'
+                        : 'text-slate-300 hover:text-on-surface hover:bg-slate-800/90',
                     )}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
@@ -136,10 +136,10 @@ export function AdminLayout() {
           ))}
         </nav>
 
-        <div className="px-3 py-4 border-t border-slate-800/70 space-y-1">
+        <div className="px-3 py-4 border-t border-border-subtle space-y-1">
           <Link
             to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-on-surface hover:bg-slate-800 transition-colors"
           >
             <ChevronRight className="h-4 w-4" />
             {t('admin.viewStore')}
@@ -152,7 +152,7 @@ export function AdminLayout() {
             {t('admin.logout')}
           </button>
           <div className="px-3 pt-3 flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-on-surface text-xs font-bold shrink-0">
               {(profile?.full_name ?? 'A').charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
@@ -163,7 +163,7 @@ export function AdminLayout() {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7fb] via-[#f8fafc] to-[#eef3fb] dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+      <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7fb] via-[#f8fafc] to-[#eef3fb] dark:from-surface-base dark:via-surface-base dark:to-surface-raised">
         <Outlet />
       </main>
     </div>

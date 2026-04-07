@@ -7,16 +7,10 @@ import { cn, formatPrice, getImageSrc } from '@/lib/utils'
 import type { ProductWithImages } from '@/types/database.types'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from '@/hooks/use-toast'
+import { WHATSAPP_URL, CONDITION_STYLES } from '@/lib/constants'
 
 interface ProductCardProps {
   product: ProductWithImages
-}
-
-const CONDITION_STYLES: Record<string, { label: string; className: string }> = {
-  'Like New': { label: 'Reconditionné+', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Excellent: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Good: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Fair: { label: 'Reconditionné', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -60,10 +54,10 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0f1726] transition-all duration-300 hover:-translate-y-1 hover:border-white/12 hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-faint bg-surface-raised transition-all duration-300 hover:-translate-y-1 hover:border-border-subtle hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
 
         {/* Image area */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#131e33] to-[#0d1523]">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-surface-overlay to-surface-overlay">
           {primarySrc ? (
             <>
               <img
@@ -89,7 +83,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </>
           ) : (
             <div className="flex h-full items-center justify-center">
-              <span className="text-4xl font-black text-white/10">{product.brand?.[0]}</span>
+              <span className="text-4xl font-black text-on-surface-faint">{product.brand?.[0]}</span>
             </div>
           )}
 
@@ -113,7 +107,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Discount badge top-right */}
           {savings !== null && (
-            <span className="absolute right-3 top-3 rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
+            <span className="absolute right-3 top-3 rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-on-surface">
               -{savings}%
             </span>
           )}
@@ -123,7 +117,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex flex-1 flex-col gap-3 p-4">
           {/* Brand + rating */}
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/35">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-on-surface-faint">
               {product.brand}
             </p>
             <div className="flex items-center gap-1">
@@ -133,33 +127,33 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Name */}
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white transition-colors duration-200 group-hover:text-amber-300">
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-300">
             {product.name}
           </h3>
 
           {/* Specs */}
-          <p className="line-clamp-1 text-[11px] text-white/35">
+          <p className="line-clamp-1 text-[11px] text-on-surface-faint">
             {product.processor} · {product.ram} · {product.storage}
           </p>
 
           {/* Price */}
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold tracking-tight text-white">
+              <span className="text-xl font-extrabold tracking-tight text-on-surface">
                 {formatPrice(product.price)}
               </span>
               {product.original_price && product.original_price > product.price && (
-                <span className="text-xs text-white/30 line-through">
+                <span className="text-xs text-on-surface-faint line-through">
                   {formatPrice(product.original_price)}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-white/30">TVA incluse · Paiement en 3x</p>
+            <p className="text-[11px] text-on-surface-faint">TVA incluse · Paiement en 3x</p>
           </div>
 
           {/* Screen size */}
           {product.screen_size && (
-            <span className="w-fit rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-medium text-white/40">
+            <span className="w-fit rounded-full border border-border-subtle bg-surface-raised/60 px-2.5 py-0.5 text-[11px] font-medium text-on-surface-faint">
               {product.screen_size}
             </span>
           )}
@@ -176,7 +170,7 @@ export function ProductCard({ product }: ProductCardProps) {
               {isAdding ? 'Ajout...' : 'Ajouter'}
             </Button>
             <a
-              href="https://wa.me/212612345678"
+              href={WHATSAPP_URL}
               onClick={e => e.stopPropagation()}
               className="flex items-center gap-1 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-400 transition hover:bg-emerald-500/15 hover:text-emerald-300"
             >
@@ -192,7 +186,7 @@ export function ProductCard({ product }: ProductCardProps) {
               isHovered ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
             )}
           >
-            <div className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] py-2 text-xs font-semibold text-white/60">
+            <div className="flex items-center justify-center rounded-xl border border-border-subtle bg-surface-raised/60 py-2 text-xs font-semibold text-on-surface-subtle">
               Voir le produit →
             </div>
           </div>

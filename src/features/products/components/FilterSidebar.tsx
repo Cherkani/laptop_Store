@@ -46,10 +46,10 @@ function FilterSection({
 }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">
+      <h3 className="text-[11px] font-semibold text-on-surface-subtle uppercase tracking-wider">
         {title}
       </h3>
-      {hint && <p className="text-[11px] text-white/40">{hint}</p>}
+      {hint && <p className="text-[11px] text-on-surface-faint">{hint}</p>}
       {children}
     </div>
   )
@@ -72,8 +72,8 @@ function CheckboxGroup({
           className={cn(
             'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
             selected.includes(item)
-              ? 'bg-amber-500/15 text-white'
-              : 'hover:bg-white/5 text-white/70',
+              ? 'bg-amber-500/15 text-on-surface'
+              : 'hover:bg-muted/50 text-on-surface-muted',
           )}
         >
           <Checkbox
@@ -105,16 +105,16 @@ export function FilterSidebar({
   className,
 }: FilterSidebarProps) {
   return (
-    <aside className={cn('space-y-6 text-white', className)}>
+    <aside className={cn('space-y-6 text-on-surface', className)}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <SlidersHorizontal className="h-3.5 w-3.5 text-white/70" />
+          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-on-surface-muted" />
           </div>
-          <span className="font-bold text-white">Filters</span>
+          <span className="font-bold text-on-surface">Filters</span>
           {activeFilterCount > 0 && (
-            <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+            <span className="w-5 h-5 rounded-full bg-blue-600 text-on-surface text-[10px] font-bold flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}
@@ -122,7 +122,7 @@ export function FilterSidebar({
         {activeFilterCount > 0 && (
           <button
             onClick={onClear}
-            className="text-xs font-medium text-white/50 hover:text-red-400 transition-colors flex items-center gap-1"
+            className="text-xs font-medium text-on-surface-subtle hover:text-red-400 transition-colors flex items-center gap-1"
           >
             <X className="h-3 w-3" />
             Clear all
@@ -130,7 +130,7 @@ export function FilterSidebar({
         )}
       </div>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Operating System */}
       <FilterSection title="Système d'exploitation">
@@ -141,8 +141,8 @@ export function FilterSidebar({
               className={cn(
                 'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
                 filters.operatingSystems.includes(os)
-                  ? 'bg-amber-500/15 text-white'
-                  : 'hover:bg-white/5 text-white/70',
+                  ? 'bg-amber-500/15 text-on-surface'
+                  : 'hover:bg-muted/50 text-on-surface-muted',
               )}
             >
               <Checkbox
@@ -154,10 +154,10 @@ export function FilterSidebar({
               <span
                 className={cn(
                   'text-sm font-medium flex items-center gap-2',
-                  filters.operatingSystems.includes(os) ? 'text-white' : 'text-white/70',
+                  filters.operatingSystems.includes(os) ? 'text-on-surface' : 'text-on-surface-muted',
                 )}
               >
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white text-[10px] font-bold">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-on-surface text-[10px] font-bold">
                   {os === 'macOS' ? '' : 'Win'}
                 </span>
                 {os}
@@ -167,7 +167,7 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Price Range */}
       <FilterSection title="Tranche de prix">
@@ -182,21 +182,21 @@ export function FilterSidebar({
             }
             defaultValue={[0, DEFAULT_FILTERS.priceRange[1]]}
           />
-          <div className="flex justify-between text-xs font-medium text-white/60">
-            <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">
+          <div className="flex justify-between text-xs font-medium text-on-surface-subtle">
+            <span className="px-2 py-0.5 rounded-md bg-muted/50 border border-border-subtle">
               {formatPrice(filters.priceRange[0])}
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10">
+            <span className="px-2 py-0.5 rounded-md bg-muted/50 border border-border-subtle">
               {formatPrice(filters.priceRange[1])}
             </span>
           </div>
         </div>
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* In Stock */}
-      <label className="flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer hover:bg-white/5 transition-colors">
+      <label className="flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
         <Checkbox
           id="inStock"
           checked={filters.inStockOnly}
@@ -207,13 +207,13 @@ export function FilterSidebar({
         />
         <Label
           htmlFor="inStock"
-          className="text-sm cursor-pointer font-medium text-white"
+          className="text-sm cursor-pointer font-medium text-on-surface"
         >
           In Stock Only
         </Label>
       </label>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Brand */}
       <FilterSection title="Marque">
@@ -224,8 +224,8 @@ export function FilterSidebar({
               className={cn(
                 'flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors',
                 filters.brands.includes(brand)
-                  ? 'bg-amber-500/15 text-white'
-                  : 'hover:bg-white/5 text-white/70',
+                  ? 'bg-amber-500/15 text-on-surface'
+                  : 'hover:bg-muted/50 text-on-surface-muted',
               )}
             >
               <Checkbox
@@ -240,7 +240,7 @@ export function FilterSidebar({
               <span
                 className={cn(
                   'text-sm',
-                  filters.brands.includes(brand) ? 'font-semibold text-[#0f172a]' : 'font-normal text-white/70',
+                  filters.brands.includes(brand) ? 'font-semibold text-[#0f172a]' : 'font-normal text-on-surface-muted',
                 )}
               >
                 {brand}
@@ -250,7 +250,7 @@ export function FilterSidebar({
         </div>
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Processor */}
       <FilterSection title="Processeur">
@@ -261,7 +261,7 @@ export function FilterSidebar({
         />
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* RAM */}
       <FilterSection title="Mémoire (RAM)">
@@ -272,7 +272,7 @@ export function FilterSidebar({
         />
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Storage */}
       <FilterSection title="Stockage" hint="SSD NVMe conseillé pour la vitesse">
@@ -283,7 +283,7 @@ export function FilterSidebar({
         />
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Graphics Card */}
       <FilterSection title="Carte graphique" hint="RTX pour gaming/vidéo, intégrée pour bureautique">
@@ -294,7 +294,7 @@ export function FilterSidebar({
         />
       </FilterSection>
 
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-muted" />
 
       {/* Screen Size */}
       <FilterSection title="Taille d'écran" hint={'13-14" ultraportable / 15-17" confort visuel'}>

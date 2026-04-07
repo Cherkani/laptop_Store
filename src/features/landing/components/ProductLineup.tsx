@@ -4,6 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { useFeaturedProducts } from '@/features/products/hooks/useProducts'
 import { cn, formatPrice, getImageSrc } from '@/lib/utils'
 import { ScrollReveal } from './ScrollReveal'
+import { Section } from '@/components/shared/Section'
 
 const FILTER_BRANDS = ['Tous', 'HP', 'Microsoft', 'Dell', 'Lenovo'] as const
 type BrandFilter = (typeof FILTER_BRANDS)[number]
@@ -40,11 +41,9 @@ export function ProductLineup() {
   if (!isLoading && (!filtered || filtered.length === 0)) return null
 
   return (
-    <section className="relative bg-[#070c15] py-14 sm:py-18 lg:py-24" id="produits">
+    <Section bg="bg-surface-sunken" className="relative" as="section">
       {/* Subtle top glow */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-      <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
         {/* Header */}
         <ScrollReveal>
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -52,13 +51,13 @@ export function ProductLineup() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-500">
                 Sélection
               </p>
-              <h2 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              <h2 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
                 Produits en avant
               </h2>
             </div>
             <Link
               to="/products"
-              className="hidden items-center gap-1.5 text-sm font-semibold text-white/50 transition-colors hover:text-white sm:inline-flex"
+              className="hidden items-center gap-1.5 text-sm font-semibold text-on-surface-subtle transition-colors hover:text-on-surface sm:inline-flex"
             >
               Voir tout
               <ArrowRight className="h-4 w-4" />
@@ -76,7 +75,7 @@ export function ProductLineup() {
                 'rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95',
                 brandFilter === label
                   ? 'border-amber-500 bg-amber-500/15 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)]'
-                  : 'border-white/10 bg-white/[0.03] text-white/60 hover:border-white/20 hover:text-white/80',
+                  : 'border-border-subtle bg-surface-raised/50 text-on-surface-subtle hover:border-border hover:text-on-surface-muted',
               )}
             >
               {label === 'Microsoft' ? 'Surface' : label}
@@ -86,7 +85,7 @@ export function ProductLineup() {
 
         {isLoading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-7 w-7 animate-spin text-white/30" />
+            <Loader2 className="h-7 w-7 animate-spin text-on-surface-faint" />
           </div>
         ) : (
           <div className="relative">
@@ -94,7 +93,7 @@ export function ProductLineup() {
             {canScrollLeft && (
               <button
                 onClick={() => scroll('left')}
-                className="absolute -left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0f1726] text-white shadow-xl transition hover:bg-[#1a2540] md:flex"
+                className="absolute -left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-surface-raised text-on-surface shadow-xl transition hover:bg-surface-overlay md:flex"
                 aria-label="Défiler à gauche"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -103,7 +102,7 @@ export function ProductLineup() {
             {canScrollRight && (
               <button
                 onClick={() => scroll('right')}
-                className="absolute -right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0f1726] text-white shadow-xl transition hover:bg-[#1a2540] md:flex"
+                className="absolute -right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-surface-raised text-on-surface shadow-xl transition hover:bg-surface-overlay md:flex"
                 aria-label="Défiler à droite"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -129,18 +128,18 @@ export function ProductLineup() {
                   >
                     <Link
                       to={`/products/${product.id}`}
-                      className="group block overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0f1726] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/15 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+                      className="group block overflow-hidden rounded-2xl border border-border-faint bg-surface-raised p-5 transition-all duration-300 hover:-translate-y-1 hover:border-border hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
                     >
                       {/* Brand + name */}
-                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-on-surface-faint">
                         {product.brand}
                       </p>
-                      <h3 className="mt-1 line-clamp-2 text-base font-bold tracking-tight text-white">
+                      <h3 className="mt-1 line-clamp-2 text-base font-bold tracking-tight text-on-surface">
                         {product.name}
                       </h3>
 
                       {/* Image */}
-                      <div className="mt-4 flex h-44 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#131e33] to-[#0d1523]">
+                      <div className="mt-4 flex h-44 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-surface-overlay to-surface-overlay">
                         {imageUrl ? (
                           <img
                             src={imageUrl}
@@ -149,25 +148,25 @@ export function ProductLineup() {
                             loading="lazy"
                           />
                         ) : (
-                          <span className="text-3xl font-black text-white/10">
+                          <span className="text-3xl font-black text-on-surface-faint">
                             {product.brand?.[0]}
                           </span>
                         )}
                       </div>
 
                       {/* Specs */}
-                      <p className="mt-4 line-clamp-1 text-xs text-white/40">
+                      <p className="mt-4 line-clamp-1 text-xs text-on-surface-faint">
                         {product.processor} · {product.ram} · {product.storage}
                       </p>
 
                       {/* Price row */}
                       <div className="mt-4 flex items-end justify-between">
                         <div>
-                          <p className="text-lg font-extrabold tracking-tight text-white">
+                          <p className="text-lg font-extrabold tracking-tight text-on-surface">
                             {formatPrice(product.price)}
                           </p>
                           {product.original_price && product.original_price > product.price && (
-                            <p className="text-xs text-white/30 line-through">
+                            <p className="text-xs text-on-surface-faint line-through">
                               {formatPrice(product.original_price)}
                             </p>
                           )}
@@ -195,7 +194,6 @@ export function ProductLineup() {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </div>
-    </section>
+    </Section>
   )
 }

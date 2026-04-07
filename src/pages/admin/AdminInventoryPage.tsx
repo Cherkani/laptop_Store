@@ -4,7 +4,7 @@ import { Search, Edit, Check, X, AlertTriangle, Package, TrendingUp, Loader2 } f
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StockBadge, StockQuantity } from '@/components/shared/StockBadge'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
@@ -237,21 +237,14 @@ export function AdminInventoryPage() {
                             {isEditing ? (
                               <InlineStockEditor product={product} onDone={() => setEditingId(null)} />
                             ) : (
-                              <span className={`text-base font-bold ${product.stock_quantity === 0 ? 'text-red-500' : product.stock_quantity <= 5 ? 'text-amber-500' : 'text-emerald-600'}`}>
-                                {product.stock_quantity}
-                              </span>
+                              <StockQuantity quantity={product.stock_quantity} />
                             )}
                           </td>
                           <td className="px-4 py-3 text-slate-700 text-sm">
                             {formatPrice(product.price * product.stock_quantity)}
                           </td>
                           <td className="px-4 py-3">
-                            {product.stock_quantity === 0
-                              ? <Badge variant="destructive" className="text-xs">Out of Stock</Badge>
-                              : product.stock_quantity <= 5
-                              ? <Badge variant="warning" className="text-xs">Low Stock</Badge>
-                              : <Badge variant="success" className="text-xs">In Stock</Badge>
-                            }
+                            <StockBadge quantity={product.stock_quantity} />
                           </td>
                           <td className="px-6 py-3">
                             <div className="flex items-center justify-end gap-1">

@@ -30,21 +30,21 @@ export function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-2 gap-16 animate-pulse">
           <div className="space-y-4">
-            <div className="aspect-square bg-white/10 rounded-3xl" />
+            <div className="aspect-square bg-muted rounded-3xl" />
             <div className="flex gap-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="w-20 h-20 bg-white/10 rounded-2xl" />
+                <div key={i} className="w-20 h-20 bg-muted rounded-2xl" />
               ))}
             </div>
           </div>
           <div className="space-y-6 pt-4">
-            <div className="h-4 bg-white/10 rounded-full w-24" />
-            <div className="h-10 bg-white/10 rounded-xl w-3/4" />
-            <div className="h-8 bg-white/10 rounded-xl w-1/3" />
-            <div className="h-20 bg-white/10 rounded-xl" />
+            <div className="h-4 bg-muted rounded-full w-24" />
+            <div className="h-10 bg-muted rounded-xl w-3/4" />
+            <div className="h-8 bg-muted rounded-xl w-1/3" />
+            <div className="h-20 bg-muted rounded-xl" />
             <div className="grid grid-cols-2 gap-3">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-20 bg-white/10 rounded-2xl" />
+                <div key={i} className="h-20 bg-muted rounded-2xl" />
               ))}
             </div>
           </div>
@@ -56,11 +56,11 @@ export function ProductDetailPage() {
   if (error || !product) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Monitor className="w-10 h-10 text-white/30" />
+        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+          <Monitor className="w-10 h-10 text-on-surface-faint" />
         </div>
-        <h2 className="text-2xl font-bold text-white dark:text-slate-100">{t('product.notFoundTitle')}</h2>
-        <p className="text-white/60 mt-2">
+        <h2 className="text-2xl font-bold text-on-surface dark:text-slate-100">{t('product.notFoundTitle')}</h2>
+        <p className="text-on-surface-subtle mt-2">
           {t('product.notFoundDesc')}
         </p>
         <Button asChild className="mt-6 rounded-full px-8">
@@ -144,30 +144,30 @@ export function ProductDetailPage() {
     'Like New': { label: 'Like New', color: 'text-emerald-700', bg: 'bg-emerald-500/15 border-emerald-100' },
     Excellent: { label: 'Excellent', color: 'text-blue-700', bg: 'bg-amber-500/150/10 border-blue-100' },
     Good: { label: 'Good', color: 'text-amber-700', bg: 'bg-amber-500/15 border-amber-100' },
-    Fair: { label: 'Fair', color: 'text-white/70', bg: 'bg-white/5 border-white/15' },
+    Fair: { label: 'Fair', color: 'text-on-surface-muted', bg: 'bg-muted/50 border-border' },
   }
   const conditionStyle = product.condition ? CONDITION_STYLES[product.condition] : null
 
   return (
-    <div className="bg-[#0b101a] text-white">
+    <div className="bg-surface-base text-on-surface">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <nav className="flex items-center gap-1.5 text-sm text-white/50">
+        <nav className="flex items-center gap-1.5 text-sm text-on-surface-subtle">
           <Link
             to="/"
-            className="hover:text-white transition-colors"
+            className="hover:text-on-surface transition-colors"
           >
             Home
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
           <Link
             to="/products"
-            className="hover:text-white transition-colors"
+            className="hover:text-on-surface transition-colors"
           >
             Laptops
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-white/70 truncate max-w-[200px]">
+          <span className="text-on-surface-muted truncate max-w-[200px]">
             {product.name}
           </span>
         </nav>
@@ -179,7 +179,7 @@ export function ProductDetailPage() {
           {/* ── Image gallery ── */}
           <div className="space-y-4">
             {/* Main image */}
-            <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-[#131e33] to-[#0d1523] border border-white/10 p-8 lg:p-12">
+            <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-surface-overlay to-surface-overlay border border-border-subtle p-8 lg:p-12">
               {getImageSrc(images[selectedImage]) ? (
                 <img
                   src={getImageSrc(images[selectedImage])!}
@@ -189,12 +189,12 @@ export function ProductDetailPage() {
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-24 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center mb-3">
-                      <span className="text-3xl font-black text-white/30">
+                    <div className="w-24 h-16 bg-muted rounded-2xl mx-auto flex items-center justify-center mb-3">
+                      <span className="text-3xl font-black text-on-surface-faint">
                         {product.brand?.[0]}
                       </span>
                     </div>
-                    <p className="text-sm text-white/50">{product.brand}</p>
+                    <p className="text-sm text-on-surface-subtle">{product.brand}</p>
                   </div>
                 </div>
               )}
@@ -207,10 +207,10 @@ export function ProductDetailPage() {
                   <button
                     key={img.id}
                     onClick={() => setSelectedImage(i)}
-                    className={`w-20 h-20 rounded-2xl overflow-hidden border-2 shrink-0 transition-all duration-300 bg-white/5 p-2 ${
+                    className={`w-20 h-20 rounded-2xl overflow-hidden border-2 shrink-0 transition-all duration-300 bg-muted/50 p-2 ${
                       selectedImage === i
                         ? 'border-amber-400 shadow-md shadow-amber-200/30'
-                        : 'border-white/10 hover:border-white/30'
+                        : 'border-border-subtle hover:border-border'
                     }`}
                   >
                     {getImageSrc(img) ? (
@@ -220,7 +220,7 @@ export function ProductDetailPage() {
                         className="w-full h-full object-contain"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-white/50">
+                      <div className="w-full h-full flex items-center justify-center text-xs text-on-surface-subtle">
                         No image
                       </div>
                     )}
@@ -236,7 +236,7 @@ export function ProductDetailPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <Badge
                 variant="secondary"
-                className="rounded-full px-3 py-1 text-xs font-semibold bg-white/10 text-white/70"
+                className="rounded-full px-3 py-1 text-xs font-semibold bg-muted text-on-surface-muted"
               >
                 {product.brand}
               </Badge>
@@ -270,7 +270,7 @@ export function ProductDetailPage() {
             </div>
 
             {/* Name */}
-            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-on-surface leading-tight tracking-tight">
               {product.name}
             </h1>
 
@@ -281,18 +281,18 @@ export function ProductDetailPage() {
                   {formatPrice(product.price)}
                 </span>
                 {product.original_price && product.original_price > product.price && (
-                  <span className="text-2xl font-medium text-white/50 line-through">
+                  <span className="text-2xl font-medium text-on-surface-subtle line-through">
                     {formatPrice(product.original_price)}
                   </span>
                 )}
                 {savings !== null && (
-                  <span className="text-sm font-bold text-white bg-red-500 rounded-full px-3 py-1">
+                  <span className="text-sm font-bold text-on-surface bg-red-500 rounded-full px-3 py-1">
                     Vous économisez {savings}%
                   </span>
                 )}
               </div>
               {product.original_price && product.original_price > product.price && (
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-on-surface-subtle">
                   Vous gagnez {formatPrice(product.original_price - product.price)} par rapport au prix neuf.
                 </p>
               )}
@@ -300,43 +300,43 @@ export function ProductDetailPage() {
 
             {/* Description */}
             {product.description && (
-              <p className="text-white/60 leading-relaxed text-[15px]">
+              <p className="text-on-surface-subtle leading-relaxed text-[15px]">
                 {product.description}
               </p>
             )}
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-muted" />
 
             {/* Spec cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {specs.map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="p-3.5 rounded-2xl bg-white/5/80 border border-white/10 hover:border-white/15 transition-colors"
+                  className="p-3.5 rounded-2xl bg-muted/50/80 border border-border-subtle hover:border-border transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
                     <Icon className="h-3.5 w-3.5 text-blue-500" />
-                    <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-on-surface-subtle uppercase tracking-wider">
                       {label}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-white leading-snug">
+                  <p className="text-sm font-semibold text-on-surface leading-snug">
                     {value}
                   </p>
                 </div>
               ))}
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="bg-muted" />
 
             {/* Quantity + Add to cart */}
             {!isOutOfStock && (
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-white dark:text-slate-100">
+                  <span className="text-sm font-semibold text-on-surface dark:text-slate-100">
                     {t('product.quantity')}
                   </span>
-                  <div className="flex items-center bg-white/5 rounded-full border border-white/15">
+                  <div className="flex items-center bg-muted/50 rounded-full border border-border">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -363,7 +363,7 @@ export function ProductDetailPage() {
                       <Plus className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <span className="text-xs text-white/50">
+                  <span className="text-xs text-on-surface-subtle">
                     {product.stock_quantity} {t('product.available')}
                   </span>
                 </div>
@@ -408,7 +408,7 @@ export function ProductDetailPage() {
               {perks.map(({ icon: Icon, text }) => (
                 <div
                   key={text}
-                  className="flex items-center gap-3 text-sm text-white/60"
+                  className="flex items-center gap-3 text-sm text-on-surface-subtle"
                 >
                   <div className="w-8 h-8 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
                     <Icon className="h-4 w-4 text-emerald-500" />
@@ -423,23 +423,23 @@ export function ProductDetailPage() {
         {/* Technical Specs Table */}
         {product.specifications && product.specifications.length > 0 && (
           <div className="mt-20">
-            <h2 className="text-2xl font-bold text-white dark:text-slate-100 mb-8">
+            <h2 className="text-2xl font-bold text-on-surface dark:text-slate-100 mb-8">
               {t('product.techSpecs')}
             </h2>
-            <div className="rounded-3xl border border-white/10 overflow-hidden">
+            <div className="rounded-3xl border border-border-subtle overflow-hidden">
               <table className="w-full text-sm">
                 <tbody>
                   {product.specifications.map((spec, i) => (
                     <tr
                       key={spec.id}
                       className={
-                        i % 2 === 0 ? 'bg-white/5/50' : 'bg-white'
+                        i % 2 === 0 ? 'bg-muted/50/50' : 'bg-white'
                       }
                     >
-                      <td className="px-8 py-4 font-semibold text-white/60 w-1/3">
+                      <td className="px-8 py-4 font-semibold text-on-surface-subtle w-1/3">
                         {spec.spec_key}
                       </td>
-                      <td className="px-8 py-4 text-white">
+                      <td className="px-8 py-4 text-on-surface">
                         {spec.spec_value}
                       </td>
                     </tr>

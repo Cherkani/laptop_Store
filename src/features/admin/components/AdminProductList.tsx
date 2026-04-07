@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { useAdminProducts, useDeleteProduct } from '../hooks/useAdminProducts'
 import { formatPrice, getImageSrc } from '@/lib/utils'
+import { StockBadge } from '@/components/shared/StockBadge'
 import type { Product, ProductImage } from '@/types/database.types'
 
 type ProductWithImages = Product & { product_images: ProductImage[] }
@@ -122,12 +123,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                       <td className="px-4 py-3.5">
                         <div className="flex gap-1 flex-wrap">
                           {product.is_featured && <Badge className="text-xs">Featured</Badge>}
-                          {product.stock_quantity === 0
-                            ? <Badge variant="destructive" className="text-xs">Out of Stock</Badge>
-                            : product.stock_quantity <= 5
-                            ? <Badge variant="warning" className="text-xs">Low Stock</Badge>
-                            : <Badge variant="success" className="text-xs">Active</Badge>
-                          }
+                          <StockBadge quantity={product.stock_quantity} />
                         </div>
                       </td>
                       <td className="px-5 py-3.5">

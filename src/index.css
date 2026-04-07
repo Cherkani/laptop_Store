@@ -4,50 +4,108 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   CENTRAL COLOR SYSTEM
+   All theme colors live here. Components use Tailwind tokens
+   (bg-surface, bg-surface-raised, text-on-surface, etc.)
+   that reference these variables — never hardcode hex values.
+   ============================================================ */
+
 @layer base {
+  /* ----------------------------------------------------------
+     LIGHT MODE (default)
+  ---------------------------------------------------------- */
   :root {
-    --background: 220 32% 8%; /* deep navy */
-    --foreground: 210 36% 96%;
-    --card: 220 30% 10%;
-    --card-foreground: 210 36% 96%;
-    --popover: 220 30% 10%;
-    --popover-foreground: 210 36% 96%;
-    --primary: 36 92% 55%; /* amber glow */
-    --primary-foreground: 210 36% 98%;
-    --secondary: 217 28% 16%;
-    --secondary-foreground: 210 36% 94%;
-    --muted: 220 18% 18%;
-    --muted-foreground: 215 16% 72%;
-    --accent: 203 86% 60%; /* electric blue */
-    --accent-foreground: 210 36% 98%;
-    --destructive: 354 78% 55%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 18% 26%;
-    --input: 220 18% 26%;
-    --ring: 36 92% 55%;
-    --radius: 0.7rem;
+    /* shadcn-ui base tokens */
+    --background:        210 20% 98%;   /* near-white page bg */
+    --foreground:        222 47% 11%;   /* near-black text */
+    --card:              0 0% 100%;
+    --card-foreground:   222 47% 11%;
+    --popover:           0 0% 100%;
+    --popover-foreground:222 47% 11%;
+    --primary:           36 92% 50%;   /* amber */
+    --primary-foreground:222 47% 11%;
+    --secondary:         210 16% 92%;
+    --secondary-foreground:222 47% 11%;
+    --muted:             210 16% 93%;
+    --muted-foreground:  215 16% 47%;
+    --accent:            210 16% 92%;
+    --accent-foreground: 222 47% 11%;
+    --destructive:       354 78% 55%;
+    --destructive-foreground:0 0% 98%;
+    --border:            214 20% 86%;
+    --input:             214 20% 86%;
+    --ring:              36 92% 50%;
+    --radius:            0.7rem;
+
+    /* Surface hierarchy (replaces hardcoded #0a0f1a / #070c15 / #0f1726) */
+    --surface-base:      210 20% 98%;  /* page-level bg       → bg-surface-base    */
+    --surface-sunken:    210 16% 94%;  /* slightly recessed   → bg-surface-sunken  */
+    --surface-raised:    0 0% 100%;    /* cards, panels       → bg-surface-raised  */
+    --surface-overlay:   0 0% 100%;    /* modals, drawers     → bg-surface-overlay */
+
+    /* Foreground opacity scale (replaces text-white/XX) */
+    --on-surface:        222 47% 11%;  /* primary text        → text-on-surface     */
+    --on-surface-muted:  215 16% 40%;  /* secondary text      → text-on-surface-muted */
+    --on-surface-subtle: 215 16% 60%;  /* tertiary text       → text-on-surface-subtle */
+    --on-surface-faint:  215 16% 72%;  /* placeholder/hints   → text-on-surface-faint  */
+
+    /* Border opacity scale (replaces border-white/XX) */
+    --border-subtle:     214 20% 90%;
+    --border-faint:      214 20% 93%;
+
+    /* Decorative highlight (for brand-colored glow borders etc.) */
+    --highlight:         36 92% 50%;
+
+    /* Theme-shell gradient colors (for .theme-shell class) */
+    --shell-glow-a: 205 100% 67%;  /* blue orb */
+    --shell-glow-b: 36 90% 55%;   /* amber orb */
   }
 
+  /* ----------------------------------------------------------
+     DARK MODE
+  ---------------------------------------------------------- */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* shadcn-ui base tokens */
+    --background:        220 32% 8%;
+    --foreground:        210 36% 96%;
+    --card:              220 30% 10%;
+    --card-foreground:   210 36% 96%;
+    --popover:           220 28% 11%;
+    --popover-foreground:210 36% 96%;
+    --primary:           36 92% 55%;
+    --primary-foreground:210 36% 98%;
+    --secondary:         217 28% 16%;
+    --secondary-foreground:210 36% 94%;
+    --muted:             220 18% 18%;
+    --muted-foreground:  215 16% 62%;
+    --accent:            220 18% 18%;
+    --accent-foreground: 210 36% 96%;
+    --destructive:       354 78% 55%;
+    --destructive-foreground:210 40% 98%;
+    --border:            220 18% 22%;
+    --input:             220 18% 22%;
+    --ring:              36 92% 55%;
+
+    /* Surface hierarchy */
+    --surface-base:      220 32% 6%;   /* #070c15 equivalent */
+    --surface-sunken:    220 30% 7%;   /* #080d16 equivalent */
+    --surface-raised:    220 28% 10%;  /* #0f1726 equivalent */
+    --surface-overlay:   220 28% 12%;  /* drawers / modals   */
+
+    /* Foreground opacity scale */
+    --on-surface:        210 36% 96%;
+    --on-surface-muted:  210 20% 75%;
+    --on-surface-subtle: 210 16% 55%;
+    --on-surface-faint:  210 14% 38%;
+
+    /* Border opacity scale */
+    --border-subtle:     220 18% 22%;
+    --border-faint:      220 18% 16%;
+
+    --highlight:         36 92% 55%;
+    --shell-glow-a: 199 89% 48%;
+    --shell-glow-b: 36 90% 55%;
   }
 
   * {
@@ -65,20 +123,18 @@
   }
 }
 
+/* ============================================================
+   THEME-AWARE DECORATIVE CLASSES
+   Use these instead of hardcoding gradient hex values.
+   ============================================================ */
+
 .theme-shell {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(980px 540px at 15% -10%, rgba(86, 184, 255, 0.12), transparent 60%),
-    radial-gradient(760px 460px at 90% 16%, rgba(245, 163, 59, 0.18), transparent 62%),
-    linear-gradient(180deg, #0a0f1a 0%, #0c111d 40%, #0f1624 100%);
-}
-
-.dark .theme-shell {
-  background:
-    radial-gradient(900px 520px at 6% -4%, rgba(56, 189, 248, 0.16), transparent 60%),
-    radial-gradient(760px 460px at 96% 11%, rgba(20, 184, 166, 0.12), transparent 62%),
-    linear-gradient(180deg, #050b16 0%, #090f1d 40%, #0b1222 100%);
+  background-color: hsl(var(--surface-base));
+  background-image:
+    radial-gradient(980px 540px at 15% -10%, hsl(var(--shell-glow-a) / 0.10), transparent 60%),
+    radial-gradient(760px 460px at 90% 16%,  hsl(var(--shell-glow-b) / 0.14), transparent 62%);
 }
 
 .theme-shell::before {
@@ -86,29 +142,24 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.4;
   background-image:
-    linear-gradient(rgba(17, 24, 39, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 24, 39, 0.04) 1px, transparent 1px);
+    linear-gradient(hsl(var(--foreground) / 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.03) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 75%);
   z-index: -1;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: hsl(var(--surface-overlay) / 0.80);
+  border: 1px solid hsl(var(--border));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.62);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-}
-
 .headline-gradient {
-  background: linear-gradient(115deg, #0f172a 0%, #0c4a6e 54%, #0369a1 100%);
+  background: linear-gradient(115deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -131,7 +182,7 @@
 
 .lift-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 14px 34px hsl(var(--foreground) / 0.10);
 }
 
 .orb-float {
@@ -144,13 +195,8 @@
 }
 
 @keyframes orb-float {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(0, -14px, 0) scale(1.05);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%       { transform: translate3d(0, -14px, 0) scale(1.05); }
 }
 
 .animate-fade-in-up {
@@ -159,33 +205,20 @@
 }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Marquee */
-.marquee {
-  position: relative;
-  overflow: hidden;
-}
+.marquee { position: relative; overflow: hidden; }
 .marquee__track {
   display: inline-flex;
   white-space: nowrap;
   animation: marquee 18s linear infinite;
 }
 @keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @layer utilities {
@@ -213,20 +246,7 @@
   }
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.32);
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.48);
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track  { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb  { background: hsl(var(--muted-foreground) / 0.32); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.48); }

@@ -28,19 +28,19 @@ export function ProductsPage() {
   const { data: products = [], isLoading, error } = useProducts(filters)
 
   return (
-    <div className="bg-[#0b101a] min-h-screen text-white">
+    <div className="bg-surface-base min-h-screen text-on-surface">
       {/* Hero banner */}
-      <div className="bg-gradient-to-b from-[#0f1624] via-[#0b101a] to-[#0b101a] border-b border-white/10">
+      <div className="bg-gradient-to-b from-surface-raised via-surface-base to-surface-base border-b border-border-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.35)]">
               <Laptop className="w-5 h-5 text-[#0b101a]" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-on-surface tracking-tight">
               Refurbished Laptops
             </h1>
           </div>
-          <p className="text-white/60 text-lg max-w-xl">
+          <p className="text-on-surface-subtle text-lg max-w-xl">
             Premium used laptops, tested and graded. Up to 60% less than new retail — same performance, smarter price.
           </p>
         </div>
@@ -48,13 +48,13 @@ export function ProductsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+        <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-border-subtle">
           <div className="flex items-center gap-3">
             {/* Mobile filter toggle */}
             <Button
               variant="outline"
               size="sm"
-              className="lg:hidden flex items-center gap-2 rounded-full border-white/20 text-white bg-white/5"
+              className="lg:hidden flex items-center gap-2 rounded-full border-border text-on-surface bg-muted/50"
               onClick={() => setIsMobileFilterOpen(true)}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -65,7 +65,7 @@ export function ProductsPage() {
                 </span>
               )}
             </Button>
-            <span className="text-sm text-white/60 font-medium">
+            <span className="text-sm text-on-surface-subtle font-medium">
               {isLoading
                 ? 'Loading...'
                 : `${products.length} laptop${products.length !== 1 ? 's' : ''}`}
@@ -77,10 +77,10 @@ export function ProductsPage() {
               value={filters.sortBy}
               onValueChange={v => setFilters({ sortBy: v as SortOption })}
             >
-              <SelectTrigger className="w-48 h-9 rounded-full text-sm border-white/15 bg-white/5 text-white">
+              <SelectTrigger className="w-48 h-9 rounded-full text-sm border-border bg-muted/50 text-on-surface">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent className="bg-[#0f1726] text-white border border-white/10">
+              <SelectContent className="bg-surface-raised text-on-surface border border-border-subtle">
                 <SelectItem value="newest">Newest First</SelectItem>
                 <SelectItem value="price_asc">Price: Low to High</SelectItem>
                 <SelectItem value="price_desc">Price: High to Low</SelectItem>
@@ -94,7 +94,7 @@ export function ProductsPage() {
                   'flex h-9 w-9 items-center justify-center rounded-full border',
                   viewMode === 'grid'
                     ? 'border-amber-400 text-amber-300 bg-amber-500/10'
-                    : 'border-white/15 text-white/60 hover:bg-white/5',
+                    : 'border-border text-on-surface-subtle hover:bg-muted/50',
                 )}
                 onClick={() => setViewMode('grid')}
                 aria-label="Vue grille"
@@ -106,7 +106,7 @@ export function ProductsPage() {
                   'flex h-9 w-9 items-center justify-center rounded-full border',
                   viewMode === 'list'
                     ? 'border-amber-400 text-amber-300 bg-amber-500/10'
-                    : 'border-white/15 text-white/60 hover:bg-white/5',
+                    : 'border-border text-on-surface-subtle hover:bg-muted/50',
                 )}
                 onClick={() => setViewMode('list')}
                 aria-label="Vue liste"

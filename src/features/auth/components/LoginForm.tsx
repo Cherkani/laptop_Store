@@ -32,35 +32,35 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#0b101a] text-white">
+    <div className="min-h-screen flex bg-surface-base text-on-surface">
       {/* Left inspirational panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative text-white items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative text-on-surface items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/first%20backgroubd1.png"
             alt="Performance laptop"
             className="h-full w-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0b101a] via-[#0b101a]/70 to-[#0b101a]/80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-surface-base via-surface-base/70 to-surface-base/80" />
         </div>
         <div className="relative z-10 max-w-lg px-12 py-10 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
+          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
             <Laptop className="h-4 w-4" />
             Espace client
           </div>
           <h2 className="text-4xl font-bold leading-tight">Rejoignez la sélection premium.</h2>
-          <p className="text-lg text-white/70 leading-relaxed">
+          <p className="text-lg text-on-surface-muted leading-relaxed">
             Suivez vos commandes, gardez vos favoris et accédez aux offres pros sur les laptops Windows et Mac reconditionnés.
           </p>
           <div className="mt-8 grid grid-cols-3 gap-3">
             {['MacBook Pro', 'Dell XPS', 'ThinkPad'].map((name, i) => (
               <div
                 key={name}
-                className="rounded-2xl bg-white/10 border border-white/10 p-3 backdrop-blur"
+                className="rounded-2xl bg-muted border border-border-subtle p-3 backdrop-blur"
                 style={{ opacity: 1 - i * 0.12 }}
               >
                 <p className="text-sm font-semibold">{name}</p>
-                <p className="text-[11px] text-white/60">Reconditionné certifié</p>
+                <p className="text-[11px] text-on-surface-subtle">Reconditionné certifié</p>
               </div>
             ))}
           </div>
@@ -69,26 +69,26 @@ export function LoginForm() {
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md rounded-2xl bg-[#0f1726] border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.5)] px-6 py-8">
+        <div className="w-full max-w-md rounded-2xl bg-surface-raised border border-border-subtle shadow-[0_24px_60px_rgba(0,0,0,0.5)] px-6 py-8">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8">
-            <div className="w-9 h-9 rounded-xl bg-[#0f5dcf] flex items-center justify-center text-white">
+            <div className="w-9 h-9 rounded-xl bg-[#0f5dcf] flex items-center justify-center text-on-surface">
               <Laptop className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white/60">TechFiable</p>
-              <p className="text-xs text-white/50">Accès sécurisé</p>
+              <p className="text-sm font-semibold text-on-surface-subtle">TechFiable</p>
+              <p className="text-xs text-on-surface-subtle">Accès sécurisé</p>
             </div>
           </div>
 
           <div className="space-y-2 mb-6">
-            <h1 className="text-3xl font-bold text-white tracking-tight">Connexion</h1>
+            <h1 className="text-3xl font-bold text-on-surface tracking-tight">Connexion</h1>
             <p className="text-gray-500">Identifiez-vous pour retrouver vos commandes et vos favoris.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-white">
+              <Label htmlFor="email" className="text-sm font-semibold text-on-surface">
                 Email
               </Label>
               <Input
@@ -99,12 +99,12 @@ export function LoginForm() {
                 onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                 required
                 autoComplete="email"
-                className="h-12 rounded-xl border-white/15 bg-white/5 px-4 text-[15px] focus:bg-[#0f1726] focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
+                className="h-12 rounded-xl border-border bg-muted/50 px-4 text-[15px] focus:bg-surface-raised focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold text-white">
+              <Label htmlFor="password" className="text-sm font-semibold text-on-surface">
                 Mot de passe
               </Label>
               <div className="relative">
@@ -116,12 +116,12 @@ export function LoginForm() {
                   onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
                   required
                   autoComplete="current-password"
-                  className="h-12 rounded-xl border-white/15 bg-white/5 px-4 pr-12 text-[15px] focus:bg-[#0f1726] focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
+                  className="h-12 rounded-xl border-border bg-muted/50 px-4 pr-12 text-[15px] focus:bg-surface-raised focus:border-amber-400 focus:ring-amber-400/30 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-subtle hover:text-on-surface transition-colors"
                   aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -148,14 +148,14 @@ export function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-white/60">
-            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+          <div className="mt-6 grid grid-cols-3 gap-2 text-xs text-on-surface-subtle">
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
               <ShieldCheck className="h-4 w-4 text-emerald-300" /> Garantie 6 mois
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
               <Truck className="h-4 w-4 text-amber-300" /> Livraison rapide
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-2">
               <Headphones className="h-4 w-4 text-amber-300" /> Support WhatsApp
             </div>
           </div>

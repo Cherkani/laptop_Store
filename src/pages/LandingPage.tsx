@@ -10,7 +10,7 @@ import { StockLocal } from '@/features/landing/components/StockLocal'
 
 export function LandingPage() {
   return (
-    <div className="bg-[#0a0f1a]">
+    <div className="bg-surface-base">
       <StoreHero />
       <BrandStrip />
       <BestSellers />

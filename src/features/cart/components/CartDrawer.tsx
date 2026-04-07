@@ -58,20 +58,20 @@ export function CartDrawer() {
       {/* Drawer */}
       <div
         className={cn(
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-[400px] flex-col border-l border-white/[0.07] bg-[#0b1120] shadow-[−20px_0_60px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-out',
+          'fixed right-0 top-0 z-50 flex h-full w-full max-w-[400px] flex-col border-l border-border-faint bg-surface-base shadow-[−20px_0_60px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-out',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-border-faint px-5 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/15 ring-1 ring-amber-500/25">
               <ShoppingBag className="h-4 w-4 text-amber-400" />
             </div>
             <div>
-              <h2 className="text-base font-bold leading-none text-white">Panier</h2>
+              <h2 className="text-base font-bold leading-none text-on-surface">Panier</h2>
               {items.length > 0 && (
-                <p className="mt-0.5 text-[11px] text-white/40">
+                <p className="mt-0.5 text-[11px] text-on-surface-faint">
                   {items.length} article{items.length !== 1 ? 's' : ''}
                 </p>
               )}
@@ -79,7 +79,7 @@ export function CartDrawer() {
           </div>
           <button
             onClick={closeCart}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/40 transition hover:bg-white/[0.08] hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle bg-surface-raised/60 text-on-surface-faint transition hover:bg-white/[0.08] hover:text-on-surface"
           >
             <X className="h-4 w-4" />
           </button>
@@ -89,18 +89,18 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto">
           {isLoading && (
             <div className="flex justify-center py-16">
-              <Loader2 className="h-6 w-6 animate-spin text-white/20" />
+              <Loader2 className="h-6 w-6 animate-spin text-on-surface-faint" />
             </div>
           )}
 
           {!isLoading && cartProducts.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-5 px-8 text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.03]">
-                <Package className="h-8 w-8 text-white/20" />
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border-faint bg-surface-raised/50">
+                <Package className="h-8 w-8 text-on-surface-faint" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Votre panier est vide</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-white/40">
+                <h3 className="text-base font-bold text-on-surface">Votre panier est vide</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-on-surface-faint">
                   Découvrez notre sélection de laptops premium reconditionnés.
                 </p>
               </div>
@@ -126,10 +126,10 @@ export function CartDrawer() {
                 return (
                   <div
                     key={productId}
-                    className="group flex gap-3 rounded-2xl border border-transparent p-3 transition-colors hover:border-white/[0.07] hover:bg-white/[0.03]"
+                    className="group flex gap-3 rounded-2xl border border-transparent p-3 transition-colors hover:border-border-faint hover:bg-surface-raised/50"
                   >
                     {/* Product image */}
-                    <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/[0.07] bg-gradient-to-br from-[#131e33] to-[#0d1523] p-2">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border-faint bg-gradient-to-br from-surface-overlay to-surface-overlay p-2">
                       {imageSrc ? (
                         <img
                           src={imageSrc}
@@ -137,7 +137,7 @@ export function CartDrawer() {
                           className="h-full w-full object-contain"
                         />
                       ) : (
-                        <span className="text-xl font-black text-white/10">
+                        <span className="text-xl font-black text-on-surface-faint">
                           {product.brand?.[0]}
                         </span>
                       )}
@@ -145,10 +145,10 @@ export function CartDrawer() {
 
                     {/* Info */}
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-faint">
                         {product.brand}
                       </p>
-                      <p className="line-clamp-2 text-sm font-semibold leading-snug text-white">
+                      <p className="line-clamp-2 text-sm font-semibold leading-snug text-on-surface">
                         {product.name}
                       </p>
                       <p className="text-sm font-extrabold tracking-tight text-amber-400">
@@ -157,19 +157,19 @@ export function CartDrawer() {
 
                       {/* Quantity + remove */}
                       <div className="mt-1 flex items-center gap-2">
-                        <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.04]">
+                        <div className="flex items-center rounded-lg border border-border-subtle bg-surface-raised/60">
                           <button
                             onClick={() => updateQuantity(productId, quantity - 1)}
-                            className="flex h-7 w-7 items-center justify-center rounded-l-lg text-white/40 transition hover:bg-white/[0.06] hover:text-white"
+                            className="flex h-7 w-7 items-center justify-center rounded-l-lg text-on-surface-faint transition hover:bg-muted/50 hover:text-on-surface"
                           >
                             <Minus className="h-3 w-3" />
                           </button>
-                          <span className="w-7 text-center text-xs font-bold text-white">
+                          <span className="w-7 text-center text-xs font-bold text-on-surface">
                             {quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(productId, quantity + 1)}
-                            className="flex h-7 w-7 items-center justify-center rounded-r-lg text-white/40 transition hover:bg-white/[0.06] hover:text-white"
+                            className="flex h-7 w-7 items-center justify-center rounded-r-lg text-on-surface-faint transition hover:bg-muted/50 hover:text-on-surface"
                           >
                             <Plus className="h-3 w-3" />
                           </button>
@@ -177,7 +177,7 @@ export function CartDrawer() {
 
                         <button
                           onClick={() => removeItem(productId)}
-                          className="ml-auto flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-white/20 opacity-0 transition hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"
+                          className="ml-auto flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-on-surface-faint opacity-0 transition hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -192,15 +192,15 @@ export function CartDrawer() {
 
         {/* Footer */}
         {cartProducts.length > 0 && (
-          <div className="border-t border-white/[0.07] bg-[#080d16] px-5 py-5 space-y-4">
+          <div className="border-t border-border-faint bg-surface-sunken px-5 py-5 space-y-4">
             {/* Subtotal */}
             <div className="flex items-center justify-between">
-              <span className="text-sm text-white/50">Sous-total</span>
-              <span className="text-xl font-extrabold tracking-tight text-white">
+              <span className="text-sm text-on-surface-subtle">Sous-total</span>
+              <span className="text-xl font-extrabold tracking-tight text-on-surface">
                 {formatPrice(total)}
               </span>
             </div>
-            <p className="text-[11px] text-white/25">
+            <p className="text-[11px] text-on-surface-faint">
               Livraison et taxes calculées à la validation.
             </p>
 
@@ -213,7 +213,7 @@ export function CartDrawer() {
             {/* Continue shopping */}
             <button
               onClick={closeCart}
-              className="w-full rounded-xl border border-white/10 py-2.5 text-sm font-medium text-white/50 transition hover:border-white/20 hover:text-white/80"
+              className="w-full rounded-xl border border-border-subtle py-2.5 text-sm font-medium text-on-surface-subtle transition hover:border-border hover:text-on-surface-muted"
             >
               <Link to="/products" className="block w-full">
                 Continuer les achats
