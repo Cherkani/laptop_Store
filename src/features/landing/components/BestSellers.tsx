@@ -33,7 +33,6 @@ export function BestSellers() {
 
   return (
     <Section>
-
         {/* Header row */}
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -93,7 +92,7 @@ export function BestSellers() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {(isLoading ? Array<ProductWithImages | null>(8).fill(null) : list).map((product, idx) => (
             <div key={product ? product.id : idx} className="h-full">
               {isLoading ? (

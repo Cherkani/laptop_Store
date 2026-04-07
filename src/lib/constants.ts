@@ -18,7 +18,7 @@ export const CONTACT = {
   whatsappRaw: '212612345678',
   /** Display-formatted number */
   whatsappFormatted: '+212 6 12 34 56 78',
-  businessHours: 'Lun - Sam · 9h00 - 20h00',
+  businessHours: 'Lun - Dim · 9h00 - 23h00',
 } as const
 
 export const WHATSAPP_URL = `https://wa.me/${CONTACT.whatsappRaw}`

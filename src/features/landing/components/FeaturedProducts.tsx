@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { ProductCard } from '@/features/products/components/ProductCard'
 import { useFeaturedProducts } from '@/features/products/hooks/useProducts'
 import { ScrollReveal } from './ScrollReveal'
@@ -7,8 +8,32 @@ import { Section } from '@/components/shared/Section'
 
 export function FeaturedProducts() {
   const { data: products, isLoading } = useFeaturedProducts()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
 
   if (!isLoading && (!products || products.length === 0)) return null
+
+  const checkScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 8)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8)
+  }
+
+  const scroll = (dir: 'left' | 'right') => {
+    const el = scrollRef.current
+    if (!el) return
+    const delta = dir === 'left' ? -340 : 340
+    el.scrollBy({ left: delta, behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    checkScroll()
+    const handleResize = () => checkScroll()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <Section>
@@ -40,12 +65,40 @@ export function FeaturedProducts() {
             <Loader2 className="h-7 w-7 animate-spin text-on-surface-faint" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {products?.slice(0, 8).map((product, index) => (
-              <ScrollReveal key={product.id} delay={index * 60}>
-                <ProductCard product={product} />
-              </ScrollReveal>
-            ))}
+          <div className="relative">
+            {/* Scroll buttons (desktop) */}
+            {canScrollLeft && (
+              <button
+                onClick={() => scroll('left')}
+                className="absolute -left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-white/90 text-on-surface shadow-xl backdrop-blur transition hover:bg-white md:flex"
+                aria-label="Défiler à gauche"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            )}
+            {canScrollRight && (
+              <button
+                onClick={() => scroll('right')}
+                className="absolute -right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-white/90 text-on-surface shadow-xl backdrop-blur transition hover:bg-white md:flex"
+                aria-label="Défiler à droite"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            )}
+
+            <div
+              ref={scrollRef}
+              onScroll={checkScroll}
+              className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide sm:mx-0"
+            >
+              {products?.slice(0, 12).map((product, index) => (
+                <ScrollReveal key={product.id} delay={index * 50} className="snap-start">
+                  <div className="w-[260px] shrink-0 sm:w-[300px]">
+                    <ProductCard product={product} />
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         )}
 

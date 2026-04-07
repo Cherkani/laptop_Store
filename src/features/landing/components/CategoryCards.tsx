@@ -19,7 +19,7 @@ const categories = [
     description: 'Compilez rapidement et faites tourner plusieurs outils en simultané.',
     href: '/advisor/developers',
     image:
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1400&q=80',
     accent: 'from-white/0 via-white/70 to-white/95',
     badge: 'Développeurs',
   },
@@ -28,7 +28,7 @@ const categories = [
     description: 'Appareils fiables conçus pour la productivité et la portabilité.',
     href: '/advisor/business',
     image:
-      'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1556761175-129418cb2dfe?auto=format&fit=crop&w=1400&q=80',
     accent: 'from-white/0 via-white/75 to-white/95',
     badge: 'Entreprises',
   },
@@ -37,7 +37,7 @@ const categories = [
     description: 'Graphismes puissants et dalles haute fréquence pour une expérience immersive.',
     href: '/advisor/gaming',
     image:
-      'https://images.unsplash.com/photo-1486401899868-0e435ed85128?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1509474204384-8f02d4d1bd90?auto=format&fit=crop&w=1400&q=80',
     accent: 'from-white/0 via-white/70 to-white/90',
     badge: 'Gamers',
   },

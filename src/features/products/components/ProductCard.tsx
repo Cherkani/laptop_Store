@@ -54,10 +54,10 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-faint bg-surface-raised transition-all duration-300 hover:-translate-y-1 hover:border-border-subtle hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white via-white to-[#f7f9fc] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-[6px] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
 
         {/* Image area */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-surface-overlay to-surface-overlay">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff]">
           {primarySrc ? (
             <>
               <img
@@ -87,23 +87,23 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
 
-          {/* Badges top-left */}
-          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-            {conditionStyle ? (
-              <Badge className={`border text-[10px] font-semibold ${conditionStyle.className}`}>
-                {conditionStyle.label}
-              </Badge>
-            ) : (
-              <Badge className="border border-emerald-500/20 bg-emerald-500/15 text-[10px] font-semibold text-emerald-400">
-                Neuf
-              </Badge>
+        {/* Simple tags top-right */}
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
+          <Badge
+            className={cn(
+              'border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm backdrop-blur',
+              conditionStyle?.className ??
+                'bg-emerald-500/15 text-emerald-600 border-emerald-500/25',
             )}
-            {product.is_featured && (
-              <Badge className="border border-sky-500/20 bg-sky-500/15 text-[10px] font-semibold text-sky-400">
-                Coup de cœur
-              </Badge>
-            )}
-          </div>
+          >
+            {conditionStyle ? conditionStyle.label : 'Neuf'}
+          </Badge>
+          {product.is_featured && (
+            <Badge className="border border-sky-500/25 bg-sky-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-sky-600 shadow-sm backdrop-blur">
+              Coup de cœur
+            </Badge>
+          )}
+        </div>
 
           {/* Discount badge top-right */}
           {savings !== null && (
@@ -121,13 +121,13 @@ export function ProductCard({ product }: ProductCardProps) {
               {product.brand}
             </p>
             <div className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-              <span className="text-[11px] font-semibold text-amber-400">4.8</span>
+              <Star className="h-3 w-3 fill-amber-400 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.35)]" />
+              <span className="text-[11px] font-semibold text-amber-500">4.8</span>
             </div>
           </div>
 
           {/* Name */}
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-300">
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-500">
             {product.name}
           </h3>
 
