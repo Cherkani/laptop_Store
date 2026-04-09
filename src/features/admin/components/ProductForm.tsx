@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Upload, X, Plus, Trash2, Loader2, GripVertical } from 'lucide-react'
+import { Upload, X, Plus, Trash2, Loader2, GripVertical, ExternalLink, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,6 +49,11 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     stock_quantity: product?.stock_quantity?.toString() ?? '0',
     is_featured: product?.is_featured ?? false,
     category: product?.category ?? 'laptop',
+    // Sourcing
+    source_url: (product as any)?.source_url ?? '',
+    source_price: (product as any)?.source_price?.toString() ?? '',
+    margin_amount: (product as any)?.margin_amount?.toString() ?? '',
+    is_available: (product as any)?.is_available ?? true,
   })
 
   const [images, setImages] = useState<ImagePreview[]>(
@@ -115,6 +120,11 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         stock_quantity: parseInt(formData.stock_quantity) || 0,
         is_featured: formData.is_featured,
         category: formData.category,
+        // Sourcing
+        source_url: formData.source_url || null,
+        source_price: formData.source_price ? parseFloat(formData.source_price) : null,
+        margin_amount: formData.margin_amount ? parseFloat(formData.margin_amount) : null,
+        is_available: formData.is_available,
       }
 
       let savedProduct: { id: string }
@@ -334,6 +344,99 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             </div>
           ))}
         </div>
+      </div>
+
+      <Separator />
+
+      {/* Sourcing / Dropshipping — admin only, never shown to customers */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Lock className="h-4 w-4 text-slate-400" />
+          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+            Sourcing <span className="normal-case font-normal text-slate-400 tracking-normal">(privé — jamais visible par les clients)</span>
+          </h3>
+        </div>
+
+        {/* Availability toggle — most important control */}
+        <div className={`flex items-center justify-between gap-3 p-4 rounded-xl border-2 transition-colors ${
+          formData.is_available
+            ? 'border-emerald-200 bg-emerald-50'
+            : 'border-red-200 bg-red-50'
+        }`}>
+          <div>
+            <p className={`text-sm font-semibold ${formData.is_available ? 'text-emerald-800' : 'text-red-800'}`}>
+              {formData.is_available ? 'Disponible — visible sur le site' : 'Indisponible — masqué du catalogue'}
+            </p>
+            <p className={`text-xs mt-0.5 ${formData.is_available ? 'text-emerald-600' : 'text-red-500'}`}>
+              {formData.is_available
+                ? 'Le produit apparaît dans le catalogue public.'
+                : 'Le store source a vendu ce produit. Il est masqué et exclu des stats de ventes.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => update('is_available', !formData.is_available)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
+              formData.is_available ? 'bg-emerald-500' : 'bg-red-400'
+            }`}
+            role="switch"
+            aria-checked={formData.is_available}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition-transform ${
+                formData.is_available ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Source store URL */}
+        <Field label="URL du store source">
+          <div className="relative">
+            <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              type="url"
+              value={formData.source_url}
+              onChange={e => update('source_url', e.target.value)}
+              placeholder="https://jumia.ma/produit/..."
+              className="pl-9 font-mono text-sm"
+            />
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Lien vers l'annonce originale. Jamais affiché aux clients.</p>
+        </Field>
+
+        {/* Price breakdown */}
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Prix d'achat (MAD)">
+            <Input
+              type="number" min="0" step="0.01"
+              value={formData.source_price}
+              onChange={e => update('source_price', e.target.value)}
+              placeholder="ex: 3200"
+            />
+          </Field>
+          <Field label="Marge ajoutée (MAD)">
+            <Input
+              type="number" min="0" step="0.01"
+              value={formData.margin_amount}
+              onChange={e => update('margin_amount', e.target.value)}
+              placeholder="ex: 500"
+            />
+          </Field>
+        </div>
+
+        {/* Auto-computed selling price hint */}
+        {formData.source_price && formData.margin_amount && (
+          <div className="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm">
+            <span className="text-blue-600 font-medium">Prix de vente suggéré :</span>
+            <span className="font-bold text-blue-800">
+              {(parseFloat(formData.source_price) + parseFloat(formData.margin_amount)).toLocaleString('fr-MA')} MAD
+            </span>
+            <span className="text-blue-400 text-xs ml-auto">
+              ({parseFloat(formData.source_price).toLocaleString('fr-MA')} + {parseFloat(formData.margin_amount).toLocaleString('fr-MA')})
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Footer actions */}

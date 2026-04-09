@@ -41,6 +41,7 @@ export function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [openMega, setOpenMega] = useState<'windows' | 'mac' | null>(null)
+  const userInitial = user?.email?.[0]?.toUpperCase() ?? '?'
 
   const desktopSearchRef = useRef<HTMLInputElement | null>(null)
   const mobileSearchRef = useRef<HTMLInputElement | null>(null)
@@ -100,7 +101,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 bg-background/95 text-foreground transition-shadow border-b border-border backdrop-blur-md',
+        'sticky top-0 z-[999] bg-background/95 text-foreground transition-shadow border-b border-border backdrop-blur-md',
         scrolled && 'shadow-[0_8px_24px_rgba(0,0,0,0.5)]',
       )}
     >
@@ -130,7 +131,7 @@ export function Header() {
 
       {/* Main bar */}
       <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center gap-3 lg:h-[68px]">
+        <div className="flex h-16 items-center gap-2 lg:h-[68px]">
           {/* Logo */}
           <Link
             to="/"
@@ -141,8 +142,8 @@ export function Header() {
           >
             <img
               src="/logo.png"
-              alt="CASALAPTOPS logo"
-              className="h-48 w-48 object-contain"
+              alt="Casaby Tech"
+              className="h-10 w-auto max-w-[140px] object-contain"
             />
           </Link>
 
@@ -177,7 +178,7 @@ export function Header() {
                 </button>
 
                 {openMega === item.key && (
-                  <div className="absolute left-0 top-full mt-1.5 w-[360px] overflow-hidden rounded-2xl border border-border bg-popover/95 shadow-2xl shadow-black/30 backdrop-blur">
+                  <div className="absolute left-0 top-full mt-1.5 w-[360px] rounded-2xl border border-border bg-popover/95 shadow-2xl shadow-black/30 backdrop-blur">
                     <div className="p-5">
                       <p className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.22em] text-foreground/45">
                         Marques {item.key === 'windows' ? 'PC Windows' : 'Mac & MacBook'}
@@ -238,7 +239,7 @@ export function Header() {
           </nav>
 
           {/* Search */}
-          <form onSubmit={handleSearch} className="ml-auto hidden w-full max-w-sm lg:block xl:max-w-md">
+          <form onSubmit={handleSearch} className="ml-auto hidden w-full max-w-xs lg:block xl:max-w-sm">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
               <Input
@@ -253,7 +254,7 @@ export function Header() {
           </form>
 
           {/* Right icons */}
-          <div className="ml-auto flex items-center gap-1 lg:ml-3">
+          <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-3">
             <Button
               variant="ghost"
               size="icon"
@@ -295,22 +296,27 @@ export function Header() {
                 </Button>
                 {isUserMenuOpen && (
                   <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsUserMenuOpen(false)} />
-                    <div className="absolute right-0 top-full z-20 mt-2 w-52 overflow-hidden rounded-2xl border border-border bg-popover shadow-2xl shadow-black/30">
-                      <div className="border-b border-border px-4 py-3">
-                        <p className="truncate text-sm font-medium text-foreground">{user.email}</p>
-                        {isAdmin && (
-                          <p className="mt-0.5 text-xs font-semibold text-emerald-400">
-                            {t('user.administrator')}
-                          </p>
-                        )}
+                    <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
+                    <div className="absolute right-0 top-full z-60 mt-2 w-64 rounded-2xl border border-white/10 bg-white/90 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl dark:border-white/5 dark:bg-[#0b1220]/90">
+                      <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/30">
+                          {userInitial}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">{user.email}</p>
+                          {isAdmin && (
+                            <p className="text-xs font-semibold text-emerald-400">
+                              {t('user.administrator')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                       <div className="py-1.5">
                         {isAdmin && (
                           <Link
                             to="/admin"
                             onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-foreground/70 hover:bg-muted hover:text-foreground"
+                            className="flex items-center gap-2 px-4 py-2 text-sm text-foreground/80 transition hover:bg-amber-500/10 hover:text-foreground"
                           >
                             <LayoutDashboard className="h-4 w-4" />
                             {t('user.adminDashboard')}
@@ -318,7 +324,7 @@ export function Header() {
                         )}
                         <button
                           onClick={handleLogout}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                          className="flex w-full items-center gap-2 px-4 py-2 text-sm font-semibold text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                         >
                           <LogOut className="h-4 w-4" />
                           {t('user.signOut')}
@@ -329,7 +335,7 @@ export function Header() {
                 )}
               </div>
             ) : (
-              <div className="hidden items-center gap-1 sm:flex">
+              <div className="hidden items-center gap-1 lg:flex">
                 <Button
                   variant="ghost"
                   size="sm"

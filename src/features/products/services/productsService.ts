@@ -11,6 +11,7 @@ export const productsService = {
         *,
         product_images (*)
       `)
+      .eq('is_available', true)
       .gte('price', filters.priceRange[0])
       .lte('price', filters.priceRange[1])
 
@@ -82,6 +83,7 @@ export const productsService = {
         specifications (*)
       `)
       .eq('id', id)
+      .eq('is_available', true)
       .single()
 
     if (error) throw error
@@ -93,6 +95,7 @@ export const productsService = {
       .from('products')
       .select(`*, product_images (*)`)
       .eq('is_featured', true)
+      .eq('is_available', true)
       .gt('stock_quantity', 0)
       .order('created_at', { ascending: false })
       .limit(8)

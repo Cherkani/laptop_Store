@@ -2,12 +2,15 @@
 -- Email: admin@laptopstore.ma
 -- Password: Admin!234
 
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema extensions;
 
-with existing_user as (
-  select id from auth.users where email = 'admin@laptopstore.ma'
-),
-created_user as (
+set local search_path = public, auth, extensions;
+
+do $$
+declare
+  v_user_id uuid;
+begin
+  -- Insert user if missing
   insert into auth.users (
     id,
     instance_id,
@@ -30,7 +33,7 @@ created_user as (
     extensions.gen_random_uuid(),
     '00000000-0000-0000-0000-000000000000',
     'admin@laptopstore.ma',
-    public.crypt('Admin!234', extensions.gen_salt('bf')),
+    extensions.crypt('Admin!234', extensions.gen_salt('bf')),
     now(),
     'authenticated',
     'authenticated',
@@ -40,25 +43,53 @@ created_user as (
     now(),
     '', '', '', '', ''
   )
-  on conflict (email) do update set email = excluded.email
-  returning id, email
-),
-user_row as (
-  select id, email from created_user
-  union all
-  select id, 'admin@laptopstore.ma' from existing_user
-)
-insert into auth.identities (id, provider, user_id, identity_data, last_sign_in_at, created_at, updated_at)
-select
-  extensions.gen_random_uuid(),
-  'email',
-  u.id,
-  jsonb_build_object('sub', u.id::text, 'email', u.email),
-  now(), now(), now()
-from user_row u
-on conflict (user_id, provider) do nothing;
+  on conflict (instance_id, email) do nothing
+  returning id into v_user_id;
 
-insert into public.profiles (id, full_name, avatar_url, is_admin, created_at, updated_at)
-select u.id, 'Admin', null, true, now(), now()
-from user_row u
-on conflict (id) do update set is_admin = true;
+  if v_user_id is null then
+    select id into v_user_id
+    from auth.users
+    where instance_id = '00000000-0000-0000-0000-000000000000'
+      and email = 'admin@laptopstore.ma'
+    limit 1;
+  else
+    -- refresh password and metadata if user already existed
+    update auth.users
+    set encrypted_password     = extensions.crypt('Admin!234', extensions.gen_salt('bf')),
+        email_confirmed_at     = now(),
+        role                   = 'authenticated',
+        raw_app_meta_data      = '{"provider":"email","providers":["email"]}',
+        raw_user_meta_data     = '{}'::jsonb,
+        updated_at             = now()
+    where id = v_user_id;
+  end if;
+
+  -- Insert identity if missing (unique on provider_id, provider)
+  insert into auth.identities (
+    id,
+    provider,
+    provider_id,
+    user_id,
+    identity_data,
+    last_sign_in_at,
+    created_at,
+    updated_at
+  )
+  values (
+    extensions.gen_random_uuid(),
+    'email',
+    'admin@laptopstore.ma',
+    v_user_id,
+    jsonb_build_object('sub', v_user_id::text, 'email', 'admin@laptopstore.ma'),
+    now(), now(), now()
+  )
+  on conflict (provider_id, provider) do
+    update set user_id = excluded.user_id,
+              identity_data = excluded.identity_data,
+              updated_at = now();
+
+  -- Ensure profile marked admin
+  insert into public.profiles (id, full_name, avatar_url, is_admin, created_at, updated_at)
+  values (v_user_id, 'Admin', null, true, now(), now())
+  on conflict (id) do update set is_admin = true;
+end$$;

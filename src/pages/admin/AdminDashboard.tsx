@@ -1,215 +1,323 @@
 import { Link } from 'react-router-dom'
-import { Package, Plus, Star, Tag, ArrowRight, Edit, BarChart3 } from 'lucide-react'
+import {
+  Package, Plus, Star, ArrowRight, Edit,
+  AlertTriangle, EyeOff, TrendingUp, Layers,
+  ShoppingBag, Banknote, Users, ExternalLink,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
+import { useToggleAvailability } from '@/features/admin/hooks/useAdminProducts'
 import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
 
-type AdminProduct = Product & { product_images: ProductImage[] }
+type AdminProduct = Product & {
+  product_images: ProductImage[]
+  source_url?: string | null
+  source_price?: number | null
+  margin_amount?: number | null
+  is_available?: boolean
+}
 
 export function AdminDashboard() {
   const { data: rawProducts = [], isLoading } = useAdminProducts()
+  const toggleAvailability = useToggleAvailability()
   const products = rawProducts as AdminProduct[]
 
-  const totalProducts = products.length
-  const totalStock   = products.reduce((s, p) => s + p.stock_quantity, 0)
-  const featured     = products.filter(p => p.is_featured).length
-  const avgPrice     = totalProducts > 0
-    ? products.reduce((s, p) => s + p.price, 0) / totalProducts
-    : 0
+  const available   = products.filter(p => p.is_available !== false)
+  const unavailable = products.filter(p => p.is_available === false)
+  const outOfStock  = available.filter(p => p.stock_quantity === 0)
+  const lowStock    = available.filter(p => p.stock_quantity > 0 && p.stock_quantity <= 3)
+  const featured    = available.filter(p => p.is_featured)
 
-  const brandMap = products.reduce<Record<string, number>>((acc, p) => {
-    acc[p.brand] = (acc[p.brand] ?? 0) + 1
-    return acc
-  }, {})
-  const topBrands    = Object.entries(brandMap).sort((a, b) => b[1] - a[1]).slice(0, 6)
-  const maxBrandCount = topBrands[0]?.[1] ?? 1
+  // Sourcing stats — only for products that have source data
+  const sourcedProducts = products.filter(p => p.source_price != null && p.margin_amount != null)
+  const totalMargin = sourcedProducts.reduce((s, p) => s + (p.margin_amount ?? 0), 0)
 
-  const stats = [
-    { label: 'Total Products', value: isLoading ? null : totalProducts,              icon: Package, accent: 'blue'   },
-    { label: 'Units in Stock',  value: isLoading ? null : totalStock,                icon: Tag,     accent: 'emerald'},
-    { label: 'Featured',        value: isLoading ? null : featured,                  icon: Star,    accent: 'amber'  },
-    { label: 'Average Price',   value: isLoading ? null : formatPrice(avgPrice),     icon: BarChart3, accent: 'purple'},
+  const recentProducts = [...available]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 6)
+
+  const quickActions = [
+    { label: 'Nouveau produit', icon: Plus, to: '/admin/products?action=new', color: 'bg-cyan-500 hover:bg-cyan-400' },
+    { label: 'Voir les ventes', icon: ShoppingBag, to: '/admin/ventes', color: 'bg-violet-500 hover:bg-violet-400' },
+    { label: 'Vente cash', icon: Banknote, to: '/admin/cash', color: 'bg-emerald-500 hover:bg-emerald-400' },
+    { label: 'Clients', icon: Users, to: '/admin/clients', color: 'bg-amber-500 hover:bg-amber-400' },
+    { label: 'Stock', icon: Layers, to: '/admin/inventory', color: 'bg-blue-500 hover:bg-blue-400' },
+    { label: 'Catalogue', icon: Package, to: '/admin/products', color: 'bg-slate-600 hover:bg-slate-500' },
   ]
 
-  const accentClasses: Record<string, { icon: string; dot: string; bar: string }> = {
-    blue:    { icon: 'text-blue-600 bg-blue-50',    dot: 'bg-blue-500',    bar: 'bg-blue-500'    },
-    emerald: { icon: 'text-emerald-600 bg-emerald-50', dot: 'bg-emerald-500', bar: 'bg-emerald-500' },
-    amber:   { icon: 'text-amber-600 bg-amber-50',  dot: 'bg-amber-500',   bar: 'bg-amber-500'   },
-    purple:  { icon: 'text-purple-600 bg-purple-50', dot: 'bg-purple-500', bar: 'bg-purple-500'  },
-  }
-
-  const recentProducts = [...products]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 7)
-
   return (
-    <div className="p-6 lg:p-8 space-y-7 bg-slate-50 min-h-full">
+    <div className="p-6 lg:p-8 space-y-6 bg-[#f5f7fb] min-h-full">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Your store overview</p>
+          <h1 className="text-xl font-bold text-slate-900">Vue d'ensemble</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
+            {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
         </div>
-        <Button asChild size="sm">
+        <Button asChild size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-sm">
           <Link to="/admin/products?action=new">
             <Plus className="h-4 w-4 mr-1.5" />
-            Add Product
+            Ajouter
           </Link>
         </Button>
       </div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(stat => {
-          const cls = accentClasses[stat.accent]
-          return (
-            <Card key={stat.label} className="border-0 shadow-sm">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{stat.label}</p>
-                    {isLoading
-                      ? <div className="mt-2 h-7 w-20 bg-slate-100 rounded animate-pulse" />
-                      : <p className="mt-1.5 text-2xl font-bold text-slate-900 truncate">{stat.value}</p>
-                    }
-                  </div>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cls.icon}`}>
-                    <stat.icon className="h-5 w-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+      {/* ── Alerts row — only shown when relevant ── */}
+      {!isLoading && (outOfStock.length > 0 || unavailable.length > 0) && (
+        <div className="grid sm:grid-cols-2 gap-3">
+          {outOfStock.length > 0 && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+              <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-amber-800">
+                  {outOfStock.length} produit{outOfStock.length > 1 ? 's' : ''} en rupture de stock
+                </p>
+                <p className="text-xs text-amber-600 mt-0.5 line-clamp-1">
+                  {outOfStock.slice(0, 3).map(p => p.name).join(', ')}
+                  {outOfStock.length > 3 ? ` +${outOfStock.length - 3}` : ''}
+                </p>
+              </div>
+              <Button asChild variant="ghost" size="sm" className="h-7 text-xs text-amber-700 hover:bg-amber-100 shrink-0">
+                <Link to="/admin/inventory">Gérer</Link>
+              </Button>
+            </div>
+          )}
+          {unavailable.length > 0 && (
+            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5">
+              <EyeOff className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-red-800">
+                  {unavailable.length} produit{unavailable.length > 1 ? 's' : ''} masqué{unavailable.length > 1 ? 's' : ''} du catalogue
+                </p>
+                <p className="text-xs text-red-400 mt-0.5">Source vendue — à remettre en vente ou supprimer</p>
+              </div>
+              <Button asChild variant="ghost" size="sm" className="h-7 text-xs text-red-600 hover:bg-red-100 shrink-0">
+                <Link to="/admin/products">Voir</Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Stat cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          {
+            label: 'Produits actifs',
+            value: isLoading ? null : available.length,
+            sub: `${featured.length} en vedette`,
+            icon: Package,
+            color: 'from-blue-500 to-blue-600',
+            light: 'bg-blue-50 text-blue-600',
+          },
+          {
+            label: 'Stock total',
+            value: isLoading ? null : available.reduce((s, p) => s + p.stock_quantity, 0),
+            sub: lowStock.length > 0 ? `${lowStock.length} en faible stock` : 'Niveaux corrects',
+            icon: Layers,
+            color: 'from-emerald-500 to-emerald-600',
+            light: 'bg-emerald-50 text-emerald-600',
+          },
+          {
+            label: 'Produits sourcés',
+            value: isLoading ? null : sourcedProducts.length,
+            sub: sourcedProducts.length > 0 ? `${formatPrice(totalMargin)} marge totale` : 'Aucun sourcé',
+            icon: TrendingUp,
+            color: 'from-violet-500 to-violet-600',
+            light: 'bg-violet-50 text-violet-600',
+          },
+          {
+            label: 'Prix moyen',
+            value: isLoading ? null : available.length > 0
+              ? formatPrice(available.reduce((s, p) => s + p.price, 0) / available.length)
+              : '—',
+            sub: `sur ${available.length} produits`,
+            icon: Star,
+            color: 'from-amber-500 to-amber-600',
+            light: 'bg-amber-50 text-amber-600',
+          },
+        ].map(stat => (
+          <div key={stat.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">{stat.label}</p>
+                {isLoading
+                  ? <div className="mt-2 h-7 w-16 bg-slate-100 rounded animate-pulse" />
+                  : <p className="mt-1.5 text-2xl font-bold text-slate-900 truncate">{stat.value}</p>
+                }
+                {!isLoading && <p className="text-xs text-slate-400 mt-0.5">{stat.sub}</p>}
+              </div>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${stat.light}`}>
+                <stat.icon className="h-4.5 w-4.5" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Main content area */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      {/* ── Main grid ── */}
+      <div className="grid lg:grid-cols-3 gap-5">
 
-        {/* Catalog table — 2/3 width */}
-        <Card className="lg:col-span-2 border-0 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between py-4 px-5 border-b">
-            <CardTitle className="text-sm font-semibold text-slate-900">Recent Products</CardTitle>
-            <Button variant="ghost" size="sm" asChild className="h-7 text-xs text-slate-500 hover:text-slate-900">
-              <Link to="/admin/products">
-                View all <ArrowRight className="ml-1 h-3 w-3" />
-              </Link>
+        {/* Recent products — 2/3 */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <p className="text-sm font-semibold text-slate-900">Produits récents</p>
+            <Button variant="ghost" size="sm" asChild className="h-7 text-xs text-slate-400 hover:text-slate-900">
+              <Link to="/admin/products">Voir tout <ArrowRight className="ml-1 h-3 w-3" /></Link>
             </Button>
-          </CardHeader>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="p-5 space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-11 bg-slate-100 rounded-lg animate-pulse" />
-                ))}
-              </div>
-            ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
-                  <Package className="h-6 w-6 text-slate-400" />
-                </div>
-                <p className="text-sm font-medium text-slate-700">No products yet</p>
-                <p className="text-xs text-slate-400 mt-1">Add your first laptop to get started</p>
-                <Button asChild size="sm" className="mt-4">
-                  <Link to="/admin/products?action=new">
-                    <Plus className="h-4 w-4 mr-1.5" /> Add Product
-                  </Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {recentProducts.map(product => {
-                  const img = product.product_images?.find(x => x.is_primary) ?? product.product_images?.[0]
-                  const stockColor =
-                    product.stock_quantity === 0 ? 'text-red-500'
-                    : product.stock_quantity <= 5 ? 'text-amber-500'
-                    : 'text-slate-700'
-                  return (
-                    <div key={product.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 group transition-colors">
-                      <div className="w-9 h-9 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
-                        {img
-                          ? <img src={getImageSrc(img) ?? ''} alt="" className="w-full h-full object-cover" />
-                          : <div className="w-full h-full" />
-                        }
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{product.name}</p>
-                        <p className="text-xs text-slate-400">{product.brand} · {product.processor}</p>
-                      </div>
-                      <div className="text-right shrink-0 hidden sm:block">
-                        <p className="text-sm font-semibold text-slate-900">{formatPrice(product.price)}</p>
-                        <p className={`text-xs font-medium ${stockColor}`}>
-                          {product.stock_quantity === 0 ? 'Out of stock' : `${product.stock_quantity} in stock`}
-                        </p>
-                      </div>
-                      {product.is_featured && (
-                        <Badge className="text-[10px] h-5 hidden sm:flex">Featured</Badge>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        asChild
-                      >
-                        <Link to={`/admin/products?action=edit&id=${product.id}`}>
-                          <Edit className="h-3.5 w-3.5 text-slate-500" />
-                        </Link>
-                      </Button>
+          </div>
+          {isLoading ? (
+            <div className="p-5 space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 bg-slate-100 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : recentProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Package className="h-10 w-10 text-slate-200 mb-3" />
+              <p className="text-sm font-medium text-slate-500">Aucun produit</p>
+              <Button asChild size="sm" className="mt-4">
+                <Link to="/admin/products?action=new"><Plus className="h-4 w-4 mr-1.5" />Ajouter</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-50">
+              {recentProducts.map(product => {
+                const img = product.product_images?.find(x => x.is_primary) ?? product.product_images?.[0]
+                return (
+                  <div key={product.id} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/70 group transition-colors">
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
+                      {img
+                        ? <img src={getImageSrc(img) ?? ''} alt="" className="w-full h-full object-cover" />
+                        : <div className="w-full h-full" />
+                      }
                     </div>
-                  )
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-slate-900 truncate">{product.name}</p>
+                        {product.source_url && (
+                          <a href={product.source_url} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-blue-300 hover:text-blue-500 shrink-0">
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400">{product.brand} · {product.ram} · {product.storage}</p>
+                    </div>
+                    <div className="text-right shrink-0 hidden sm:block">
+                      <p className="text-sm font-semibold text-slate-900">{formatPrice(product.price)}</p>
+                      {product.source_price != null && product.margin_amount != null && (
+                        <p className="text-xs text-emerald-600">+{formatPrice(product.margin_amount)}</p>
+                      )}
+                    </div>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full hidden sm:inline-flex ${
+                      product.stock_quantity === 0
+                        ? 'bg-red-100 text-red-600'
+                        : product.stock_quantity <= 3
+                        ? 'bg-amber-100 text-amber-600'
+                        : 'bg-emerald-100 text-emerald-700'
+                    }`}>
+                      {product.stock_quantity === 0 ? 'Rupture' : `${product.stock_quantity} unités`}
+                    </span>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
+                      <Link to={`/admin/products?action=edit&id=${product.id}`}>
+                        <Edit className="h-3.5 w-3.5 text-slate-400" />
+                      </Link>
+                    </Button>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
 
-        {/* Brand breakdown — 1/3 width */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="py-4 px-5 border-b">
-            <CardTitle className="text-sm font-semibold text-slate-900">By Brand</CardTitle>
-          </CardHeader>
-          <CardContent className="p-5">
-            {isLoading ? (
-              <div className="space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <div className="h-3 bg-slate-100 rounded w-24 animate-pulse" />
-                    <div className="h-2 bg-slate-100 rounded animate-pulse" />
+        {/* Right column */}
+        <div className="space-y-5">
+
+          {/* Quick actions */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <p className="text-sm font-semibold text-slate-900 mb-3">Actions rapides</p>
+            <div className="grid grid-cols-2 gap-2">
+              {quickActions.map(action => (
+                <Link
+                  key={action.to}
+                  to={action.to}
+                  className={`flex flex-col items-center gap-2 rounded-xl px-3 py-3.5 text-white text-xs font-semibold text-center transition-all hover:-translate-y-0.5 shadow-sm ${action.color}`}
+                >
+                  <action.icon className="h-5 w-5" />
+                  {action.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Masqués — sourcing watchlist */}
+          {!isLoading && unavailable.length > 0 && (
+            <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-red-50">
+                <p className="text-sm font-semibold text-red-700 flex items-center gap-2">
+                  <EyeOff className="h-4 w-4" /> Masqués ({unavailable.length})
+                </p>
+              </div>
+              <div className="divide-y divide-slate-50">
+                {unavailable.slice(0, 5).map(product => (
+                  <div key={product.id} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 group">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-slate-700 truncate">{product.name}</p>
+                      <p className="text-[11px] text-slate-400">{formatPrice(product.price)}</p>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {product.source_url && (
+                        <a href={product.source_url} target="_blank" rel="noreferrer" className="h-6 w-6 rounded-lg bg-blue-50 flex items-center justify-center text-blue-400 hover:text-blue-600">
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      <button
+                        onClick={() => toggleAvailability.mutate({ id: product.id, is_available: true })}
+                        className="h-6 w-6 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 hover:text-emerald-700"
+                        title="Remettre en vente"
+                      >
+                        ✓
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {unavailable.length > 5 && (
+                  <div className="px-4 py-2.5 text-xs text-slate-400 text-center">
+                    +{unavailable.length - 5} autres — <Link to="/admin/products" className="text-blue-500 hover:underline">voir tout</Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Low stock watchlist */}
+          {!isLoading && lowStock.length > 0 && (
+            <div className="bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-3.5 border-b border-amber-50">
+                <p className="text-sm font-semibold text-amber-700 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" /> Faible stock ({lowStock.length})
+                </p>
+              </div>
+              <div className="divide-y divide-slate-50">
+                {lowStock.slice(0, 5).map(product => (
+                  <div key={product.id} className="flex items-center justify-between px-4 py-2.5">
+                    <p className="text-xs font-medium text-slate-700 truncate flex-1 min-w-0 mr-2">{product.name}</p>
+                    <span className="text-xs font-bold text-amber-600 shrink-0">{product.stock_quantity} restant{product.stock_quantity > 1 ? 's' : ''}</span>
                   </div>
                 ))}
               </div>
-            ) : topBrands.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-8">No data yet</p>
-            ) : (
-              <div className="space-y-4">
-                {topBrands.map(([brand, count], i) => {
-                  const barColors = ['bg-blue-500', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500', 'bg-rose-500', 'bg-cyan-500']
-                  return (
-                    <div key={brand}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-medium text-slate-700">{brand}</span>
-                        <span className="text-xs text-slate-400">
-                          {count} · {totalProducts > 0 ? Math.round((count / totalProducts) * 100) : 0}%
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${barColors[i % barColors.length]} rounded-full transition-all duration-700`}
-                          style={{ width: `${(count / maxBrandCount) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="px-4 py-2.5 border-t border-slate-50">
+                <Link to="/admin/inventory" className="text-xs text-blue-500 hover:underline flex items-center gap-1">
+                  Gérer le stock <ArrowRight className="h-3 w-3" />
+                </Link>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
 
+        </div>
       </div>
     </div>
   )

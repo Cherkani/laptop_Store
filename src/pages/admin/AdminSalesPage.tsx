@@ -46,6 +46,7 @@ export function AdminSalesPage() {
 
   const handleCreate = async () => {
     if (!selectedProduct) return
+    // Either name or phone is enough — phone-only clients are valid
 
     const primaryImage = selectedProduct.product_images?.find(i => i.is_primary) ?? selectedProduct.product_images?.[0]
 
@@ -101,12 +102,12 @@ export function AdminSalesPage() {
         </CardHeader>
         <CardContent className="grid grid-cols-1 lg:grid-cols-5 gap-3">
           <Input
-            placeholder="Client"
+            placeholder="Nom (optionnel)"
             value={clientName}
             onChange={e => setClientName(e.target.value)}
           />
           <Input
-            placeholder="Téléphone"
+            placeholder="Téléphone / WhatsApp"
             value={clientPhone}
             onChange={e => setClientPhone(e.target.value)}
           />
@@ -168,8 +169,12 @@ export function AdminSalesPage() {
                   {records.map(record => (
                     <tr key={record.id}>
                       <td className="px-3 py-2">
-                        <p className="font-medium text-slate-900">{record.client_name || 'Client WhatsApp'}</p>
-                        <p className="text-xs text-slate-500">{record.client_phone || record.client_whatsapp || '—'}</p>
+                        <p className="font-medium text-slate-900">
+                          {record.client_name || record.client_phone || record.client_whatsapp || 'Client anonyme'}
+                        </p>
+                        {record.client_name && (
+                          <p className="text-xs text-slate-500">{record.client_phone || record.client_whatsapp || '—'}</p>
+                        )}
                       </td>
                       <td className="px-3 py-2">
                         <p className="font-medium text-slate-900">{record.lead_title}</p>

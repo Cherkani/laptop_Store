@@ -66,8 +66,8 @@ export function SignupForm() {
         </div>
 
         <div className="relative z-10 max-w-md px-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-8">
-            <Laptop className="w-8 h-8 text-on-surface" />
+          <div className="mx-auto mb-8 flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" className="h-16 w-auto object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-on-surface tracking-tight mb-4">
             Join TechFiable.

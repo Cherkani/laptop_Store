@@ -15,6 +15,11 @@ export type ProductInsert = {
   stock_quantity?: number
   is_featured?: boolean
   category?: string
+  // Sourcing / dropshipping — admin-only, never shown to customers
+  source_url?: string | null
+  source_price?: number | null
+  margin_amount?: number | null
+  is_available?: boolean
 }
 
 export type ProductUpdate = Partial<ProductInsert>
@@ -52,6 +57,14 @@ export const adminService = {
 
   async deleteProduct(id: string) {
     const { error } = await supabase.from('products').delete().eq('id', id)
+    if (error) throw error
+  },
+
+  async toggleAvailability(id: string, is_available: boolean) {
+    const { error } = await supabase
+      .from('products')
+      .update({ is_available, updated_at: new Date().toISOString() } as never)
+      .eq('id', id)
     if (error) throw error
   },
 

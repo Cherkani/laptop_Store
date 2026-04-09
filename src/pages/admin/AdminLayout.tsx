@@ -6,7 +6,7 @@ import {
   ChevronRight,
   ClipboardList,
   FileText,
-  Laptop,
+
   Layers,
   LayoutDashboard,
   LogOut,
@@ -30,21 +30,22 @@ import { useI18n } from '@/contexts/i18n'
 
 const navGroupsData = [
   {
-    labelKey: 'admin.group.pilotage',
+    labelKey: 'admin.group.catalog',
     items: [
-      { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
-      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
-      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
+      { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package, exact: false },
+      { to: '/admin/products?action=new', labelKey: 'admin.nav.addProduct', icon: Plus, exact: false },
+      { to: '/admin/inventory', labelKey: 'admin.nav.stock', icon: Layers, exact: true },
     ],
   },
   {
     labelKey: 'admin.group.commercial',
     items: [
       { to: '/admin/ventes', labelKey: 'admin.nav.sales', icon: ShoppingBag, exact: true },
+      { to: '/admin/cash', labelKey: 'admin.nav.cashSales', icon: Banknote, exact: true },
+      { to: '/admin/paiements', labelKey: 'admin.nav.payments', icon: Wallet, exact: true },
       { to: '/admin/devis', labelKey: 'admin.nav.quotes', icon: FileText, exact: true },
       { to: '/admin/factures', labelKey: 'admin.nav.invoices', icon: Receipt, exact: true },
       { to: '/admin/bons-livraison', labelKey: 'admin.nav.delivery', icon: ClipboardList, exact: true },
-      { to: '/admin/paiements', labelKey: 'admin.nav.payments', icon: Wallet, exact: true },
     ],
   },
   {
@@ -53,17 +54,16 @@ const navGroupsData = [
       { to: '/admin/clients', labelKey: 'admin.nav.clients', icon: Users, exact: true },
       { to: '/admin/entreprises', labelKey: 'admin.nav.companies', icon: Building2, exact: true },
       { to: '/admin/fournisseurs', labelKey: 'admin.nav.suppliers', icon: Truck, exact: true },
-      { to: '/admin/cash', labelKey: 'admin.nav.cashSales', icon: Banknote, exact: true },
       { to: '/admin/treasury', labelKey: 'admin.nav.treasury', icon: PiggyBank, exact: true },
     ],
   },
   {
-    labelKey: 'admin.group.catalog',
+    labelKey: 'admin.group.pilotage',
     items: [
-      { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package, exact: false },
-      { to: '/admin/products?action=new', labelKey: 'admin.nav.addProduct', icon: Plus, exact: false },
-      { to: '/admin/inventory', labelKey: 'admin.nav.stock', icon: Layers, exact: true },
+      { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
       { to: '/admin/reports', labelKey: 'admin.nav.reports', icon: BarChart3, exact: true },
+      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
+      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
     ],
   },
 ]
@@ -95,9 +95,7 @@ export function AdminLayout() {
       <aside className="w-72 bg-gradient-to-b from-surface-base via-surface-raised to-surface-base text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-border-faint">
         <div className="px-5 py-5 border-b border-border-subtle">
           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/30">
-              <Laptop className="w-5 h-5 text-on-surface" />
-            </div>
+            <img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain" />
             <div>
               <p className="text-sm font-bold text-on-surface leading-none">TechFiable Pro</p>
               <p className="text-xs text-slate-400 mt-0.5">Admin Backoffice</p>
