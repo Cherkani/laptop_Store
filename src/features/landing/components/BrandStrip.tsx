@@ -1,38 +1,46 @@
 import { Link } from 'react-router-dom'
 
-// Simple Icons CDN — official brand SVG logos, white version via color param
+// Simple Icons CDN — official brand SVG logos
 const brands = [
   {
     name: 'Apple',
-    logo: 'https://cdn.simpleicons.org/apple/ffffff',
+    light: 'https://cdn.simpleicons.org/apple/111111',
+    dark:  'https://cdn.simpleicons.org/apple/ffffff',
   },
   {
     name: 'Dell',
-    logo: 'https://cdn.simpleicons.org/dell/ffffff',
+    light: 'https://cdn.simpleicons.org/dell/111111',
+    dark:  'https://cdn.simpleicons.org/dell/ffffff',
   },
   {
     name: 'HP',
-    logo: 'https://cdn.simpleicons.org/hp/ffffff',
+    light: 'https://cdn.simpleicons.org/hp/111111',
+    dark:  'https://cdn.simpleicons.org/hp/ffffff',
   },
   {
     name: 'Lenovo',
-    logo: 'https://cdn.simpleicons.org/lenovo/ffffff',
+    light: 'https://cdn.simpleicons.org/lenovo/111111',
+    dark:  'https://cdn.simpleicons.org/lenovo/ffffff',
   },
   {
     name: 'ASUS',
-    logo: 'https://cdn.simpleicons.org/asus/ffffff',
+    light: 'https://cdn.simpleicons.org/asus/111111',
+    dark:  'https://cdn.simpleicons.org/asus/ffffff',
   },
   {
     name: 'MSI',
-    logo: 'https://cdn.simpleicons.org/msi/ffffff',
+    light: 'https://cdn.simpleicons.org/msi/111111',
+    dark:  'https://cdn.simpleicons.org/msi/ffffff',
   },
   {
     name: 'Acer',
-    logo: 'https://cdn.simpleicons.org/acer/ffffff',
+    light: 'https://cdn.simpleicons.org/acer/111111',
+    dark:  'https://cdn.simpleicons.org/acer/ffffff',
   },
   {
     name: 'Samsung',
-    logo: 'https://cdn.simpleicons.org/samsung/ffffff',
+    light: 'https://cdn.simpleicons.org/samsung/111111',
+    dark:  'https://cdn.simpleicons.org/samsung/ffffff',
   },
 ]
 
@@ -48,10 +56,18 @@ export function BrandStrip() {
               className="inline-flex h-10 min-w-[130px] items-center justify-center gap-2.5 rounded-full border border-border-subtle bg-surface-raised/60 px-4 text-xs font-semibold tracking-tight text-on-surface-muted transition-all duration-200 hover:border-amber-500/40 hover:bg-amber-500/10 hover:text-amber-300"
             >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                {/* Light mode logo */}
                 <img
-                  src={brand.logo}
+                  src={brand.light}
                   alt={brand.name}
-                  className="h-4 w-4 object-contain opacity-70 transition-opacity duration-200 group-hover:opacity-100"
+                  className="h-4 w-4 object-contain opacity-70 transition-opacity duration-200 group-hover:opacity-100 dark:hidden"
+                  loading="lazy"
+                />
+                {/* Dark mode logo */}
+                <img
+                  src={brand.dark}
+                  alt={brand.name}
+                  className="hidden h-4 w-4 object-contain opacity-70 transition-opacity duration-200 group-hover:opacity-100 dark:inline-block"
                   loading="lazy"
                 />
               </span>

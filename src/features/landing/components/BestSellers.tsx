@@ -10,10 +10,21 @@ type OS = 'Windows' | 'macOS'
 
 const WINDOWS_BRANDS = ['Tous', 'HP', 'Surface', 'Dell', 'Lenovo'] as const
 type WindowsBrand = (typeof WINDOWS_BRANDS)[number]
+type MacChip = 'Tous' | string
+
+function normalizeMacChip(processor?: string | null): string | null {
+  if (!processor) return null
+  const match = processor.match(/m\s?([123])(?:\s?(pro|max|ultra))?/i)
+  if (!match) return null
+  const gen = `M${match[1]}`
+  const tier = match[2] ? match[2].toUpperCase() : ''
+  return tier ? `${gen} ${tier}` : gen
+}
 
 export function BestSellers() {
   const [activeOS, setActiveOS] = useState<OS>('Windows')
   const [windowsBrand, setWindowsBrand] = useState<WindowsBrand>('Tous')
+  const [macChip, setMacChip] = useState<MacChip>('Tous')
 
   const filters = useMemo(
     () => ({ ...DEFAULT_FILTERS, operatingSystems: [activeOS], sortBy: 'price_desc' as const }),
@@ -28,8 +39,11 @@ export function BestSellers() {
       const search = windowsBrand === 'Surface' ? 'microsoft' : windowsBrand.toLowerCase()
       items = items.filter(p => p.brand.toLowerCase().includes(search))
     }
+    if (activeOS === 'macOS' && macChip !== 'Tous') {
+      items = items.filter(p => normalizeMacChip(p.processor) === macChip)
+    }
     return items.slice(0, 8)
-  }, [products, activeOS, windowsBrand])
+  }, [products, activeOS, windowsBrand, macChip])
 
   return (
     <Section>
@@ -52,6 +66,7 @@ export function BestSellers() {
                 onClick={() => {
                   setActiveOS(os)
                   setWindowsBrand('Tous')
+                  setMacChip('Tous')
                 }}
                 className={cn(
                   'rounded-lg px-5 py-2 text-sm font-semibold transition-all duration-200',
@@ -81,6 +96,27 @@ export function BestSellers() {
                 )}
               >
                 {brand}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeOS === 'macOS' && (
+          <div className="mb-7 flex flex-wrap gap-2">
+            {(['Tous', ...Array.from(new Set(products
+              .map(p => normalizeMacChip(p.processor))
+              .filter(Boolean) as string[]))] as MacChip[]).map(chip => (
+              <button
+                key={chip}
+                onClick={() => setMacChip(chip)}
+                className={cn(
+                  'rounded-xl border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95',
+                  macChip === chip
+                    ? 'border-amber-500 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                    : 'border-border-subtle bg-surface-raised/50 text-on-surface-subtle hover:border-border hover:text-on-surface-muted',
+                )}
+              >
+                {chip}
               </button>
             ))}
           </div>

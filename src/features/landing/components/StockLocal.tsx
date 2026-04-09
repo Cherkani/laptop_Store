@@ -11,7 +11,7 @@ const highlights = [
 
 export function StockLocal() {
   return (
-    <Section bg="bg-surface-sunken">
+    <Section bg="bg-[#f0f4ff]">
         <div className="overflow-hidden rounded-3xl border border-border-faint bg-surface-raised">
           <div className="grid lg:grid-cols-2 lg:items-stretch">
             {/* Left: Images */}
@@ -22,7 +22,7 @@ export function StockLocal() {
               {/* Stack of images */}
               <div className="absolute inset-0 z-[3]">
                 <img
-                  src="https://c.animaapp.com/mnm6ln0dq3mZP0/assets/10.webp"
+                  src="/local_store.png"
                   alt="Stock local"
                   className="h-full w-full object-cover"
                 />
@@ -31,18 +31,10 @@ export function StockLocal() {
               {/* Layered images desktop only */}
               <div className="absolute bottom-6 right-6 z-[4] hidden flex-col gap-2 lg:flex">
                 <div className="h-24 w-36 overflow-hidden rounded-xl border border-border-subtle shadow-xl opacity-80">
-                  <img
-                    src="https://c.animaapp.com/mnm6ln0dq3mZP0/assets/11.webp"
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
+                  {/* secondary shot intentionally removed */}
                 </div>
                 <div className="h-20 w-32 overflow-hidden rounded-xl border border-border-subtle shadow-xl opacity-50 self-end">
-                  <img
-                    src="https://c.animaapp.com/mnm6ln0dq3mZP0/assets/12.webp"
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
+                  {/* tertiary shot intentionally removed */}
                 </div>
               </div>
             </ScrollReveal>

@@ -27,7 +27,7 @@ export function Footer() {
   const { t } = useI18n()
 
   return (
-    <footer className="border-t border-border-faint bg-surface-sunken">
+    <footer className="border-t border-border-faint bg-[#faf9f7]">
       <div className="mx-auto max-w-[1260px] px-4 sm:px-6 lg:px-8">
         <p className="border-b border-border-faint py-4 text-xs text-on-surface-faint sm:text-sm">
           {t('footer.disclaimer')}
