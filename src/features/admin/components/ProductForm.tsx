@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Upload, X, Plus, Trash2, Loader2, GripVertical, ExternalLink, Lock } from 'lucide-react'
+import { Upload, X, Plus, Trash2, Loader2, GripVertical, ExternalLink, Lock, Wand2, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import { BRANDS, PROCESSORS, RAM_OPTIONS, STORAGE_OPTIONS, GRAPHICS_OPTIONS, SCREEN_SIZES } from '@/features/products/types'
 import type { ProductWithImages } from '@/types/database.types'
 import { getImageSrc } from '@/lib/utils'
+import { parseListing, ParsedListing, ParsedSpec } from '@/features/admin/utils/listingParser'
 
 interface ProductFormProps {
   product?: ProductWithImages
@@ -25,15 +26,15 @@ interface ImagePreview {
   isPrimary: boolean
 }
 
-interface SpecField {
-  key: string
-  value: string
-}
+type SpecField = ParsedSpec
 
 export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [pasteText, setPasteText] = useState('')
+  const [draftSuggestions, setDraftSuggestions] = useState<ParsedListing>({})
+  const [applyEmptyOnly, setApplyEmptyOnly] = useState(true)
 
   const [formData, setFormData] = useState({
     name: product?.name ?? '',
@@ -71,6 +72,56 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   const update = (key: string, val: string | boolean) =>
     setFormData(p => ({ ...p, [key]: val }))
 
+  const canonicalizeProcessor = (val: string): string | undefined => {
+    const v = val.toLowerCase()
+    if (v.includes('ryzen 9')) return 'AMD Ryzen 9'
+    if (v.includes('ryzen 7')) return 'AMD Ryzen 7'
+    if (v.includes('ryzen 5')) return 'AMD Ryzen 5'
+    if (v.includes('core ultra') || v.includes('ultra')) {
+      if (v.includes('9')) return 'Intel Core i9'
+      if (v.includes('7')) return 'Intel Core i7'
+      if (v.includes('5')) return 'Intel Core i5'
+    }
+    if (v.includes('i9')) return 'Intel Core i9'
+    if (v.includes('i7')) return 'Intel Core i7'
+    if (v.includes('i5')) return 'Intel Core i5'
+    if (v.includes('i3')) return 'Intel Core i3'
+    if (v.includes('m4')) return 'Apple M4'
+    if (v.includes('m3')) return 'Apple M3'
+    if (v.includes('m2')) return 'Apple M2'
+    if (v.includes('m1')) return 'Apple M1'
+    return undefined
+  }
+
+  const applySuggestions = () => {
+    if (!Object.keys(draftSuggestions).length) return
+    const next = { ...formData }
+    const fields: Array<keyof typeof formData> = ['name','price','brand','processor','ram','storage','graphics_card','screen_size','description']
+    for (const key of fields) {
+      const val = (draftSuggestions as any)[key]
+      if (val === undefined || val === null || val === '') continue
+      const shouldApply = applyEmptyOnly ? !next[key] : true
+      if (shouldApply) {
+        if (key === 'processor') {
+          next[key] = canonicalizeProcessor(String(val)) ?? String(val)
+        } else {
+          next[key] = typeof next[key] === 'boolean' ? !!val : String(val)
+        }
+      }
+    }
+    setFormData(next)
+    if (draftSuggestions.specs && draftSuggestions.specs.length > 0 && (!applyEmptyOnly || specs.length === 0)) {
+      setSpecs(prev => prev.length ? prev : draftSuggestions.specs!)
+    }
+    toast({ title: 'Champs préremplis depuis le texte' })
+  }
+
+  const handlePasteParse = () => {
+    const suggestions = parseListing(pasteText)
+    setDraftSuggestions(suggestions)
+    toast({ title: 'Analyse terminée', description: 'Vérifiez puis appliquez les valeurs proposées.' })
+  }
+
   const handleImageFiles = (files: FileList | null) => {
     if (!files) return
     const newImages: ImagePreview[] = Array.from(files).map((file, i) => ({
@@ -99,11 +150,6 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.name || !formData.price || !formData.brand || !formData.processor || !formData.ram || !formData.storage || !formData.graphics_card || !formData.screen_size) {
-      toast({ title: 'Please fill all required fields', variant: 'destructive' })
-      return
-    }
-
     setIsSubmitting(true)
     try {
       const productData = {
@@ -154,10 +200,10 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     }
   }
 
-  const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
+  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div className="space-y-1.5">
       <Label className="text-sm">
-        {label}{required && <span className="text-destructive ml-1">*</span>}
+        {label}
       </Label>
       {children}
     </div>
@@ -168,12 +214,69 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
       {/* Basic Info */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Basic Information</h3>
-        <Field label="Product Name" required>
+
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 space-y-2">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <Wand2 className="h-4 w-4" /> Coller une annonce pour pré-remplir
+          </div>
+          <textarea
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono min-h-[110px] resize-y"
+            placeholder="Collez ici une annonce (texte brut, bullet points, prix, specs...)"
+            value={pasteText}
+            onChange={e => setPasteText(e.target.value)}
+          />
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" size="sm" onClick={handlePasteParse} disabled={!pasteText.trim()}>
+              <Wand2 className="h-4 w-4 mr-1" /> Générer des propositions
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={applySuggestions} disabled={!Object.keys(draftSuggestions).length}>
+              Appliquer aux champs
+            </Button>
+            <label className="flex items-center gap-2 text-xs text-slate-600 ml-auto">
+              <input
+                type="checkbox"
+                className="w-4 h-4 rounded border-input accent-blue-600"
+                checked={applyEmptyOnly}
+                onChange={e => setApplyEmptyOnly(e.target.checked)}
+              />
+              <span>Ne remplacer que les champs vides</span>
+            </label>
+          </div>
+          {Object.keys(draftSuggestions).length > 0 && (
+            <div className="grid grid-cols-2 gap-3 text-xs text-slate-700">
+              {(['name','price','brand','processor','ram','storage','graphics_card','screen_size'] as const).map(key => (
+                (draftSuggestions as any)[key] && (
+                  <div key={key} className="bg-white border rounded-lg px-3 py-2 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold capitalize">{key.replace('_',' ')}</p>
+                      {((applyEmptyOnly && !(formData as any)[key]) || !applyEmptyOnly) && (
+                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                      )}
+                    </div>
+                    <p className="text-slate-600 break-words">{(draftSuggestions as any)[key]}</p>
+                  </div>
+                )
+              ))}
+              {draftSuggestions.specs && draftSuggestions.specs.length > 0 && (
+                <div className="col-span-2 bg-white border rounded-lg px-3 py-2 shadow-sm">
+                  <p className="font-semibold">Specs détectées ({draftSuggestions.specs.length})</p>
+                  <ul className="list-disc pl-5 space-y-1 mt-1">
+                    {draftSuggestions.specs.slice(0,5).map((s, i) => (
+                      <li key={i} className="text-slate-600">{s.key && <span className="font-medium">{s.key}: </span>}{s.value}</li>
+                    ))}
+                    {draftSuggestions.specs.length > 5 && <li className="text-slate-500">... et {draftSuggestions.specs.length - 5} autres</li>}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <Field label="Product Name">
           <Input
             value={formData.name}
             onChange={e => update('name', e.target.value)}
             placeholder="e.g. MacBook Pro 16-inch M4 Pro"
-            required
           />
         </Field>
         <Field label="Description">
@@ -186,21 +289,19 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
           />
         </Field>
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Price (MAD)" required>
+          <Field label="Price (MAD)">
             <Input
               type="number" min="0" step="0.01"
               value={formData.price}
               onChange={e => update('price', e.target.value)}
               placeholder="9999"
-              required
             />
           </Field>
-          <Field label="Stock Quantity" required>
+          <Field label="Stock Quantity">
             <Input
               type="number" min="0"
               value={formData.stock_quantity}
               onChange={e => update('stock_quantity', e.target.value)}
-              required
             />
           </Field>
         </div>
@@ -225,37 +326,37 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Laptop Specifications</h3>
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Brand" required>
+          <Field label="Brand">
             <Select value={formData.brand} onValueChange={v => update('brand', v)}>
               <SelectTrigger><SelectValue placeholder="Select brand" /></SelectTrigger>
               <SelectContent>{BRANDS.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <Field label="Processor" required>
+          <Field label="Processor">
             <Select value={formData.processor} onValueChange={v => update('processor', v)}>
               <SelectTrigger><SelectValue placeholder="Select processor" /></SelectTrigger>
               <SelectContent>{PROCESSORS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <Field label="RAM" required>
+          <Field label="RAM">
             <Select value={formData.ram} onValueChange={v => update('ram', v)}>
               <SelectTrigger><SelectValue placeholder="Select RAM" /></SelectTrigger>
               <SelectContent>{RAM_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <Field label="Storage" required>
+          <Field label="Storage">
             <Select value={formData.storage} onValueChange={v => update('storage', v)}>
               <SelectTrigger><SelectValue placeholder="Select storage" /></SelectTrigger>
               <SelectContent>{STORAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <Field label="Graphics Card" required>
+          <Field label="Graphics Card">
             <Select value={formData.graphics_card} onValueChange={v => update('graphics_card', v)}>
               <SelectTrigger><SelectValue placeholder="Select GPU" /></SelectTrigger>
               <SelectContent>{GRAPHICS_OPTIONS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <Field label="Screen Size" required>
+          <Field label="Screen Size">
             <Select value={formData.screen_size} onValueChange={v => update('screen_size', v)}>
               <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
               <SelectContent>{SCREEN_SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>

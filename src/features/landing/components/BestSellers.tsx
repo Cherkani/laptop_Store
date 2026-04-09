@@ -133,7 +133,7 @@ export function BestSellers() {
             <div key={product ? product.id : idx} className="h-full">
               {isLoading ? (
                 <div className="h-full animate-pulse rounded-2xl border border-border-faint bg-surface-raised p-4">
-                  <div className="aspect-[4/3] rounded-xl bg-surface-raised/60" />
+                  <div className="aspect-[4/5] rounded-xl bg-surface-raised/60" />
                   <div className="mt-4 h-2.5 w-16 rounded-full bg-surface-raised/70" />
                   <div className="mt-2.5 h-4 w-36 rounded-full bg-muted/50" />
                   <div className="mt-2 h-2.5 w-28 rounded-full bg-surface-raised/60" />

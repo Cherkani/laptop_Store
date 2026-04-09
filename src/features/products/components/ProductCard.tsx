@@ -57,14 +57,14 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white via-white to-[#f7f9fc] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-[6px] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
 
         {/* Image area */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff]">
+        <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff]">
           {primarySrc ? (
             <>
               <img
                 src={primarySrc}
                 alt={product.name}
                 className={cn(
-                  'h-full w-full object-contain p-5 transition-all duration-700 group-hover:scale-105',
+                  'h-full w-full object-contain p-3 transition-all duration-700 group-hover:scale-105',
                   isHovered && secondaryImage ? 'opacity-0' : 'opacity-100',
                 )}
                 loading="lazy"
@@ -74,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   src={secondarySrc}
                   alt={product.name}
                   className={cn(
-                    'absolute inset-5 h-[calc(100%-2.5rem)] w-[calc(100%-2.5rem)] object-contain transition-all duration-700',
+                    'absolute inset-3 h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)] object-contain transition-all duration-700',
                     isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100',
                   )}
                   loading="lazy"
