@@ -27,7 +27,7 @@ function getPrimaryImageUrl(product: ProductWithImages) {
   return getImageSrc(primary) || getImageSrc(product.product_images?.[0]) || null
 }
 
-function buildLeadMessage({ product, quantity, productUrl }: LeadCaptureParams) {
+function buildLeadMessage({ product, quantity, productUrl }: LeadCaptureParams, imageUrl?: string) {
   const total = product.price * quantity
   const lines = [
     'Bonjour, je veux commander cet article :',
@@ -37,10 +37,11 @@ function buildLeadMessage({ product, quantity, productUrl }: LeadCaptureParams) 
     `Total: ${total.toLocaleString()} MAD`,
   ]
 
+  if (productUrl) lines.unshift(`Lien produit: ${productUrl}`)
   if (product.processor) lines.push(`CPU: ${product.processor}`)
   if (product.ram) lines.push(`RAM: ${product.ram}`)
   if (product.storage) lines.push(`Stockage: ${product.storage}`)
-  if (productUrl) lines.push(`Lien produit: ${productUrl}`)
+  if (imageUrl) lines.push(`Image: ${imageUrl}`)
 
   return lines.join('\n')
 }
@@ -96,11 +97,11 @@ export async function sendWhatsAppLead(params: LeadCaptureParams): Promise<LeadC
   const channels = await getChannelSettings()
   const productUrl = params.productUrl || (typeof window !== 'undefined' ? window.location.href : '')
   const payloadParams = { ...params, productUrl }
-  const message = buildLeadMessage(payloadParams)
+  const imageUrl = getPrimaryImageUrl(params.product)
+  const message = buildLeadMessage(payloadParams, imageUrl || undefined)
   const whatsappUrl = buildWhatsAppUrl(message, channels.whatsappNumber)
 
   const leadId = crypto.randomUUID()
-  const imageUrl = getPrimaryImageUrl(params.product)
   const total = params.product.price * params.quantity
 
   const payload = {

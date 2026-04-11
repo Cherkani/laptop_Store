@@ -30,10 +30,18 @@ import { useI18n } from '@/contexts/i18n'
 
 const navGroupsData = [
   {
+    labelKey: 'admin.group.pilotage',
+    items: [
+      { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
+      { to: '/admin/reports', labelKey: 'admin.nav.reports', icon: BarChart3, exact: true },
+      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
+      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
+    ],
+  },
+  {
     labelKey: 'admin.group.catalog',
     items: [
       { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package, exact: false },
-      { to: '/admin/products?action=new', labelKey: 'admin.nav.addProduct', icon: Plus, exact: false },
       { to: '/admin/inventory', labelKey: 'admin.nav.stock', icon: Layers, exact: true },
     ],
   },
@@ -55,15 +63,6 @@ const navGroupsData = [
       { to: '/admin/entreprises', labelKey: 'admin.nav.companies', icon: Building2, exact: true },
       { to: '/admin/fournisseurs', labelKey: 'admin.nav.suppliers', icon: Truck, exact: true },
       { to: '/admin/treasury', labelKey: 'admin.nav.treasury', icon: PiggyBank, exact: true },
-    ],
-  },
-  {
-    labelKey: 'admin.group.pilotage',
-    items: [
-      { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
-      { to: '/admin/reports', labelKey: 'admin.nav.reports', icon: BarChart3, exact: true },
-      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
-      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
     ],
   },
 ]

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, MessageCircle, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -8,6 +8,8 @@ import type { ProductWithImages } from '@/types/database.types'
 import { useCartStore } from '@/store/cartStore'
 import { toast } from '@/hooks/use-toast'
 import { WHATSAPP_URL, CONDITION_STYLES } from '@/lib/constants'
+import { supabase } from '@/lib/supabase'
+import { sendWhatsAppLead } from '@/features/products/services/leadCaptureService'
 
 interface ProductCardProps {
   product: ProductWithImages
@@ -16,6 +18,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [whatsappHref, setWhatsappHref] = useState(WHATSAPP_URL)
   const addItem = useCartStore(s => s.addItem)
 
   const images =
@@ -46,6 +50,53 @@ export function ProductCard({ product }: ProductCardProps) {
     product.original_price && product.original_price > product.price
       ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
       : null
+
+  useEffect(() => {
+    let cancelled = false
+    const loadWhatsapp = async () => {
+      const { data, error } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'whatsapp_number')
+        .maybeSingle()
+
+      if (cancelled || error || !data?.value) return
+      const digits = String(data.value).replace(/\D/g, '')
+      if (!digits) return
+      setWhatsappHref(`https://wa.me/${digits}`)
+    }
+    loadWhatsapp()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleWhatsAppClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isSending) return
+    setIsSending(true)
+    try {
+      const productUrl =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/products/${product.id}`
+          : `/products/${product.id}`
+
+      const result = await sendWhatsAppLead({
+        product,
+        quantity: 1,
+        productUrl,
+      })
+
+      const url = result.whatsappUrl || whatsappHref
+      window.open(url, '_blank', 'noreferrer')
+    } catch {
+      toast({ title: 'Impossible d\'ouvrir WhatsApp', variant: 'destructive' })
+      window.open(whatsappHref, '_blank', 'noreferrer')
+    } finally {
+      setIsSending(false)
+    }
+  }
 
   return (
     <Link
@@ -169,14 +220,16 @@ export function ProductCard({ product }: ProductCardProps) {
               <ShoppingCart className="mr-1.5 h-3.5 w-3.5" />
               {isAdding ? 'Ajout...' : 'Ajouter'}
             </Button>
-            <a
-              href={WHATSAPP_URL}
-              onClick={e => e.stopPropagation()}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleWhatsAppClick}
+              disabled={isSending}
               className="flex items-center gap-1 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-400 transition hover:bg-emerald-500/15 hover:text-emerald-300"
             >
               <MessageCircle className="h-3.5 w-3.5" />
-              WhatsApp
-            </a>
+              {isSending ? '...' : 'WhatsApp'}
+            </Button>
           </div>
 
           {/* Voir le produit - shows on hover */}

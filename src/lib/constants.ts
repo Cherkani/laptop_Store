@@ -12,12 +12,24 @@ export const BRAND = {
   tagline: 'Premium laptops reconditionnés',
 } as const
 
+const formatWhatsapp = (raw: string) => {
+  const digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('212') && digits.length === 12) {
+    const local = digits.slice(3)
+    return `+212 ${local[0]} ${local.slice(1, 3)} ${local.slice(3, 5)} ${local.slice(5, 7)} ${local.slice(7, 9)}`
+  }
+  if (digits.length > 0) return `+${digits}`
+  return ''
+}
+
+const DEFAULT_WHATSAPP = (import.meta.env.VITE_WHATSAPP_NUMBER || '').trim()
+
 // ── Contact ──────────────────────────────────────────────────
 export const CONTACT = {
   /** Raw digits only — use for wa.me links */
-  whatsappRaw: '212612345678',
+  whatsappRaw: DEFAULT_WHATSAPP.replace(/\D/g, ''),
   /** Display-formatted number */
-  whatsappFormatted: '+212 6 12 34 56 78',
+  whatsappFormatted: formatWhatsapp(DEFAULT_WHATSAPP),
   businessHours: 'Lun - Dim · 9h00 - 23h00',
 } as const
 
