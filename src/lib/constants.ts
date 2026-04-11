@@ -64,8 +64,8 @@ export const STOCK = {
 
 // ── Condition badge styles (used in ProductCard + ProductDetailPage) ──
 export const CONDITION_STYLES: Record<string, { label: string; className: string }> = {
-  'Like New': { label: 'Reconditionné+', className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Excellent:  { label: 'Reconditionné',  className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Good:       { label: 'Reconditionné',  className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
-  Fair:       { label: 'Reconditionné',  className: 'bg-orange-500/15 text-orange-400 border-orange-500/20' },
+  'Like New': { label: 'Reconditionné+', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Excellent:  { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Good:       { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Fair:       { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
 }

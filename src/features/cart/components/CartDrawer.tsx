@@ -49,7 +49,7 @@ export function CartDrawer() {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
+          'fixed inset-0 z-[1100] bg-black/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
         )}
         onClick={closeCart}
@@ -58,7 +58,7 @@ export function CartDrawer() {
       {/* Drawer */}
       <div
         className={cn(
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-[400px] flex-col border-l border-border-faint bg-surface-base shadow-[−20px_0_60px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-out',
+          'fixed right-0 top-0 z-[1101] flex h-full w-full max-w-[400px] flex-col border-l border-border-faint bg-surface-base shadow-[-20px_0_60px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-out',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >

@@ -22,7 +22,7 @@ export function StockLocal() {
               {/* Stack of images */}
               <div className="absolute inset-0 z-[3]">
                 <img
-                  src="/local_store.png"
+                  src="/laptop_store.png"
                   alt="Stock local"
                   className="h-full w-full object-cover"
                 />

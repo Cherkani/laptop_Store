@@ -23,6 +23,7 @@ import { toast } from '@/hooks/use-toast'
 import { SitePreferences } from '@/components/layout/SitePreferences'
 import { useI18n } from '@/contexts/i18n'
 import { CONTACT, WHATSAPP_URL, WINDOWS_BRANDS, MAC_BRANDS, BRAND_LOGOS } from '@/lib/constants'
+import { supabase } from '@/lib/supabase'
 
 function isTypingElement(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false
@@ -30,10 +31,17 @@ function isTypingElement(target: EventTarget | null) {
   return target.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select'
 }
 
+type ContactInfo = {
+  whatsappRaw: string
+  whatsappDisplay: string
+  businessHours: string
+}
+
 export function Header() {
   const navigate = useNavigate()
   const { user, isAdmin } = useAuth()
-  const { toggleCart, getTotalItems } = useCartStore()
+  const { toggleCart } = useCartStore()
+  const cartItemCount = useCartStore(state => state.items.length)
   const { t } = useI18n()
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -42,6 +50,11 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [openMega, setOpenMega] = useState<'windows' | 'mac' | null>(null)
   const userInitial = user?.email?.[0]?.toUpperCase() ?? '?'
+  const [contact, setContact] = useState<ContactInfo>(() => ({
+    whatsappRaw: CONTACT.whatsappRaw,
+    whatsappDisplay: CONTACT.whatsappFormatted,
+    businessHours: CONTACT.businessHours,
+  }))
 
   const desktopSearchRef = useRef<HTMLInputElement | null>(null)
   const mobileSearchRef = useRef<HTMLInputElement | null>(null)
@@ -77,7 +90,45 @@ export function Header() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
-  const totalItems = getTotalItems()
+  useEffect(() => {
+    const formatWhatsapp = (raw: string) => {
+      const digits = raw.replace(/\D/g, '')
+      if (digits.startsWith('212') && digits.length === 12) {
+        const local = digits.slice(3)
+        return `+212 ${local[0]} ${local.slice(1, 3)} ${local.slice(3, 5)} ${local.slice(5, 7)} ${local.slice(7, 9)}`
+      }
+      if (digits.length > 0) return `+${digits}`
+      return CONTACT.whatsappFormatted
+    }
+
+    const loadContact = async () => {
+      const { data, error } = await supabase
+        .from('app_settings')
+        .select('key, value')
+        .in('key', ['whatsapp_number', 'business_hours'])
+
+      if (error || !data) return
+
+      setContact(prev => {
+        let next = { ...prev }
+        for (const item of data) {
+          if (item.key === 'whatsapp_number' && item.value) {
+            const digits = item.value.replace(/\D/g, '')
+            next.whatsappRaw = digits || prev.whatsappRaw
+            next.whatsappDisplay = formatWhatsapp(digits || prev.whatsappRaw)
+          }
+          if (item.key === 'business_hours' && item.value) {
+            next.businessHours = item.value
+          }
+        }
+        return next
+      })
+    }
+
+    loadContact()
+  }, [])
+
+  const whatsappHref = contact.whatsappRaw ? `https://wa.me/${contact.whatsappRaw}` : WHATSAPP_URL
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -111,17 +162,17 @@ export function Header() {
           <div className="inline-flex items-center gap-2 rounded-full bg-foreground/[0.05] px-3 py-1 text-foreground/70 ring-1 ring-foreground/10">
             <Phone className="h-3.5 w-3.5 text-emerald-400" />
             <a
-              href={WHATSAPP_URL}
+              href={whatsappHref}
               target="_blank"
               rel="noreferrer"
               className="hover:text-foreground"
             >
-              WhatsApp {CONTACT.whatsappFormatted}
+              WhatsApp {contact.whatsappDisplay}
             </a>
           </div>
           <span className="hidden items-center gap-2 text-foreground/50 sm:flex">
             <span className="h-1 w-1 rounded-full bg-foreground/30" />
-            {CONTACT.businessHours}
+            {contact.businessHours}
           </span>
           <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
             {t('header.promo') ?? 'Premium laptops reconditionnés'}
@@ -143,7 +194,7 @@ export function Header() {
             <img
               src="/logo.png"
               alt="Casaby Tech"
-              className="h-10 w-auto max-w-[140px] object-contain"
+              className="h-25 w-auto max-w-[170px] object-contain"
             />
           </Link>
 
@@ -263,9 +314,9 @@ export function Header() {
               aria-label={t('header.cart')}
             >
               <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
+              {cartItemCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">
-                  {totalItems > 9 ? '9+' : totalItems}
+                  {cartItemCount > 9 ? '9+' : cartItemCount}
                 </span>
               )}
             </Button>
@@ -462,10 +513,10 @@ export function Header() {
               <MessageCircle className="h-4 w-4 shrink-0 text-emerald-400" />
               <div className="flex-1">
                 <p className="font-semibold text-foreground">Commander sur WhatsApp</p>
-                <p className="text-xs text-foreground/50">Réponse rapide · {CONTACT.businessHours}</p>
+                <p className="text-xs text-foreground/50">Réponse rapide · {contact.businessHours}</p>
               </div>
               <a
-                href={WHATSAPP_URL}
+                href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
                 className="shrink-0 rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-bold text-on-surface hover:bg-emerald-400"

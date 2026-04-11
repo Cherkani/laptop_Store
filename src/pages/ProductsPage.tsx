@@ -144,10 +144,10 @@ export function ProductsPage() {
       {isMobileFilterOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm"
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          <div className="fixed left-0 top-0 h-full w-80 max-w-[85vw] z-50 bg-white shadow-2xl overflow-y-auto">
+          <div className="fixed left-0 top-0 h-full w-80 max-w-[85vw] z-[1001] bg-white shadow-2xl overflow-y-auto">
             <div className="sticky top-0 bg-white/95 backdrop-blur flex items-center justify-between px-5 py-4 border-b border-gray-100 z-10">
               <h2 className="font-bold text-lg text-[#1d1d1f]">Filters</h2>
               <Button

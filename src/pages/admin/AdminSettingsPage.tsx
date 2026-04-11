@@ -25,6 +25,12 @@ const CORE_SETTING_KEYS = [
     description: 'Format international sans + (utilisé pour wa.me).',
   },
   {
+    key: 'business_hours',
+    label: 'Horaires',
+    placeholder: 'Lun - Dim · 9h00 - 23h00',
+    description: 'Affiché dans l’en-tête et les boutons WhatsApp.',
+  },
+  {
     key: 'google_webhook_url',
     label: 'Webhook Google',
     placeholder: 'https://script.google.com/macros/s/.../exec',
