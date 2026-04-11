@@ -1,13 +1,40 @@
-import { useState } from 'react'
-import { BarChart3, Package, Tag, TrendingUp, TrendingDown, Layers, Star, Download } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Package, Tag, TrendingUp, TrendingDown, Layers, Star, Download, MessageCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StockBadge, StockQuantity } from '@/components/shared/StockBadge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
+import { useWhatsAppLeads } from '@/features/admin/hooks/useBackoffice'
 import { formatPrice } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
+
+type Period = '1d' | '7d' | '30d'
+const PERIOD_DAYS: Record<Period, number> = { '1d': 1, '7d': 7, '30d': 30 }
+const PERIOD_LABELS: Record<Period, string> = { '1d': 'Jour', '7d': 'Semaine', '30d': 'Mois' }
+
+function PeriodFilter({ value, onChange }: { value: Period; onChange: (p: Period) => void }) {
+  return (
+    <div className="flex items-center gap-1 bg-surface-raised border border-border-faint rounded-xl p-1">
+      {(['1d', '7d', '30d'] as Period[]).map(p => (
+        <button
+          key={p}
+          onClick={() => onChange(p)}
+          className={cn(
+            'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+            value === p
+              ? 'bg-cyan-600 text-white shadow-sm'
+              : 'text-on-surface-subtle hover:text-on-surface hover:bg-surface-sunken',
+          )}
+        >
+          {PERIOD_LABELS[p]}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 type AdminProduct = Product & { product_images: ProductImage[] }
 
@@ -31,7 +58,7 @@ function BarRow({ label, value, max, color = 'bg-blue-500', sub }: { label: stri
         <span className="text-sm text-slate-700 truncate max-w-[60%]">{label}</span>
         <span className="text-xs text-muted-foreground">{sub ?? value}</span>
       </div>
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-surface-sunken rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -55,8 +82,36 @@ function exportCSV(products: AdminProduct[]) {
 }
 
 export function AdminReportsPage() {
+  const [period, setPeriod] = useState<Period>('7d')
   const { data: rawProducts = [], isLoading } = useAdminProducts()
+  const { data: leads = [] } = useWhatsAppLeads()
   const products = rawProducts as AdminProduct[]
+
+  const since = useMemo(() => {
+    const d = new Date(); d.setDate(d.getDate() - PERIOD_DAYS[period]); return d
+  }, [period])
+
+  const periodProducts = useMemo(
+    () => products.filter(p => p.created_at && new Date(p.created_at) >= since),
+    [products, since],
+  )
+
+  const periodLeads = useMemo(
+    () => leads.filter(l => l.created_at && new Date(l.created_at) >= since),
+    [leads, since],
+  )
+
+  // WhatsApp per-product for period
+  const periodLeadsByProduct = useMemo(() => {
+    const map = new Map<string, { name: string; count: number }>()
+    for (const lead of periodLeads) {
+      const item = lead.sales_record_items?.[0]
+      const name = item?.product_name ?? lead.lead_title ?? 'Inconnu'
+      const key = item?.product_id ?? name
+      map.set(key, { name, count: (map.get(key)?.count ?? 0) + 1 })
+    }
+    return [...map.values()].sort((a, b) => b.count - a.count)
+  }, [periodLeads])
 
   // Summary stats
   const totalProducts = products.length
@@ -115,38 +170,121 @@ export function AdminReportsPage() {
 
   const Skeleton = () => (
     <div className="animate-pulse space-y-4">
-      {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-8 bg-slate-100 rounded" />)}
+      {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-8 bg-surface-sunken rounded" />)}
     </div>
   )
 
   return (
-    <div className="p-6 lg:p-8 space-y-8 bg-slate-50 min-h-full">
+    <div className="p-6 lg:p-8 space-y-8 bg-surface-base min-h-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reports & Analytics</h1>
-          <p className="text-muted-foreground mt-1">Inventory insights and product performance</p>
+          <h1 className="text-2xl font-bold text-on-surface">Rapports & Analyse</h1>
+          <p className="text-muted-foreground mt-1">Aperçu du catalogue et performances produits</p>
         </div>
-        <Button variant="outline" onClick={() => exportCSV(products)} disabled={isLoading || products.length === 0}>
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
-        </Button>
+        <div className="flex items-center gap-2">
+          <PeriodFilter value={period} onChange={setPeriod} />
+          <Button variant="outline" onClick={() => exportCSV(products)} disabled={isLoading || products.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Period summary */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Total Products', value: totalProducts, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Total Stock Units', value: totalStock, icon: Layers, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: Tag, color: 'text-purple-600', bg: 'bg-purple-50' },
-          { label: 'Featured', value: featuredCount, icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
+          {
+            label: `Ajoutés (${PERIOD_LABELS[period].toLowerCase()})`,
+            value: isLoading ? '…' : periodProducts.length,
+            icon: TrendingUp,
+            color: 'text-cyan-600',
+            bg: 'bg-cyan-50',
+          },
+          {
+            label: `Clics WhatsApp (${PERIOD_LABELS[period].toLowerCase()})`,
+            value: isLoading ? '…' : periodLeads.length,
+            icon: MessageCircle,
+            color: 'text-emerald-600',
+            bg: 'bg-emerald-50',
+          },
+          {
+            label: 'Total catalogue',
+            value: isLoading ? '…' : totalProducts,
+            icon: Package,
+            color: 'text-blue-600',
+            bg: 'bg-blue-50',
+          },
+          {
+            label: 'Valeur inventaire',
+            value: isLoading ? '…' : formatPrice(inventoryValue),
+            icon: Tag,
+            color: 'text-purple-600',
+            bg: 'bg-purple-50',
+          },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="pt-5">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className="text-xl font-bold text-slate-900 mt-1">{isLoading ? '...' : s.value}</p>
+                  <p className="text-xl font-bold text-on-surface mt-1">{s.value}</p>
+                </div>
+                <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center`}>
+                  <s.icon className={`h-5 w-5 ${s.color}`} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Period WhatsApp breakdown */}
+      {periodLeadsByProduct.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <MessageCircle className="h-4 w-4 text-emerald-500" />
+              Clics WhatsApp par produit — {PERIOD_LABELS[period]}
+            </CardTitle>
+            <CardDescription>{periodLeads.length} clic{periodLeads.length !== 1 ? 's' : ''} au total sur la période</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {periodLeadsByProduct.slice(0, 10).map((item, i) => (
+              <div key={i} className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700 truncate max-w-[70%]">
+                    <span className="font-bold text-muted-foreground mr-2">#{i + 1}</span>
+                    {item.name}
+                  </span>
+                  <span className="text-xs font-bold text-on-surface">{item.count} clic{item.count !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="h-1.5 bg-surface-sunken rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full"
+                    style={{ width: `${Math.round((item.count / (periodLeadsByProduct[0]?.count ?? 1)) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* All-time Summary Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Total produits', value: totalProducts, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Unités en stock', value: totalStock, icon: Layers, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Valeur inventaire', value: formatPrice(inventoryValue), icon: Tag, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'En vedette', value: featuredCount, icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
+        ].map(s => (
+          <Card key={s.label}>
+            <CardContent className="pt-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-xl font-bold text-on-surface mt-1">{isLoading ? '...' : s.value}</p>
                 </div>
                 <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center`}>
                   <s.icon className={`h-5 w-5 ${s.color}`} />
@@ -200,7 +338,7 @@ export function AdminReportsPage() {
                         <span className="text-sm text-slate-700">{s.label}</span>
                         <Badge variant={s.badge} className="text-xs">{s.count}</Badge>
                       </div>
-                      <div className="h-1.5 bg-slate-100 rounded-full">
+                      <div className="h-1.5 bg-surface-sunken rounded-full">
                         <div className={`h-full ${s.color} rounded-full`} style={{ width: totalProducts > 0 ? `${(s.count / totalProducts) * 100}%` : '0%' }} />
                       </div>
                     </div>
@@ -209,7 +347,7 @@ export function AdminReportsPage() {
                 <Separator />
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Stock availability rate</span>
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-on-surface">
                     {totalProducts > 0 ? Math.round(((totalProducts - outOfStockCount) / totalProducts) * 100) : 0}%
                   </span>
                 </div>
@@ -243,13 +381,13 @@ export function AdminReportsPage() {
                   <tbody className="divide-y">
                     {brandStats.map(([brand, s]) => (
                       <tr key={brand} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 font-medium text-slate-900">{brand}</td>
+                        <td className="px-4 py-3 font-medium text-on-surface">{brand}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.count}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.totalStock}</td>
-                        <td className="px-4 py-3 font-semibold text-slate-900">{formatPrice(s.totalValue)}</td>
+                        <td className="px-4 py-3 font-semibold text-on-surface">{formatPrice(s.totalValue)}</td>
                         <td className="px-4 py-3 w-40">
                           <div className="flex items-center gap-2">
-                            <div className="flex-1 h-1.5 bg-slate-100 rounded-full">
+                            <div className="flex-1 h-1.5 bg-surface-sunken rounded-full">
                               <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(s.count / maxBrandCount) * 100}%` }} />
                             </div>
                             <span className="text-xs text-muted-foreground w-7">{Math.round((s.count / totalProducts) * 100)}%</span>
@@ -319,10 +457,10 @@ export function AdminReportsPage() {
               <div key={p.id} className="flex items-center gap-3 py-2.5">
                 <span className="text-xs font-bold text-muted-foreground w-4">#{i + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-on-surface truncate">{p.name}</p>
                   <p className="text-xs text-muted-foreground">{p.brand}</p>
                 </div>
-                <span className="text-sm font-bold text-slate-900 shrink-0">{formatPrice(p.price)}</span>
+                <span className="text-sm font-bold text-on-surface shrink-0">{formatPrice(p.price)}</span>
               </div>
             ))}
           </CardContent>
@@ -341,7 +479,7 @@ export function AdminReportsPage() {
               <div key={p.id} className="flex items-center gap-3 py-2.5">
                 <span className="text-xs font-bold text-muted-foreground w-4">#{i + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-on-surface truncate">{p.name}</p>
                   <p className="text-xs text-muted-foreground">{p.brand}</p>
                 </div>
                 <span className="text-sm font-bold text-emerald-600 shrink-0">{formatPrice(p.price)}</span>
@@ -363,7 +501,7 @@ export function AdminReportsPage() {
               <div key={p.id} className="flex items-center gap-3 py-2.5">
                 <span className="text-xs font-bold text-muted-foreground w-4">#{i + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-on-surface truncate">{p.name}</p>
                   <p className="text-xs text-muted-foreground">{p.brand}</p>
                 </div>
                 <Badge variant="success" className="text-xs shrink-0">{p.stock_quantity} units</Badge>
@@ -402,12 +540,12 @@ export function AdminReportsPage() {
                   <tbody className="divide-y">
                     {products.map(p => (
                       <tr key={p.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-2.5 font-medium text-slate-900 max-w-[160px] truncate">{p.name}</td>
+                        <td className="px-4 py-2.5 font-medium text-on-surface max-w-[160px] truncate">{p.name}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.brand}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.processor}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.ram}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.storage}</td>
-                        <td className="px-4 py-2.5 font-semibold text-slate-900">{formatPrice(p.price)}</td>
+                        <td className="px-4 py-2.5 font-semibold text-on-surface">{formatPrice(p.price)}</td>
                         <td className="px-4 py-2.5">
                           <StockQuantity quantity={p.stock_quantity} />
                         </td>

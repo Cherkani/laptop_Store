@@ -54,14 +54,14 @@ export function AdminClientsPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Clients</h1>
-          <p className="text-slate-500 mt-1">Annuaire client pour vos ventes hors-stripe.</p>
+          <h1 className="text-2xl font-bold text-on-surface">Clients</h1>
+          <p className="text-on-surface-subtle mt-1">Annuaire client pour vos ventes hors-stripe.</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-600 bg-white px-3 py-2 rounded-lg shadow-sm">
-          <Users className="h-4 w-4 text-slate-500" />
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-surface-raised px-3 py-2 rounded-lg shadow-sm">
+          <Users className="h-4 w-4 text-on-surface-subtle" />
           <span>{clients.length} clients</span>
           <span className="text-slate-400">·</span>
           <span>{totalUniquePhones} numéros</span>
@@ -123,15 +123,15 @@ export function AdminClientsPage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : clients.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucun client enregistré.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucun client enregistré.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Nom</th>
                     <th className="text-left px-3 py-2">Téléphone</th>
@@ -143,7 +143,7 @@ export function AdminClientsPage() {
                 <tbody className="divide-y">
                   {clients.map(client => (
                     <tr key={client.id}>
-                      <td className="px-3 py-2 font-medium text-slate-900">
+                      <td className="px-3 py-2 font-medium text-on-surface">
                         {client.name}
                         {client.cin ? <span className="text-xs text-slate-500 ml-2">CIN {client.cin}</span> : null}
                       </td>

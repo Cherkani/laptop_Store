@@ -46,6 +46,14 @@ export function useUpdateSalesStatus() {
   })
 }
 
+export function useWhatsAppLeads() {
+  return useQuery({
+    queryKey: ['admin-whatsapp-leads'],
+    queryFn: () => backofficeService.getWhatsAppLeads(),
+    staleTime: 60 * 1000,
+  })
+}
+
 export function useSalesDocuments(docType?: SalesDocumentType) {
   return useQuery({
     queryKey: ['admin-sales-documents', docType ?? 'all'],

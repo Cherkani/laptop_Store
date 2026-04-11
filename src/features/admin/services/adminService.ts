@@ -20,6 +20,7 @@ export type ProductInsert = {
   source_price?: number | null
   margin_amount?: number | null
   is_available?: boolean
+  image_source_url?: string | null
 }
 
 export type ProductUpdate = Partial<ProductInsert>
@@ -68,6 +69,49 @@ export const adminService = {
     if (error) throw error
   },
 
+  // Mark as checked today (still available) — updates last_checked_at
+  async markChecked(id: string) {
+    const { error } = await supabase
+      .from('products')
+      .update({
+        last_checked_at: new Date().toISOString(),
+        is_available: true,
+        availability_note: null,
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  // Mark as sold/gone on the source — hide from catalog
+  async markUnavailable(id: string, note?: string) {
+    const { error } = await supabase
+      .from('products')
+      .update({
+        is_available: false,
+        last_checked_at: new Date().toISOString(),
+        availability_note: note ?? 'Vendu chez la source',
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  // Bulk mark all given product ids as checked today
+  async bulkMarkChecked(ids: string[]) {
+    const now = new Date().toISOString()
+    const { error } = await supabase
+      .from('products')
+      .update({
+        last_checked_at: now,
+        is_available: true,
+        availability_note: null,
+        updated_at: now,
+      } as never)
+      .in('id', ids)
+    if (error) throw error
+  },
+
   async uploadImage(file: File, productId: string): Promise<string> {
     const ext = file.name.split('.').pop()
     const path = `${productId}/${Date.now()}.${ext}`
@@ -106,4 +150,5 @@ export const adminService = {
       if (error) throw error
     }
   },
+
 }

@@ -50,18 +50,18 @@ export function AdminBalancePage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Trésorerie</h1>
-          <p className="text-slate-500 mt-1">Journal de caisse pour rapprocher vos encaissements hors Stripe.</p>
+          <h1 className="text-2xl font-bold text-on-surface">Trésorerie</h1>
+          <p className="text-on-surface-subtle mt-1">Journal de caisse pour rapprocher vos encaissements hors Stripe.</p>
         </div>
         <div className="flex items-center gap-3 text-sm">
-          <div className="bg-white rounded-lg px-3 py-2 shadow-sm flex items-center gap-2">
+          <div className="bg-surface-raised rounded-lg px-3 py-2 shadow-sm flex items-center gap-2">
             <Wallet className="h-4 w-4 text-emerald-600" />
             <div>
-              <p className="text-xs text-slate-500">Solde courant</p>
-              <p className="text-base font-semibold text-slate-900">{formatPrice(currentBalance)}</p>
+              <p className="text-xs text-on-surface-subtle">Solde courant</p>
+              <p className="text-base font-semibold text-on-surface">{formatPrice(currentBalance)}</p>
             </div>
           </div>
         </div>
@@ -125,15 +125,15 @@ export function AdminBalancePage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : computedEntries.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucune écriture.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucune écriture.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Date</th>
                     <th className="text-left px-3 py-2">Type</th>
@@ -147,7 +147,7 @@ export function AdminBalancePage() {
                     <tr key={entry.id}>
                       <td className="px-3 py-2">{new Date(entry.occurred_at).toLocaleString()}</td>
                       <td className="px-3 py-2">
-                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">
+                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-surface-sunken text-on-surface-muted">
                           {entry.entry_type === 'income' ? <ArrowUpCircle className="h-3 w-3 text-emerald-600" /> : null}
                           {entry.entry_type === 'expense' ? <ArrowDownCircle className="h-3 w-3 text-red-500" /> : null}
                           {entry.entry_type === 'adjustment' ? <Scale className="h-3 w-3 text-amber-500" /> : null}

@@ -27,19 +27,19 @@ export function AdminSystemPage() {
   ]
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Système</h1>
-        <p className="text-slate-500 mt-1">Vue globale des modules, intégrations et automatisations.</p>
+        <h1 className="text-2xl font-bold text-on-surface">Système</h1>
+        <p className="text-on-surface-subtle mt-1">Vue globale des modules, intégrations et automatisations.</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map(card => (
           <Card key={card.label}>
             <CardContent className="p-5">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{card.label}</p>
-              <p className="text-2xl font-bold text-slate-900 mt-2">{card.value}</p>
-              <p className="text-xs text-slate-500 mt-1">{card.hint}</p>
+              <p className="text-xs uppercase tracking-wide text-on-surface-subtle">{card.label}</p>
+              <p className="text-2xl font-bold text-on-surface mt-2">{card.value}</p>
+              <p className="text-xs text-on-surface-subtle mt-1">{card.hint}</p>
             </CardContent>
           </Card>
         ))}
@@ -55,12 +55,12 @@ export function AdminSystemPage() {
             <CardDescription>Canal principal de contact client.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="rounded-lg border p-3 bg-white">
-              <p className="text-sm font-medium text-slate-900">Numéro configuré</p>
+            <div className="rounded-lg border p-3 bg-surface-raised">
+              <p className="text-sm font-medium text-on-surface">Numéro configuré</p>
               <p className="text-sm text-slate-600 mt-1">{whatsappNumber || 'Non configuré'}</p>
             </div>
-            <div className="rounded-lg border p-3 bg-white">
-              <p className="text-sm font-medium text-slate-900">Paiements en attente</p>
+            <div className="rounded-lg border p-3 bg-surface-raised">
+              <p className="text-sm font-medium text-on-surface">Paiements en attente</p>
               <p className="text-sm text-slate-600 mt-1">{pendingPayments}</p>
             </div>
           </CardContent>
@@ -75,11 +75,11 @@ export function AdminSystemPage() {
             <CardDescription>Envoi des leads/articles vers Apps Script ou Google Sheets.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="rounded-lg border p-3 bg-white">
-              <p className="text-sm font-medium text-slate-900">Webhook URL</p>
+            <div className="rounded-lg border p-3 bg-surface-raised">
+              <p className="text-sm font-medium text-on-surface">Webhook URL</p>
               <p className="text-xs text-slate-600 mt-1 break-all">{googleWebhook || 'Non configuré'}</p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs bg-slate-100 text-slate-700">
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs bg-surface-sunken text-on-surface-muted">
               <BadgeCheck className="h-3.5 w-3.5" />
               Configurez l'URL dans Paramètres pour activer la synchronisation.
             </div>

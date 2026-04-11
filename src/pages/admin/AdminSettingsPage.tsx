@@ -67,10 +67,10 @@ export function AdminSettingsPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Paramètres</h1>
-        <p className="text-slate-500 mt-1">Configuration de l'instance, WhatsApp et intégration Google.</p>
+        <h1 className="text-2xl font-bold text-on-surface">Paramètres</h1>
+        <p className="text-on-surface-subtle mt-1">Configuration de l'instance, WhatsApp et intégration Google.</p>
       </div>
 
       <div className="grid gap-4">

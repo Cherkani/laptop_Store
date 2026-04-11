@@ -75,6 +75,18 @@ export const backofficeService = {
     const { data, error } = await supabase
       .from('sales_records')
       .select('*, sales_record_items(*)')
+      .eq('source', 'manual')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return (data ?? []) as SalesRecordWithItems[]
+  },
+
+  async getWhatsAppLeads(): Promise<SalesRecordWithItems[]> {
+    const { data, error } = await supabase
+      .from('sales_records')
+      .select('*, sales_record_items(*)')
+      .eq('source', 'whatsapp')
       .order('created_at', { ascending: false })
 
     if (error) throw error

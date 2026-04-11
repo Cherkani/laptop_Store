@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -i '' 's/bg-slate-50 min-h-full/bg-surface-base min-h-full/g' *.tsx)",
+      "Bash(sed -i '' 's/bg-\\\\[#f5f7fb\\\\]/bg-surface-base/g' *.tsx)",
+      "Bash(sed -i '' 's/bg-white rounded/bg-surface-raised rounded/g' *.tsx)",
+      "Bash(sed -i '' 's/bg-white border/bg-surface-raised border/g' *.tsx)",
+      "Bash(sed -i '' 's/bg-white px/bg-surface-raised px/g' *.tsx)"
+    ]
+  }
+}

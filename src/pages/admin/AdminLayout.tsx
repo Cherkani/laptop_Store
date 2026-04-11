@@ -3,16 +3,15 @@ import {
   Banknote,
   BarChart3,
   Building2,
+  CalendarCheck,
   ChevronRight,
   ClipboardList,
   FileText,
-
   Layers,
   LayoutDashboard,
   LogOut,
   Package,
   PiggyBank,
-  Plus,
   Receipt,
   Settings2,
   ShoppingBag,
@@ -33,9 +32,8 @@ const navGroupsData = [
     labelKey: 'admin.group.pilotage',
     items: [
       { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
+      { to: '/admin/daily', labelKey: 'admin.nav.daily', icon: CalendarCheck, exact: true },
       { to: '/admin/reports', labelKey: 'admin.nav.reports', icon: BarChart3, exact: true },
-      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
-      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
     ],
   },
   {
@@ -65,6 +63,13 @@ const navGroupsData = [
       { to: '/admin/treasury', labelKey: 'admin.nav.treasury', icon: PiggyBank, exact: true },
     ],
   },
+  {
+    labelKey: 'admin.group.settings',
+    items: [
+      { to: '/admin/parametres', labelKey: 'admin.nav.settings', icon: SlidersHorizontal, exact: true },
+      { to: '/admin/systeme', labelKey: 'admin.nav.system', icon: Settings2, exact: true },
+    ],
+  },
 ]
 
 export function AdminLayout() {
@@ -91,7 +96,7 @@ export function AdminLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <aside className="w-72 bg-gradient-to-b from-surface-base via-surface-raised to-surface-base text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-border-faint">
+      <aside className="w-72 bg-surface-raised text-on-surface-subtle flex flex-col shrink-0 overflow-y-auto border-r border-border-faint">
         <div className="px-5 py-5 border-b border-border-subtle">
           <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain" />
@@ -109,7 +114,7 @@ export function AdminLayout() {
         <nav className="flex-1 px-3 py-4 space-y-5">
           {navGroupsData.map(group => (
             <div key={group.labelKey}>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-slate-500 font-semibold px-3 mb-2">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-on-surface-faint font-semibold px-3 mb-2">
                 {t(group.labelKey)}
               </p>
               <div className="space-y-1">
@@ -121,7 +126,7 @@ export function AdminLayout() {
                       'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                       isActive(item.to, item.exact)
                         ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-on-surface shadow-md shadow-cyan-700/30'
-                        : 'text-slate-300 hover:text-on-surface hover:bg-slate-800/90',
+                        : 'text-on-surface-subtle hover:text-on-surface hover:bg-surface-overlay',
                     )}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
@@ -136,14 +141,14 @@ export function AdminLayout() {
         <div className="px-3 py-4 border-t border-border-subtle space-y-1">
           <Link
             to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-on-surface hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-on-surface-subtle hover:text-on-surface hover:bg-surface-overlay transition-colors"
           >
             <ChevronRight className="h-4 w-4" />
             {t('admin.viewStore')}
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:text-red-300 hover:bg-slate-800 transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-on-surface-subtle hover:text-red-400 hover:bg-surface-overlay transition-colors"
           >
             <LogOut className="h-4 w-4" />
             {t('admin.logout')}
@@ -153,14 +158,14 @@ export function AdminLayout() {
               {(profile?.full_name ?? 'A').charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-slate-200 truncate">{profile?.full_name ?? 'Admin'}</p>
-              <p className="text-xs text-slate-500">{t('user.administrator')}</p>
+              <p className="text-xs font-medium text-on-surface truncate">{profile?.full_name ?? 'Admin'}</p>
+              <p className="text-xs text-on-surface-subtle">{t('user.administrator')}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f7fb] via-[#f8fafc] to-[#eef3fb] dark:from-surface-base dark:via-surface-base dark:to-surface-raised">
+      <main className="flex-1 overflow-y-auto bg-surface-base">
         <Outlet />
       </main>
     </div>

@@ -20,7 +20,7 @@ function statusClass(status: string) {
   if (status === 'paid') return 'bg-blue-100 text-blue-700'
   if (status === 'quoted') return 'bg-violet-100 text-violet-700'
   if (status === 'cancelled' || status === 'lost') return 'bg-red-100 text-red-700'
-  return 'bg-slate-100 text-slate-700'
+  return 'bg-surface-sunken text-on-surface-muted'
 }
 
 export function AdminSalesPage() {
@@ -54,7 +54,7 @@ export function AdminSalesPage() {
       client_name: clientName || null,
       client_phone: clientPhone || null,
       client_whatsapp: clientPhone || null,
-      source: 'whatsapp',
+      source: 'manual',
       lead_title: selectedProduct.name,
       lead_message: `Incoming WhatsApp lead for ${selectedProduct.name}`,
       status: 'new',
@@ -89,10 +89,10 @@ export function AdminSalesPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Ventes</h1>
-        <p className="text-slate-500 mt-1">Suivi des ventes WhatsApp et mise à jour du statut jusqu'à vendu/payé.</p>
+        <h1 className="text-2xl font-bold text-on-surface">Ventes</h1>
+        <p className="text-on-surface-subtle mt-1">Suivi des ventes WhatsApp et mise à jour du statut jusqu'à vendu/payé.</p>
       </div>
 
       <Card>
@@ -147,15 +147,15 @@ export function AdminSalesPage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : records.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucune vente pour le moment.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucune vente pour le moment.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Client</th>
                     <th className="text-left px-3 py-2">Article</th>
@@ -169,20 +169,20 @@ export function AdminSalesPage() {
                   {records.map(record => (
                     <tr key={record.id}>
                       <td className="px-3 py-2">
-                        <p className="font-medium text-slate-900">
+                        <p className="font-medium text-on-surface">
                           {record.client_name || record.client_phone || record.client_whatsapp || 'Client anonyme'}
                         </p>
                         {record.client_name && (
-                          <p className="text-xs text-slate-500">{record.client_phone || record.client_whatsapp || '—'}</p>
+                          <p className="text-xs text-on-surface-subtle">{record.client_phone || record.client_whatsapp || '—'}</p>
                         )}
                       </td>
                       <td className="px-3 py-2">
-                        <p className="font-medium text-slate-900">{record.lead_title}</p>
-                        <p className="text-xs text-slate-500">{record.sales_record_items?.length || 0} ligne(s)</p>
+                        <p className="font-medium text-on-surface">{record.lead_title}</p>
+                        <p className="text-xs text-on-surface-subtle">{record.sales_record_items?.length || 0} ligne(s)</p>
                       </td>
                       <td className="px-3 py-2 font-semibold">{formatPrice(record.total)}</td>
                       <td className="px-3 py-2">
-                        <span className="inline-flex items-center gap-1 text-xs text-slate-600 bg-slate-100 rounded-full px-2 py-1">
+                        <span className="inline-flex items-center gap-1 text-xs text-slate-600 bg-surface-sunken rounded-full px-2 py-1">
                           <MessageCircle className="h-3 w-3" />
                           {record.source}
                         </span>

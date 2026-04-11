@@ -50,14 +50,14 @@ export function AdminSuppliersPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Fournisseurs</h1>
-          <p className="text-slate-500 mt-1">Suivez vos fournisseurs et contacts d'achat.</p>
+          <h1 className="text-2xl font-bold text-on-surface">Fournisseurs</h1>
+          <p className="text-on-surface-subtle mt-1">Suivez vos fournisseurs et contacts d'achat.</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-600 bg-white px-3 py-2 rounded-lg shadow-sm">
-          <Building2 className="h-4 w-4 text-slate-500" />
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-surface-raised px-3 py-2 rounded-lg shadow-sm">
+          <Building2 className="h-4 w-4 text-on-surface-subtle" />
           <span>{suppliers.length} fournisseurs</span>
         </div>
       </div>
@@ -112,15 +112,15 @@ export function AdminSuppliersPage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : suppliers.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucun fournisseur.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucun fournisseur.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Nom</th>
                     <th className="text-left px-3 py-2">Téléphone</th>
@@ -132,7 +132,7 @@ export function AdminSuppliersPage() {
                 <tbody className="divide-y">
                   {suppliers.map(supplier => (
                     <tr key={supplier.id}>
-                      <td className="px-3 py-2 font-medium text-slate-900">{supplier.name}</td>
+                      <td className="px-3 py-2 font-medium text-on-surface">{supplier.name}</td>
                       <td className="px-3 py-2">{supplier.phone || '—'}</td>
                       <td className="px-3 py-2">{supplier.email || '—'}</td>
                       <td className="px-3 py-2 text-slate-600 max-w-xs truncate" title={supplier.address ?? ''}>

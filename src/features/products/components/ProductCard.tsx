@@ -82,12 +82,7 @@ export function ProductCard({ product }: ProductCardProps) {
           ? `${window.location.origin}/products/${product.id}`
           : `/products/${product.id}`
 
-      const result = await sendWhatsAppLead({
-        product,
-        quantity: 1,
-        productUrl,
-      })
-
+      const result = await sendWhatsAppLead({ product, quantity: 1, productUrl })
       const url = result.whatsappUrl || whatsappHref
       window.open(url, '_blank', 'noreferrer')
     } catch {
@@ -245,6 +240,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
       </div>
+
     </Link>
   )
 }

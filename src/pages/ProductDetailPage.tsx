@@ -94,17 +94,11 @@ export function ProductDetailPage() {
 
   const handleWhatsAppOrder = async () => {
     setIsOrderingOnWhatsApp(true)
-    const result = await sendWhatsAppLead({
-      product,
-      quantity,
-    })
-
+    const result = await sendWhatsAppLead({ product, quantity })
     if (result.persisted) {
       toast({
         title: t('toast.whatsappOpened'),
-        description: result.googleSynced
-          ? t('toast.leadSynced')
-          : t('toast.leadSavedOnly'),
+        description: result.googleSynced ? t('toast.leadSynced') : t('toast.leadSavedOnly'),
       })
     } else {
       toast({
@@ -464,6 +458,7 @@ export function ProductDetailPage() {
           </Button>
         </div>
       </div>
+
     </div>
   )
 }

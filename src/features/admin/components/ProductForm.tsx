@@ -46,6 +46,7 @@ type FormState = {
   source_price: string
   margin_amount: string
   is_available: boolean
+  image_source_url: string
 }
 
 type SuggestionField =
@@ -95,6 +96,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     source_price: (product as any)?.source_price?.toString() ?? '',
     margin_amount: (product as any)?.margin_amount?.toString() ?? '',
     is_available: (product as any)?.is_available ?? true,
+    image_source_url: (product as any)?.image_source_url ?? '',
   })
 
   const [images, setImages] = useState<ImagePreview[]>(
@@ -222,6 +224,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         source_price: parsedSourcePrice,
         margin_amount: parsedMargin,
         is_available: formData.is_available,
+        image_source_url: formData.image_source_url || null,
       }
 
       let savedProduct: { id: string }
@@ -547,6 +550,21 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             />
           </div>
           <p className="text-xs text-slate-400 mt-1">Lien vers l'annonce originale. Jamais affiché aux clients.</p>
+        </Field>
+
+        {/* Image source URL */}
+        <Field label="Source de l'image (admin uniquement)">
+          <div className="relative">
+            <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              type="url"
+              value={formData.image_source_url}
+              onChange={e => update('image_source_url', e.target.value)}
+              placeholder="https://..."
+              className="pl-9 font-mono text-sm"
+            />
+          </div>
+          <p className="text-xs text-slate-400 mt-1">D'où provient l'image du produit. Jamais affiché aux clients.</p>
         </Field>
 
         {/* Price breakdown */}

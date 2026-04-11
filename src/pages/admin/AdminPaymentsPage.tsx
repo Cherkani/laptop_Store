@@ -18,8 +18,8 @@ function statusClass(status: string) {
   if (status === 'received') return 'bg-emerald-100 text-emerald-700'
   if (status === 'pending') return 'bg-amber-100 text-amber-700'
   if (status === 'failed') return 'bg-red-100 text-red-700'
-  if (status === 'refunded') return 'bg-slate-100 text-slate-700'
-  return 'bg-slate-100 text-slate-700'
+  if (status === 'refunded') return 'bg-surface-sunken text-on-surface-muted'
+  return 'bg-surface-sunken text-on-surface-muted'
 }
 
 export function AdminPaymentsPage() {
@@ -54,10 +54,10 @@ export function AdminPaymentsPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Paiements</h1>
-        <p className="text-slate-500 mt-1">Suivi des règlements et rapprochement vente/facture.</p>
+        <h1 className="text-2xl font-bold text-on-surface">Paiements</h1>
+        <p className="text-on-surface-subtle mt-1">Suivi des règlements et rapprochement vente/facture.</p>
       </div>
 
       <Card>
@@ -132,15 +132,15 @@ export function AdminPaymentsPage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : payments.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucun paiement pour le moment.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucun paiement pour le moment.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Date</th>
                     <th className="text-left px-3 py-2">Vente</th>
@@ -161,7 +161,7 @@ export function AdminPaymentsPage() {
                       </td>
                       <td className="px-3 py-2">{payment.reference || '—'}</td>
                       <td className="px-3 py-2">
-                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs bg-slate-100 text-slate-700">
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs bg-surface-sunken text-on-surface-muted">
                           <CreditCard className="h-3 w-3" />
                           {payment.method}
                         </span>

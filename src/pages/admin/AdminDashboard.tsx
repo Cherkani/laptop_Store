@@ -1,12 +1,17 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Package, Plus, Star, ArrowRight, Edit,
   AlertTriangle, EyeOff, TrendingUp, Layers,
   ShoppingBag, Banknote, Users, ExternalLink,
+  MessageCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
+import { useWhatsAppLeads } from '@/features/admin/hooks/useBackoffice'
 import { ActivityHeatmap } from '@/features/admin/components/ActivityHeatmap'
+import { AdCheckHeatmap } from '@/features/admin/components/AdCheckHeatmap'
 import { useToggleAvailability } from '@/features/admin/hooks/useAdminProducts'
 import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
@@ -19,10 +24,41 @@ type AdminProduct = Product & {
   is_available?: boolean
 }
 
+type Period = '1d' | '7d' | '30d'
+const PERIOD_DAYS: Record<Period, number> = { '1d': 1, '7d': 7, '30d': 30 }
+const PERIOD_LABELS: Record<Period, string> = { '1d': 'Jour', '7d': 'Semaine', '30d': 'Mois' }
+
+function PeriodFilter({ value, onChange }: { value: Period; onChange: (p: Period) => void }) {
+  return (
+    <div className="flex items-center gap-1 bg-surface-raised border border-border-faint rounded-xl p-1">
+      {(['1d', '7d', '30d'] as Period[]).map(p => (
+        <button
+          key={p}
+          onClick={() => onChange(p)}
+          className={cn(
+            'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+            value === p
+              ? 'bg-cyan-600 text-white shadow-sm'
+              : 'text-on-surface-subtle hover:text-on-surface hover:bg-surface-sunken',
+          )}
+        >
+          {PERIOD_LABELS[p]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function AdminDashboard() {
+  const [period, setPeriod] = useState<Period>('7d')
   const { data: rawProducts = [], isLoading } = useAdminProducts()
+  const { data: leads = [] } = useWhatsAppLeads()
   const toggleAvailability = useToggleAvailability()
   const products = rawProducts as AdminProduct[]
+
+  const since = useMemo(() => {
+    const d = new Date(); d.setDate(d.getDate() - PERIOD_DAYS[period]); return d
+  }, [period])
 
   const available   = products.filter(p => p.is_available !== false)
   const unavailable = products.filter(p => p.is_available === false)
@@ -30,9 +66,18 @@ export function AdminDashboard() {
   const lowStock    = available.filter(p => p.stock_quantity > 0 && p.stock_quantity <= 3)
   const featured    = available.filter(p => p.is_featured)
 
-  // Sourcing stats — only for products that have source data
+  // Sourcing stats
   const sourcedProducts = products.filter(p => p.source_price != null && p.margin_amount != null)
   const totalMargin = sourcedProducts.reduce((s, p) => s + (p.margin_amount ?? 0), 0)
+
+  // Period-scoped products
+  const periodProducts = available.filter(p => p.created_at && new Date(p.created_at) >= since)
+
+  // Period-scoped WhatsApp leads
+  const periodLeads = useMemo(
+    () => leads.filter(l => l.created_at && new Date(l.created_at) >= since),
+    [leads, since],
+  )
 
   const recentProducts = [...available]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -48,22 +93,25 @@ export function AdminDashboard() {
   ]
 
   return (
-    <div className="p-6 lg:p-8 space-y-6 bg-[#f5f7fb] min-h-full">
+    <div className="p-6 lg:p-8 space-y-6 bg-surface-base min-h-full">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Vue d'ensemble</h1>
+          <h1 className="text-xl font-bold text-on-surface">Vue d'ensemble</h1>
           <p className="text-sm text-slate-400 mt-0.5">
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
         </div>
-        <Button asChild size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-sm">
-          <Link to="/admin/products?action=new">
-            <Plus className="h-4 w-4 mr-1.5" />
-            Ajouter
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <PeriodFilter value={period} onChange={setPeriod} />
+          <Button asChild size="sm" className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-sm">
+            <Link to="/admin/products?action=new">
+              <Plus className="h-4 w-4 mr-1.5" />
+              Ajouter
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* ── Alerts row — only shown when relevant ── */}
@@ -103,7 +151,7 @@ export function AdminDashboard() {
         </div>
       )}
 
-      {/* ── Stat cards ── */}
+      {/* ── Period stat cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           {
@@ -115,20 +163,20 @@ export function AdminDashboard() {
             light: 'bg-blue-50 text-blue-600',
           },
           {
-            label: 'Stock total',
-            value: isLoading ? null : available.reduce((s, p) => s + p.stock_quantity, 0),
-            sub: lowStock.length > 0 ? `${lowStock.length} en faible stock` : 'Niveaux corrects',
-            icon: Layers,
-            color: 'from-emerald-500 to-emerald-600',
-            light: 'bg-emerald-50 text-emerald-600',
+            label: `Ajoutés (${PERIOD_LABELS[period].toLowerCase()})`,
+            value: isLoading ? null : periodProducts.length,
+            sub: `sur ${available.length} au total`,
+            icon: TrendingUp,
+            color: 'from-cyan-500 to-cyan-600',
+            light: 'bg-cyan-50 text-cyan-600',
           },
           {
-            label: 'Produits sourcés',
-            value: isLoading ? null : sourcedProducts.length,
-            sub: sourcedProducts.length > 0 ? `${formatPrice(totalMargin)} marge totale` : 'Aucun sourcé',
-            icon: TrendingUp,
-            color: 'from-violet-500 to-violet-600',
-            light: 'bg-violet-50 text-violet-600',
+            label: `Clics WhatsApp (${PERIOD_LABELS[period].toLowerCase()})`,
+            value: isLoading ? null : periodLeads.length,
+            sub: periodLeads.length > 0 ? 'leads captés' : 'aucun clic',
+            icon: MessageCircle,
+            color: 'from-emerald-500 to-emerald-600',
+            light: 'bg-emerald-50 text-emerald-600',
           },
           {
             label: 'Prix moyen',
@@ -141,13 +189,13 @@ export function AdminDashboard() {
             light: 'bg-amber-50 text-amber-600',
           },
         ].map(stat => (
-          <div key={stat.label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <div key={stat.label} className="bg-surface-raised rounded-2xl border border-slate-100 shadow-sm p-5">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">{stat.label}</p>
                 {isLoading
-                  ? <div className="mt-2 h-7 w-16 bg-slate-100 rounded animate-pulse" />
-                  : <p className="mt-1.5 text-2xl font-bold text-slate-900 truncate">{stat.value}</p>
+                  ? <div className="mt-2 h-7 w-16 bg-surface-sunken rounded animate-pulse" />
+                  : <p className="mt-1.5 text-2xl font-bold text-on-surface truncate">{stat.value}</p>
                 }
                 {!isLoading && <p className="text-xs text-slate-400 mt-0.5">{stat.sub}</p>}
               </div>
@@ -159,6 +207,9 @@ export function AdminDashboard() {
         ))}
       </div>
 
+      {/* ── Vérification quotidienne des annonces sources ── */}
+      <AdCheckHeatmap />
+
       {/* ── Activity heatmaps ── */}
       <ActivityHeatmap />
 
@@ -166,23 +217,23 @@ export function AdminDashboard() {
       <div className="grid lg:grid-cols-3 gap-5">
 
         {/* Recent products — 2/3 */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="lg:col-span-2 bg-surface-raised rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <p className="text-sm font-semibold text-slate-900">Produits récents</p>
-            <Button variant="ghost" size="sm" asChild className="h-7 text-xs text-slate-400 hover:text-slate-900">
+            <p className="text-sm font-semibold text-on-surface">Produits récents</p>
+            <Button variant="ghost" size="sm" asChild className="h-7 text-xs text-slate-400 hover:text-on-surface">
               <Link to="/admin/products">Voir tout <ArrowRight className="ml-1 h-3 w-3" /></Link>
             </Button>
           </div>
           {isLoading ? (
             <div className="p-5 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 bg-slate-100 rounded-xl animate-pulse" />
+                <div key={i} className="h-12 bg-surface-sunken rounded-xl animate-pulse" />
               ))}
             </div>
           ) : recentProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Package className="h-10 w-10 text-slate-200 mb-3" />
-              <p className="text-sm font-medium text-slate-500">Aucun produit</p>
+              <p className="text-sm font-medium text-on-surface-subtle">Aucun produit</p>
               <Button asChild size="sm" className="mt-4">
                 <Link to="/admin/products?action=new"><Plus className="h-4 w-4 mr-1.5" />Ajouter</Link>
               </Button>
@@ -191,6 +242,7 @@ export function AdminDashboard() {
             <div className="divide-y divide-slate-50">
               {recentProducts.map(product => {
                 const img = product.product_images?.find(x => x.is_primary) ?? product.product_images?.[0]
+                const isNew = product.created_at && new Date(product.created_at) >= since
                 return (
                   <div key={product.id} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/70 group transition-colors">
                     <div className="w-9 h-9 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
@@ -201,7 +253,12 @@ export function AdminDashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-medium text-slate-900 truncate">{product.name}</p>
+                        <p className="text-sm font-medium text-on-surface truncate">{product.name}</p>
+                        {isNew && (
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 border border-cyan-200 shrink-0">
+                            Nouveau
+                          </span>
+                        )}
                         {product.source_url && (
                           <a href={product.source_url} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-blue-300 hover:text-blue-500 shrink-0">
                             <ExternalLink className="h-3 w-3" />
@@ -211,7 +268,7 @@ export function AdminDashboard() {
                       <p className="text-xs text-slate-400">{product.brand} · {product.ram} · {product.storage}</p>
                     </div>
                     <div className="text-right shrink-0 hidden sm:block">
-                      <p className="text-sm font-semibold text-slate-900">{formatPrice(product.price)}</p>
+                      <p className="text-sm font-semibold text-on-surface">{formatPrice(product.price)}</p>
                       {product.source_price != null && product.margin_amount != null && (
                         <p className="text-xs text-emerald-600">+{formatPrice(product.margin_amount)}</p>
                       )}
@@ -241,8 +298,8 @@ export function AdminDashboard() {
         <div className="space-y-5">
 
           {/* Quick actions */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-            <p className="text-sm font-semibold text-slate-900 mb-3">Actions rapides</p>
+          <div className="bg-surface-raised rounded-2xl border border-slate-100 shadow-sm p-5">
+            <p className="text-sm font-semibold text-on-surface mb-3">Actions rapides</p>
             <div className="grid grid-cols-2 gap-2">
               {quickActions.map(action => (
                 <Link
@@ -257,9 +314,45 @@ export function AdminDashboard() {
             </div>
           </div>
 
+          {/* Period WhatsApp top products */}
+          {periodLeads.length > 0 && (() => {
+            const map = new Map<string, { name: string; count: number }>()
+            for (const lead of periodLeads) {
+              const item = lead.sales_record_items?.[0]
+              const name = item?.product_name ?? lead.lead_title ?? 'Inconnu'
+              const key = item?.product_id ?? name
+              map.set(key, { name, count: (map.get(key)?.count ?? 0) + 1 })
+            }
+            const ranked = [...map.values()].sort((a, b) => b.count - a.count).slice(0, 5)
+            const max = ranked[0]?.count ?? 1
+            return (
+              <div className="bg-surface-raised rounded-2xl border border-border-faint shadow-sm overflow-hidden">
+                <div className="px-5 py-3.5 border-b border-border-faint flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-emerald-500" />
+                  <p className="text-sm font-semibold text-on-surface">Top clics WhatsApp</p>
+                  <span className="ml-auto text-xs text-on-surface-faint">{PERIOD_LABELS[period]}</span>
+                </div>
+                <div className="divide-y divide-border-faint">
+                  {ranked.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2.5 px-5 py-2.5">
+                      <span className="text-xs font-bold text-on-surface-faint w-4 shrink-0">{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-on-surface truncate">{item.name}</p>
+                        <div className="mt-1 h-1 bg-surface-sunken rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.round((item.count / max) * 100)}%` }} />
+                        </div>
+                      </div>
+                      <span className="text-sm font-bold text-on-surface shrink-0">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+
           {/* Masqués — sourcing watchlist */}
           {!isLoading && unavailable.length > 0 && (
-            <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+            <div className="bg-surface-raised rounded-2xl border border-red-100 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-red-50">
                 <p className="text-sm font-semibold text-red-700 flex items-center gap-2">
                   <EyeOff className="h-4 w-4" /> Masqués ({unavailable.length})
@@ -299,7 +392,7 @@ export function AdminDashboard() {
 
           {/* Low stock watchlist */}
           {!isLoading && lowStock.length > 0 && (
-            <div className="bg-white rounded-2xl border border-amber-100 shadow-sm overflow-hidden">
+            <div className="bg-surface-raised rounded-2xl border border-amber-100 shadow-sm overflow-hidden">
               <div className="px-5 py-3.5 border-b border-amber-50">
                 <p className="text-sm font-semibold text-amber-700 flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4" /> Faible stock ({lowStock.length})

@@ -51,20 +51,20 @@ export function AdminCashSalesPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 bg-slate-50 min-h-full space-y-6">
+    <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Ventes cash / hors Stripe</h1>
-          <p className="text-slate-500 mt-1">Encaissements immédiats (espèces, TPE, virement direct).</p>
+          <h1 className="text-2xl font-bold text-on-surface">Ventes cash / hors Stripe</h1>
+          <p className="text-on-surface-subtle mt-1">Encaissements immédiats (espèces, TPE, virement direct).</p>
         </div>
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total HT</p>
-            <p className="text-base font-semibold text-slate-900">{formatPrice(totalHT)}</p>
+          <div className="bg-surface-raised rounded-lg px-3 py-2 shadow-sm">
+            <p className="text-xs text-on-surface-subtle">Total HT</p>
+            <p className="text-base font-semibold text-on-surface">{formatPrice(totalHT)}</p>
           </div>
-          <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total TTC</p>
-            <p className="text-base font-semibold text-slate-900">{formatPrice(totalTTC)}</p>
+          <div className="bg-surface-raised rounded-lg px-3 py-2 shadow-sm">
+            <p className="text-xs text-on-surface-subtle">Total TTC</p>
+            <p className="text-base font-semibold text-on-surface">{formatPrice(totalTTC)}</p>
           </div>
         </div>
       </div>
@@ -153,15 +153,15 @@ export function AdminCashSalesPage() {
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
+                <div key={i} className="h-12 rounded bg-surface-raised animate-pulse" />
               ))}
             </div>
           ) : cashSales.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-8">Aucune vente cash.</p>
+            <p className="text-sm text-on-surface-subtle text-center py-8">Aucune vente cash.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className="bg-surface-sunken text-xs uppercase text-on-surface-subtle">
                   <tr>
                     <th className="text-left px-3 py-2">Date</th>
                     <th className="text-left px-3 py-2">Contrepartie</th>
@@ -175,7 +175,7 @@ export function AdminCashSalesPage() {
                   {cashSales.map(sale => (
                     <tr key={sale.id}>
                       <td className="px-3 py-2">{new Date(sale.occurred_at).toLocaleDateString()}</td>
-                      <td className="px-3 py-2 font-medium text-slate-900">{counterpartyLabel(sale)}</td>
+                      <td className="px-3 py-2 font-medium text-on-surface">{counterpartyLabel(sale)}</td>
                       <td className="px-3 py-2 text-slate-600 max-w-xs truncate" title={sale.description ?? ''}>
                         {sale.description || '—'}
                       </td>

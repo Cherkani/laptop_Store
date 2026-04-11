@@ -18,7 +18,7 @@ export function AdminEditProductPage() {
   if (error || !product) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-slate-900">Product not found</h1>
+        <h1 className="text-2xl font-bold text-on-surface">Product not found</h1>
       </div>
     )
   }
@@ -26,7 +26,7 @@ export function AdminEditProductPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Edit Product</h1>
+        <h1 className="text-2xl font-bold text-on-surface">Edit Product</h1>
         <p className="text-muted-foreground mt-1">{product.name}</p>
       </div>
       <ProductForm product={product} />

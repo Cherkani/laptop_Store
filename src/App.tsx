@@ -17,6 +17,7 @@ import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminReportsPage } from '@/pages/admin/AdminReportsPage'
 import { AdminInventoryPage } from '@/pages/admin/AdminInventoryPage'
+import { AdminDailyPage } from '@/pages/admin/AdminDailyPage'
 import { AdminSalesPage } from '@/pages/admin/AdminSalesPage'
 import { AdminQuotesPage } from '@/pages/admin/AdminQuotesPage'
 import { AdminInvoicesPage } from '@/pages/admin/AdminInvoicesPage'
@@ -88,6 +89,7 @@ export default function App() {
               <Route path="parametres" element={<AdminSettingsPage />} />
               <Route path="products" element={<AdminProductsPage />} />
               <Route path="inventory" element={<AdminInventoryPage />} />
+              <Route path="daily" element={<AdminDailyPage />} />
               <Route path="reports" element={<AdminReportsPage />} />
             </Route>
           </Routes>
