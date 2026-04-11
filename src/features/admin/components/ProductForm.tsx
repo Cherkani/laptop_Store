@@ -28,6 +28,37 @@ interface ImagePreview {
 
 type SpecField = ParsedSpec
 
+type FormState = {
+  name: string
+  description: string
+  price: string
+  brand: string
+  processor: string
+  ram: string
+  storage: string
+  graphics_card: string
+  screen_size: string
+  weight: string
+  stock_quantity: string
+  is_featured: boolean
+  category: string
+  source_url: string
+  source_price: string
+  margin_amount: string
+  is_available: boolean
+}
+
+type SuggestionField =
+  | 'name'
+  | 'price'
+  | 'brand'
+  | 'processor'
+  | 'ram'
+  | 'storage'
+  | 'graphics_card'
+  | 'screen_size'
+  | 'description'
+
 export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -36,7 +67,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   const [draftSuggestions, setDraftSuggestions] = useState<ParsedListing>({})
   const [applyEmptyOnly, setApplyEmptyOnly] = useState(true)
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormState>({
     name: product?.name ?? '',
     description: product?.description ?? '',
     price: product?.price?.toString() ?? '',
@@ -69,7 +100,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     product?.specifications?.map(s => ({ key: s.spec_key, value: s.spec_value })) ?? []
   )
 
-  const update = (key: string, val: string | boolean) =>
+  const update = <K extends keyof FormState>(key: K, val: FormState[K]) =>
     setFormData(p => ({ ...p, [key]: val }))
 
   const canonicalizeProcessor = (val: string): string | undefined => {
@@ -96,7 +127,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   const applySuggestions = () => {
     if (!Object.keys(draftSuggestions).length) return
     const next = { ...formData }
-    const fields: Array<keyof typeof formData> = ['name','price','brand','processor','ram','storage','graphics_card','screen_size','description']
+    const fields: SuggestionField[] = ['name','price','brand','processor','ram','storage','graphics_card','screen_size','description']
     for (const key of fields) {
       const val = (draftSuggestions as any)[key]
       if (val === undefined || val === null || val === '') continue
@@ -105,7 +136,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         if (key === 'processor') {
           next[key] = canonicalizeProcessor(String(val)) ?? String(val)
         } else {
-          next[key] = typeof next[key] === 'boolean' ? !!val : String(val)
+          next[key] = String(val)
         }
       }
     }
