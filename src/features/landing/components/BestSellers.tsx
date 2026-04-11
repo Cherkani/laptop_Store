@@ -46,7 +46,7 @@ export function BestSellers() {
   }, [products, activeOS, windowsBrand, macChip])
 
   return (
-    <Section>
+    <Section bg="bg-surface-base">
         {/* Header row */}
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>

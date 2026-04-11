@@ -11,7 +11,7 @@ const highlights = [
 
 export function StockLocal() {
   return (
-    <Section bg="bg-[#f0f4ff]">
+    <Section bg="bg-surface-sunken">
         <div className="overflow-hidden rounded-3xl border border-border-faint bg-surface-raised">
           <div className="grid lg:grid-cols-2 lg:items-stretch">
             {/* Left: Images */}

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
+import { ActivityHeatmap } from '@/features/admin/components/ActivityHeatmap'
 import { useToggleAvailability } from '@/features/admin/hooks/useAdminProducts'
 import { formatPrice, getImageSrc } from '@/lib/utils'
 import type { Product, ProductImage } from '@/types/database.types'
@@ -157,6 +158,9 @@ export function AdminDashboard() {
           </div>
         ))}
       </div>
+
+      {/* ── Activity heatmaps ── */}
+      <ActivityHeatmap />
 
       {/* ── Main grid ── */}
       <div className="grid lg:grid-cols-3 gap-5">

@@ -88,10 +88,10 @@
     --ring:              36 92% 55%;
 
     /* Surface hierarchy */
-    --surface-base:      220 32% 6%;   /* #070c15 equivalent */
-    --surface-sunken:    220 30% 7%;   /* #080d16 equivalent */
-    --surface-raised:    220 28% 10%;  /* #0f1726 equivalent */
-    --surface-overlay:   220 28% 12%;  /* drawers / modals   */
+    --surface-base:      210 60% 7%;   /* deep navy-sky base  */
+    --surface-sunken:    205 55% 10%;  /* sky-blue tinted alt */
+    --surface-raised:    210 45% 13%;  /* cards, panels       */
+    --surface-overlay:   210 40% 16%;  /* drawers / modals    */
 
     /* Foreground opacity scale */
     --on-surface:        210 36% 96%;
@@ -100,8 +100,8 @@
     --on-surface-faint:  210 14% 38%;
 
     /* Border opacity scale */
-    --border-subtle:     220 18% 22%;
-    --border-faint:      220 18% 16%;
+    --border-subtle:     210 30% 22%;
+    --border-faint:      210 30% 16%;
 
     --highlight:         36 92% 55%;
     --shell-glow-a: 199 89% 48%;

@@ -105,10 +105,10 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white via-white to-[#f7f9fc] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-[6px] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)]">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white via-white to-[#f7f9fc] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-[6px] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)] dark:border-slate-800 dark:from-[#0f172a] dark:via-[#0b1220] dark:to-[#070b14] dark:shadow-[0_10px_30px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.8)]">
 
         {/* Image area */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff]">
+        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff] dark:from-[#121a2b] dark:via-[#0d1422] dark:to-[#0a0f1c]">
           {primarySrc ? (
             <>
               <img
@@ -144,7 +144,7 @@ export function ProductCard({ product }: ProductCardProps) {
             className={cn(
               'border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] shadow-sm backdrop-blur',
               conditionStyle?.className ??
-                'bg-white/0 text-emerald-600 border-emerald-500/15',
+                'bg-white/0 text-emerald-600 border-emerald-500/15 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20',
             )}
           >
             {conditionStyle ? conditionStyle.label : 'Neuf'}
@@ -168,7 +168,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex flex-1 flex-col gap-3 p-4">
           {/* Brand + rating */}
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-on-surface-faint">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-on-surface-faint dark:text-slate-400">
               {product.brand}
             </p>
             <div className="flex items-center gap-1">
@@ -178,33 +178,33 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Name */}
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-500">
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-500 dark:text-slate-100">
             {product.name}
           </h3>
 
           {/* Specs */}
-          <p className="line-clamp-1 text-[11px] text-on-surface-faint">
+          <p className="line-clamp-1 text-[11px] text-on-surface-faint dark:text-slate-400">
             {product.processor} · {product.ram} · {product.storage}
           </p>
 
           {/* Price */}
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold tracking-tight text-on-surface">
+              <span className="text-xl font-extrabold tracking-tight text-on-surface dark:text-slate-50">
                 {formatPrice(product.price)}
               </span>
               {product.original_price && product.original_price > product.price && (
-                <span className="text-xs text-on-surface-faint line-through">
+                <span className="text-xs text-on-surface-faint line-through dark:text-slate-500">
                   {formatPrice(product.original_price)}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-on-surface-faint">TVA incluse · Paiement en 3x</p>
+            <p className="text-[11px] text-on-surface-faint dark:text-slate-400">TVA incluse · Paiement en 3x</p>
           </div>
 
           {/* Screen size */}
           {product.screen_size && (
-            <span className="w-fit rounded-full border border-border-subtle bg-surface-raised/60 px-2.5 py-0.5 text-[11px] font-medium text-on-surface-faint">
+            <span className="w-fit rounded-full border border-border-subtle bg-surface-raised/60 px-2.5 py-0.5 text-[11px] font-medium text-on-surface-faint dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300">
               {product.screen_size}
             </span>
           )}

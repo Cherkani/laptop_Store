@@ -59,6 +59,15 @@ type SuggestionField =
   | 'screen_size'
   | 'description'
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-sm">{label}</Label>
+      {children}
+    </div>
+  )
+}
+
 export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -179,14 +188,25 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   const updateSpec = (i: number, field: 'key' | 'value', value: string) =>
     setSpecs(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s))
 
+  const parseNumber = (val: string | null | undefined) => {
+    if (!val) return null
+    const cleaned = val.replace(',', '.')
+    const n = Number(cleaned)
+    return Number.isFinite(n) ? n : null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     try {
+      const parsedPrice = parseNumber(formData.price)
+      const parsedSourcePrice = parseNumber(formData.source_price)
+      const parsedMargin = parseNumber(formData.margin_amount)
+
       const productData = {
         name: formData.name,
         description: formData.description || null,
-        price: parseFloat(formData.price),
+        price: parsedPrice ?? 0,
         brand: formData.brand,
         processor: formData.processor,
         ram: formData.ram,
@@ -199,8 +219,8 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         category: formData.category,
         // Sourcing
         source_url: formData.source_url || null,
-        source_price: formData.source_price ? parseFloat(formData.source_price) : null,
-        margin_amount: formData.margin_amount ? parseFloat(formData.margin_amount) : null,
+        source_price: parsedSourcePrice,
+        margin_amount: parsedMargin,
         is_available: formData.is_available,
       }
 
@@ -230,15 +250,6 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
       setIsSubmitting(false)
     }
   }
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="space-y-1.5">
-      <Label className="text-sm">
-        {label}
-      </Label>
-      {children}
-    </div>
-  )
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -322,8 +333,9 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Price (MAD)">
             <Input
-              type="number" min="0" step="0.01"
-              value={formData.price}
+              type="text"
+              inputMode="decimal"
+              defaultValue={formData.price}
               onChange={e => update('price', e.target.value)}
               placeholder="9999"
             />
@@ -541,16 +553,18 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Prix d'achat (MAD)">
             <Input
-              type="number" min="0" step="0.01"
-              value={formData.source_price}
+              type="text"
+              inputMode="decimal"
+              defaultValue={formData.source_price}
               onChange={e => update('source_price', e.target.value)}
               placeholder="ex: 3200"
             />
           </Field>
           <Field label="Marge ajoutée (MAD)">
             <Input
-              type="number" min="0" step="0.01"
-              value={formData.margin_amount}
+              type="text"
+              inputMode="decimal"
+              defaultValue={formData.margin_amount}
               onChange={e => update('margin_amount', e.target.value)}
               placeholder="ex: 500"
             />
@@ -558,14 +572,18 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         </div>
 
         {/* Auto-computed selling price hint */}
-        {formData.source_price && formData.margin_amount && (
+        {(() => {
+          const sp = parseNumber(formData.source_price)
+          const ma = parseNumber(formData.margin_amount)
+          return Number.isFinite(sp) && Number.isFinite(ma)
+        })() && (
           <div className="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm">
             <span className="text-blue-600 font-medium">Prix de vente suggéré :</span>
             <span className="font-bold text-blue-800">
-              {(parseFloat(formData.source_price) + parseFloat(formData.margin_amount)).toLocaleString('fr-MA')} MAD
+              {((parseNumber(formData.source_price) ?? 0) + (parseNumber(formData.margin_amount) ?? 0)).toLocaleString('fr-MA')} MAD
             </span>
             <span className="text-blue-400 text-xs ml-auto">
-              ({parseFloat(formData.source_price).toLocaleString('fr-MA')} + {parseFloat(formData.margin_amount).toLocaleString('fr-MA')})
+              {(parseNumber(formData.source_price) ?? 0).toLocaleString('fr-MA')} + {(parseNumber(formData.margin_amount) ?? 0).toLocaleString('fr-MA')}
             </span>
           </div>
         )}

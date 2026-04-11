@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
-import { useFeaturedProducts } from '@/features/products/hooks/useProducts'
+import { useProducts } from '@/features/products/hooks/useProducts'
+import { DEFAULT_FILTERS } from '@/features/products/types'
 import { cn, formatPrice, getImageSrc } from '@/lib/utils'
 import { ScrollReveal } from './ScrollReveal'
 import { Section } from '@/components/shared/Section'
@@ -10,7 +11,7 @@ const FILTER_BRANDS = ['Tous', 'HP', 'Microsoft', 'Dell', 'Lenovo'] as const
 type BrandFilter = (typeof FILTER_BRANDS)[number]
 
 export function ProductLineup() {
-  const { data: products, isLoading } = useFeaturedProducts()
+  const { data: products, isLoading } = useProducts(DEFAULT_FILTERS)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)

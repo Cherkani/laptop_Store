@@ -128,7 +128,7 @@ export function FeaturedProducts() {
   if (!isLoading && (!products || products.length === 0)) return null
 
   return (
-    <Section bg="bg-[#faf9f7] dark:bg-surface-base" className="overflow-hidden">
+    <Section bg="bg-surface-base" className="overflow-hidden">
 
       {/* ── Section header ───────────────────────────────────────────────── */}
       <div className="mb-14 flex items-end justify-between gap-4">

@@ -28,7 +28,7 @@ const supportItems = [
 
 export function FeatureHighlights() {
   return (
-    <Section>
+    <Section bg="bg-sky-50 dark:bg-sky-900/25">
         <ScrollReveal>
           <div className="overflow-hidden rounded-3xl border border-border-faint bg-surface-raised">
             <div className="grid lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch">

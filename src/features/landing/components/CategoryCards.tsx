@@ -59,7 +59,7 @@ const categories = [
 
 export function CategoryCards() {
   return (
-    <section className="relative overflow-hidden bg-[#f0f4ff] py-20 sm:py-28">
+    <section className="relative overflow-hidden bg-surface-sunken py-20 sm:py-28">
       {/* Soft ambient glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-20 -top-24 h-96 w-96 rounded-full bg-amber-400/12 blur-[96px]" />
