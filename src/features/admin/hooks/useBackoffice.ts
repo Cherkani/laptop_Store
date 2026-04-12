@@ -1,48 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
-import {
-  backofficeService,
-  type PaymentDraft,
-  type SalesDocumentDraft,
-  type SalesDocumentType,
-  type SalesRecordDraft,
-} from '@/features/admin/services/backofficeService'
+import { backofficeService } from '@/features/admin/services/backofficeService'
+import { supabase } from '@/lib/supabase'
+import type { Profile } from '@/types/database.types'
 
-export function useSalesRecords() {
-  return useQuery({
-    queryKey: ['admin-sales-records'],
-    queryFn: () => backofficeService.getSalesRecords(),
-  })
-}
-
-export function useCreateSalesRecord() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (draft: SalesRecordDraft) => backofficeService.createSalesRecord(draft),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin-sales-records'] })
-      qc.invalidateQueries({ queryKey: ['admin-products'] })
-      toast({ title: 'Vente créée' })
+export function useAdminProfiles() {
+  return useQuery<Profile[]>({
+    queryKey: ['admin-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('is_admin', true)
+        .order('full_name')
+      if (error) throw error
+      return (data ?? []) as Profile[]
     },
-    onError: (err: Error) => {
-      toast({ title: 'Erreur création vente', description: err.message, variant: 'destructive' })
-    },
-  })
-}
-
-export function useUpdateSalesStatus() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      backofficeService.updateSalesRecordStatus(id, status),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin-sales-records'] })
-      qc.invalidateQueries({ queryKey: ['admin-products'] })
-      toast({ title: 'Statut mis à jour' })
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Erreur mise à jour statut', description: err.message, variant: 'destructive' })
-    },
+    staleTime: 5 * 60 * 1000,
   })
 }
 
@@ -51,49 +25,6 @@ export function useWhatsAppLeads() {
     queryKey: ['admin-whatsapp-leads'],
     queryFn: () => backofficeService.getWhatsAppLeads(),
     staleTime: 60 * 1000,
-  })
-}
-
-export function useSalesDocuments(docType?: SalesDocumentType) {
-  return useQuery({
-    queryKey: ['admin-sales-documents', docType ?? 'all'],
-    queryFn: () => backofficeService.getSalesDocuments(docType as SalesDocumentType | undefined),
-  })
-}
-
-export function useCreateSalesDocument() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (draft: SalesDocumentDraft) => backofficeService.createSalesDocument(draft),
-    onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: ['admin-sales-documents'] })
-      qc.invalidateQueries({ queryKey: ['admin-sales-documents', vars.doc_type] })
-      toast({ title: 'Document créé' })
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Erreur création document', description: err.message, variant: 'destructive' })
-    },
-  })
-}
-
-export function usePayments() {
-  return useQuery({
-    queryKey: ['admin-payments'],
-    queryFn: () => backofficeService.getPayments(),
-  })
-}
-
-export function useCreatePayment() {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (draft: PaymentDraft) => backofficeService.createPayment(draft),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin-payments'] })
-      toast({ title: 'Paiement enregistré' })
-    },
-    onError: (err: Error) => {
-      toast({ title: 'Erreur paiement', description: err.message, variant: 'destructive' })
-    },
   })
 }
 

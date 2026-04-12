@@ -1,24 +1,14 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
-  Banknote,
   BarChart3,
-  Building2,
   CalendarCheck,
   ChevronRight,
-  ClipboardList,
-  FileText,
   Layers,
   LayoutDashboard,
   LogOut,
   Package,
-  PiggyBank,
-  Receipt,
   Settings2,
-  ShoppingBag,
   SlidersHorizontal,
-  Truck,
-  Users,
-  Wallet,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { authService } from '@/features/auth/services/authService'
@@ -41,26 +31,6 @@ const navGroupsData = [
     items: [
       { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package, exact: false },
       { to: '/admin/inventory', labelKey: 'admin.nav.stock', icon: Layers, exact: true },
-    ],
-  },
-  {
-    labelKey: 'admin.group.commercial',
-    items: [
-      { to: '/admin/ventes', labelKey: 'admin.nav.sales', icon: ShoppingBag, exact: true },
-      { to: '/admin/cash', labelKey: 'admin.nav.cashSales', icon: Banknote, exact: true },
-      { to: '/admin/paiements', labelKey: 'admin.nav.payments', icon: Wallet, exact: true },
-      { to: '/admin/devis', labelKey: 'admin.nav.quotes', icon: FileText, exact: true },
-      { to: '/admin/factures', labelKey: 'admin.nav.invoices', icon: Receipt, exact: true },
-      { to: '/admin/bons-livraison', labelKey: 'admin.nav.delivery', icon: ClipboardList, exact: true },
-    ],
-  },
-  {
-    labelKey: 'admin.group.crm',
-    items: [
-      { to: '/admin/clients', labelKey: 'admin.nav.clients', icon: Users, exact: true },
-      { to: '/admin/entreprises', labelKey: 'admin.nav.companies', icon: Building2, exact: true },
-      { to: '/admin/fournisseurs', labelKey: 'admin.nav.suppliers', icon: Truck, exact: true },
-      { to: '/admin/treasury', labelKey: 'admin.nav.treasury', icon: PiggyBank, exact: true },
     ],
   },
   {

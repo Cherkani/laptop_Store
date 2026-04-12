@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   Package, Plus, Star, ArrowRight, Edit,
   AlertTriangle, EyeOff, TrendingUp, Layers,
-  ShoppingBag, Banknote, Users, ExternalLink,
-  MessageCircle,
+  ExternalLink, MessageCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -85,9 +84,7 @@ export function AdminDashboard() {
 
   const quickActions = [
     { label: 'Nouveau produit', icon: Plus, to: '/admin/products?action=new', color: 'bg-cyan-500 hover:bg-cyan-400' },
-    { label: 'Voir les ventes', icon: ShoppingBag, to: '/admin/ventes', color: 'bg-violet-500 hover:bg-violet-400' },
-    { label: 'Vente cash', icon: Banknote, to: '/admin/cash', color: 'bg-emerald-500 hover:bg-emerald-400' },
-    { label: 'Clients', icon: Users, to: '/admin/clients', color: 'bg-amber-500 hover:bg-amber-400' },
+    { label: 'Vérification', icon: TrendingUp, to: '/admin/daily', color: 'bg-emerald-500 hover:bg-emerald-400' },
     { label: 'Stock', icon: Layers, to: '/admin/inventory', color: 'bg-blue-500 hover:bg-blue-400' },
     { label: 'Catalogue', icon: Package, to: '/admin/products', color: 'bg-slate-600 hover:bg-slate-500' },
   ]

@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { useAdminProducts, useDeleteProduct, useToggleAvailability } from '../hooks/useAdminProducts'
+import { useAdminProfiles } from '../hooks/useBackoffice'
 import { formatPrice, getImageSrc } from '@/lib/utils'
 import { StockBadge } from '@/components/shared/StockBadge'
-import type { Product, ProductImage } from '@/types/database.types'
+import type { Product, ProductImage, Profile } from '@/types/database.types'
 
 type ProductWithImages = Product & {
   product_images: ProductImage[]
@@ -15,6 +16,28 @@ type ProductWithImages = Product & {
   source_price?: number | null
   margin_amount?: number | null
   is_available?: boolean
+  created_by?: string | null
+}
+
+function AuthorChip({ userId, profiles }: { userId: string | null | undefined; profiles: Profile[] }) {
+  if (!userId) return null
+  const profile = profiles.find(p => p.id === userId)
+  if (!profile) return null
+  const name = profile.display_name ?? profile.full_name ?? '?'
+  const initials = name.slice(0, 2).toUpperCase()
+  const colors: Record<string, string> = {
+    Aymen: 'bg-cyan-100 text-cyan-700',
+    Adam:  'bg-violet-100 text-violet-700',
+  }
+  const colorClass = colors[name] ?? 'bg-slate-100 text-slate-600'
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${colorClass}`}>
+      <span className="w-3.5 h-3.5 rounded-full bg-current/20 flex items-center justify-center text-[9px] font-bold leading-none">
+        {initials}
+      </span>
+      {name}
+    </span>
+  )
 }
 
 interface AdminProductListProps {
@@ -24,6 +47,7 @@ interface AdminProductListProps {
 
 export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
   const { data: products = [], isLoading } = useAdminProducts()
+  const { data: profiles = [] } = useAdminProfiles()
   const deleteProduct = useDeleteProduct()
   const toggleAvailability = useToggleAvailability()
   const [search, setSearch] = useState('')
@@ -183,7 +207,10 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                                 </a>
                               )}
                             </div>
-                            <p className="text-xs text-slate-400 mt-0.5">{product.processor} · {product.ram} · {product.storage}</p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <p className="text-xs text-slate-400">{product.processor} · {product.ram} · {product.storage}</p>
+                              <AuthorChip userId={product.created_by} profiles={profiles} />
+                            </div>
                           </div>
                         </div>
                       </td>

@@ -18,18 +18,8 @@ import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminReportsPage } from '@/pages/admin/AdminReportsPage'
 import { AdminInventoryPage } from '@/pages/admin/AdminInventoryPage'
 import { AdminDailyPage } from '@/pages/admin/AdminDailyPage'
-import { AdminSalesPage } from '@/pages/admin/AdminSalesPage'
-import { AdminQuotesPage } from '@/pages/admin/AdminQuotesPage'
-import { AdminInvoicesPage } from '@/pages/admin/AdminInvoicesPage'
-import { AdminDeliveryNotesPage } from '@/pages/admin/AdminDeliveryNotesPage'
-import { AdminPaymentsPage } from '@/pages/admin/AdminPaymentsPage'
 import { AdminSystemPage } from '@/pages/admin/AdminSystemPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
-import { AdminClientsPage } from '@/pages/admin/AdminClientsPage'
-import { AdminSuppliersPage } from '@/pages/admin/AdminSuppliersPage'
-import { AdminCompaniesPage } from '@/pages/admin/AdminCompaniesPage'
-import { AdminCashSalesPage } from '@/pages/admin/AdminCashSalesPage'
-import { AdminBalancePage } from '@/pages/admin/AdminBalancePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -75,16 +65,6 @@ export default function App() {
               }
             >
               <Route index element={<AdminDashboard />} />
-              <Route path="ventes" element={<AdminSalesPage />} />
-              <Route path="devis" element={<AdminQuotesPage />} />
-              <Route path="factures" element={<AdminInvoicesPage />} />
-              <Route path="bons-livraison" element={<AdminDeliveryNotesPage />} />
-              <Route path="paiements" element={<AdminPaymentsPage />} />
-              <Route path="clients" element={<AdminClientsPage />} />
-              <Route path="entreprises" element={<AdminCompaniesPage />} />
-              <Route path="fournisseurs" element={<AdminSuppliersPage />} />
-              <Route path="cash" element={<AdminCashSalesPage />} />
-              <Route path="treasury" element={<AdminBalancePage />} />
               <Route path="systeme" element={<AdminSystemPage />} />
               <Route path="parametres" element={<AdminSettingsPage />} />
               <Route path="products" element={<AdminProductsPage />} />

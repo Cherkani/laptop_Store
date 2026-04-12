@@ -3,47 +3,29 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
-// ── Data fetching ────────────────────────────────────────────────
-
 async function fetchActivityData() {
   const since = new Date()
   since.setFullYear(since.getFullYear() - 1)
   const sinceISO = since.toISOString()
 
-  const [productsRes, salesRes] = await Promise.all([
-    supabase
-      .from('products')
-      .select('created_at')
-      .gte('created_at', sinceISO),
-    supabase
-      .from('sales_records')
-      .select('created_at, status')
-      .gte('created_at', sinceISO)
-      .in('status', ['sold', 'paid', 'invoiced', 'delivery']),
-  ])
+  const { data, error } = await supabase
+    .from('products')
+    .select('created_at')
+    .gte('created_at', sinceISO)
 
-  if (productsRes.error) throw productsRes.error
-  if (salesRes.error) throw salesRes.error
-
-  return {
-    products: (productsRes.data ?? []) as { created_at: string }[],
-    sales: (salesRes.data ?? []) as { created_at: string; status: string }[],
-  }
+  if (error) throw error
+  return (data ?? []) as { created_at: string }[]
 }
 
-// ── Helpers ──────────────────────────────────────────────────────
-
 function toDateKey(iso: string) {
-  return iso.slice(0, 10) // 'YYYY-MM-DD'
+  return iso.slice(0, 10)
 }
 
 function buildGrid() {
-  // Build 53 weeks × 7 days ending today
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const dayOfWeek = today.getDay() // 0=Sun
+  const dayOfWeek = today.getDay()
 
-  // Start from the Sunday 52 weeks ago
   const start = new Date(today)
   start.setDate(start.getDate() - dayOfWeek - 52 * 7)
 
@@ -74,22 +56,26 @@ function getLevel(count: number, max: number): 0 | 1 | 2 | 3 | 4 {
 
 const MONTH_LABELS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
 
-// ── Sub-component ────────────────────────────────────────────────
+export function ActivityHeatmap() {
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['admin', 'activity-heatmap'],
+    queryFn: fetchActivityData,
+    staleTime: 5 * 60 * 1000,
+  })
 
-interface HeatmapGridProps {
-  counts: Record<string, number>
-  label: string
-  colorClass: (level: 0 | 1 | 2 | 3 | 4) => string
-  tooltip: (date: Date, count: number) => string
-  weeks: Date[][]
-  totalLabel: string
-  total: number
-}
+  const weeks = useMemo(() => buildGrid(), [])
 
-function HeatmapGrid({ counts, label, colorClass, tooltip, weeks, totalLabel, total }: HeatmapGridProps) {
+  const counts = useMemo(() => {
+    const map: Record<string, number> = {}
+    products.forEach(p => {
+      const k = toDateKey(p.created_at)
+      map[k] = (map[k] ?? 0) + 1
+    })
+    return map
+  }, [products])
+
   const maxCount = Math.max(...Object.values(counts), 1)
 
-  // Month label positions
   const monthLabels: { label: string; col: number }[] = []
   weeks.forEach((week, col) => {
     const first = week.find(d => d.getDate() <= 7)
@@ -101,32 +87,31 @@ function HeatmapGrid({ counts, label, colorClass, tooltip, weeks, totalLabel, to
     }
   })
 
+  if (isLoading) {
+    return <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 h-40 animate-pulse" />
+  }
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold text-slate-900">{label}</p>
-        <span className="text-xs font-medium text-slate-400">{total} {totalLabel}</span>
+        <p className="text-sm font-semibold text-slate-900">Activité catalogue</p>
+        <span className="text-xs font-medium text-slate-400">{products.length} produits ajoutés (12 mois)</span>
       </div>
 
       <div className="overflow-x-auto">
         <div style={{ minWidth: weeks.length * 13 }}>
-          {/* Month labels */}
           <div className="flex mb-1" style={{ paddingLeft: 20 }}>
             {weeks.map((_, col) => {
               const ml = monthLabels.find(m => m.col === col)
               return (
                 <div key={col} className="shrink-0" style={{ width: 11, marginRight: 2 }}>
-                  {ml && (
-                    <span className="text-[10px] text-slate-400 whitespace-nowrap">{ml.label}</span>
-                  )}
+                  {ml && <span className="text-[10px] text-slate-400 whitespace-nowrap">{ml.label}</span>}
                 </div>
               )
             })}
           </div>
 
-          {/* Grid */}
           <div className="flex gap-[2px]">
-            {/* Day labels */}
             <div className="flex flex-col gap-[2px] mr-1 shrink-0">
               {['', 'Lun', '', 'Mer', '', 'Ven', ''].map((d, i) => (
                 <div key={i} className="h-[11px] text-[9px] text-slate-300 flex items-center" style={{ width: 16 }}>
@@ -142,13 +127,20 @@ function HeatmapGrid({ counts, label, colorClass, tooltip, weeks, totalLabel, to
                   const count = counts[key] ?? 0
                   const level = getLevel(count, maxCount)
                   const isFuture = day > new Date()
+                  const title = isFuture
+                    ? ''
+                    : count === 0
+                    ? `${day.toLocaleDateString('fr-FR')} — aucun ajout`
+                    : `${day.toLocaleDateString('fr-FR')} — ${count} produit${count > 1 ? 's' : ''} ajouté${count > 1 ? 's' : ''}`
                   return (
                     <div
                       key={di}
-                      title={isFuture ? '' : tooltip(day, count)}
+                      title={title}
                       className={cn(
                         'rounded-[2px] shrink-0',
-                        isFuture ? 'bg-slate-50' : colorClass(level),
+                        isFuture
+                          ? 'bg-slate-50'
+                          : ({ 0: 'bg-slate-100', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[level]),
                       )}
                       style={{ width: 11, height: 11 }}
                     />
@@ -158,100 +150,19 @@ function HeatmapGrid({ counts, label, colorClass, tooltip, weeks, totalLabel, to
             ))}
           </div>
 
-          {/* Legend */}
           <div className="flex items-center gap-1.5 mt-3 justify-end">
             <span className="text-[10px] text-slate-400">Moins</span>
             {([0, 1, 2, 3, 4] as const).map(l => (
-              <div key={l} className={cn('rounded-[2px]', colorClass(l))} style={{ width: 11, height: 11 }} />
+              <div
+                key={l}
+                className={cn('rounded-[2px]', { 0: 'bg-slate-100', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[l])}
+                style={{ width: 11, height: 11 }}
+              />
             ))}
             <span className="text-[10px] text-slate-400">Plus</span>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-// ── Main component ───────────────────────────────────────────────
-
-export function ActivityHeatmap() {
-  const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'activity-heatmap'],
-    queryFn: fetchActivityData,
-    staleTime: 5 * 60 * 1000,
-  })
-
-  const weeks = useMemo(() => buildGrid(), [])
-
-  const catalogueCounts = useMemo(() => {
-    const map: Record<string, number> = {}
-    data?.products.forEach(p => {
-      const k = toDateKey(p.created_at)
-      map[k] = (map[k] ?? 0) + 1
-    })
-    return map
-  }, [data])
-
-  const salesCounts = useMemo(() => {
-    const map: Record<string, number> = {}
-    data?.sales.forEach(s => {
-      const k = toDateKey(s.created_at)
-      map[k] = (map[k] ?? 0) + 1
-    })
-    return map
-  }, [data])
-
-  if (isLoading) {
-    return (
-      <div className="grid sm:grid-cols-2 gap-5">
-        {[0, 1].map(i => (
-          <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 h-40 animate-pulse" />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="grid sm:grid-cols-2 gap-5">
-      <HeatmapGrid
-        weeks={weeks}
-        label="Activité catalogue"
-        totalLabel="produits ajoutés (12 mois)"
-        total={data?.products.length ?? 0}
-        counts={catalogueCounts}
-        colorClass={level => ({
-          0: 'bg-slate-100',
-          1: 'bg-cyan-200',
-          2: 'bg-cyan-400',
-          3: 'bg-cyan-500',
-          4: 'bg-cyan-700',
-        }[level])}
-        tooltip={(date, count) =>
-          count === 0
-            ? `${date.toLocaleDateString('fr-FR')} — aucun ajout`
-            : `${date.toLocaleDateString('fr-FR')} — ${count} produit${count > 1 ? 's' : ''} ajouté${count > 1 ? 's' : ''}`
-        }
-      />
-
-      <HeatmapGrid
-        weeks={weeks}
-        label="Activité ventes"
-        totalLabel="ventes (12 mois)"
-        total={data?.sales.length ?? 0}
-        counts={salesCounts}
-        colorClass={level => ({
-          0: 'bg-slate-100',
-          1: 'bg-emerald-200',
-          2: 'bg-emerald-400',
-          3: 'bg-emerald-500',
-          4: 'bg-emerald-700',
-        }[level])}
-        tooltip={(date, count) =>
-          count === 0
-            ? `${date.toLocaleDateString('fr-FR')} — aucune vente`
-            : `${date.toLocaleDateString('fr-FR')} — ${count} vente${count > 1 ? 's' : ''}`
-        }
-      />
     </div>
   )
 }
