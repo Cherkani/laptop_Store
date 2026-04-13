@@ -434,6 +434,47 @@ export interface Database {
           }
         ]
       }
+      analytics_events: {
+        Row: {
+          id: string
+          event_type: string
+          product_id: string | null
+          product_name: string | null
+          page_path: string | null
+          session_id: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_type: string
+          product_id?: string | null
+          product_name?: string | null
+          page_path?: string | null
+          session_id?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_type?: string
+          product_id?: string | null
+          product_name?: string | null
+          page_path?: string | null
+          session_id?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -451,6 +492,7 @@ export type CartItem = Database['public']['Tables']['cart_items']['Row']
 export type SalesRecord = Database['public']['Tables']['sales_records']['Row']
 export type SalesRecordItem = Database['public']['Tables']['sales_record_items']['Row']
 export type AppSetting = Database['public']['Tables']['app_settings']['Row']
+export type AnalyticsEvent = Database['public']['Tables']['analytics_events']['Row']
 
 export type ProductWithImages = Product & {
   product_images: ProductImage[]

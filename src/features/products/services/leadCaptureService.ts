@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { getImageSrc } from '@/lib/utils'
 import type { ProductWithImages } from '@/types/database.types'
+import { trackEvent } from '@/features/analytics/services/eventTrackingService'
 
 const FALLBACK_WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER || '').trim()
 const FALLBACK_GOOGLE_WEBHOOK_URL = (import.meta.env.VITE_GOOGLE_WEBHOOK_URL || '').trim()
@@ -122,6 +123,13 @@ export async function sendWhatsAppLead(params: LeadCaptureParams): Promise<LeadC
   }
 
   const googleSynced = await pushGoogleWebhook(payload, channels.googleWebhookUrl)
+
+  void trackEvent({
+    eventType: 'whatsapp_click',
+    productId: params.product.id,
+    productName: params.product.name,
+    metadata: { quantity: params.quantity, googleSynced },
+  })
 
   if (typeof window !== 'undefined') {
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer')

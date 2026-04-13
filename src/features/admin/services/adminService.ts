@@ -112,12 +112,12 @@ export const adminService = {
     if (error) throw error
   },
 
-  // Mark product as posted on Instagram
-  async markInstagramPosted(id: string) {
+  // Set or unset Instagram posted state
+  async setInstagramPosted(id: string, posted: boolean) {
     const { error } = await supabase
       .from('products')
       .update({
-        instagram_posted_at: new Date().toISOString(),
+        instagram_posted_at: posted ? new Date().toISOString() : null,
         updated_at: new Date().toISOString(),
       } as never)
       .eq('id', id)

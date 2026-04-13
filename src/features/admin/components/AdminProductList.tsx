@@ -72,10 +72,10 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
   const [hideReason, setHideReason] = useState('vendu_source')
 
   const instagramMut = useMutation({
-    mutationFn: (id: string) => adminService.markInstagramPosted(id),
-    onSuccess: () => {
+    mutationFn: ({ id, posted }: { id: string; posted: boolean }) => adminService.setInstagramPosted(id, posted),
+    onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['admin-products'] })
-      toast({ title: 'Posté sur Instagram ✓' })
+      toast({ title: vars.posted ? 'Posté sur Instagram ✓' : 'Marquage Instagram retiré' })
     },
     onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
   })
@@ -290,15 +290,18 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                         <div className="flex items-center justify-end gap-1">
                           {/* Instagram posted indicator / button */}
                           {product.instagram_posted_at ? (
-                            <span
+                            <button
+                              type="button"
+                              onClick={() => instagramMut.mutate({ id: product.id, posted: false })}
+                              disabled={instagramMut.isPending}
                               title={`Posté le ${new Date(product.instagram_posted_at).toLocaleDateString('fr-FR')}`}
-                              className="h-8 w-8 rounded-lg flex items-center justify-center text-pink-500"
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-pink-500 hover:bg-pink-500/10 transition-colors"
                             >
                               <Share2 className="h-3.5 w-3.5" />
-                            </span>
+                            </button>
                           ) : (
                             <button
-                              onClick={() => instagramMut.mutate(product.id)}
+                              onClick={() => instagramMut.mutate({ id: product.id, posted: true })}
                               disabled={instagramMut.isPending}
                               title="Marquer comme posté sur Instagram"
                               className="h-8 w-8 rounded-lg flex items-center justify-center text-on-surface-faint hover:text-pink-500 hover:bg-pink-500/10 transition-colors"
@@ -408,16 +411,18 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                         <Eye className="h-4 w-4" />
                       </button>
                     )}
-                    {!product.instagram_posted_at && (
-                      <button
-                        onClick={() => instagramMut.mutate(product.id)}
-                        disabled={instagramMut.isPending}
-                        className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-pink-400 hover:bg-pink-500 hover:text-white transition-colors"
-                        title="Marquer posté sur Instagram"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => instagramMut.mutate({ id: product.id, posted: !product.instagram_posted_at })}
+                      disabled={instagramMut.isPending}
+                      className={`h-9 w-9 rounded-xl bg-white flex items-center justify-center transition-colors ${
+                        product.instagram_posted_at
+                          ? 'text-pink-500 hover:bg-pink-500 hover:text-white'
+                          : 'text-pink-400 hover:bg-pink-500 hover:text-white'
+                      }`}
+                      title={product.instagram_posted_at ? 'Retirer le marquage Instagram' : 'Marquer posté sur Instagram'}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => setDeleteTarget(product)}
                       className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors"

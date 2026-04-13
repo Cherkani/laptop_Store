@@ -10,6 +10,7 @@ import { toast } from '@/hooks/use-toast'
 import { WHATSAPP_URL, CONDITION_STYLES } from '@/lib/constants'
 import { supabase } from '@/lib/supabase'
 import { sendWhatsAppLead } from '@/features/products/services/leadCaptureService'
+import { trackEvent } from '@/features/analytics/services/eventTrackingService'
 
 interface ProductCardProps {
   product: ProductWithImages
@@ -35,6 +36,12 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsAdding(true)
     try {
       await addItem(product.id, 1)
+      void trackEvent({
+        eventType: 'add_to_cart',
+        productId: product.id,
+        productName: product.name,
+        metadata: { source: 'product_card', quantity: 1 },
+      })
       toast({ title: 'Ajouté au panier', description: product.name })
     } catch {
       toast({ title: 'Erreur lors de l\'ajout', variant: 'destructive' })
@@ -50,6 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
     product.original_price && product.original_price > product.price
       ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
       : null
+  const inlineSpecs = [product.processor, product.ram, product.storage].filter(Boolean).join(' · ')
 
   useEffect(() => {
     let cancelled = false
@@ -103,6 +111,14 @@ export function ProductCard({ product }: ProductCardProps) {
     <Link
       to={`/products/${product.id}`}
       className="group block h-full"
+      onClick={() => {
+        void trackEvent({
+          eventType: 'product_card_click',
+          productId: product.id,
+          productName: product.name,
+          metadata: { source: 'product_grid' },
+        })
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -185,7 +201,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Specs */}
           <p className="line-clamp-1 text-[11px] text-on-surface-faint">
-            {product.processor} · {product.ram} · {product.storage}
+            {inlineSpecs || 'Configuration à préciser'}
           </p>
 
           {/* Price */}

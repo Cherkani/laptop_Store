@@ -74,6 +74,7 @@ const dictionaries: Record<Locale, Dict> = {
     'admin.nav.addProduct': 'Add Product',
     'admin.nav.stock': 'Stock',
     'admin.nav.reports': 'Reports',
+    'admin.nav.monitoring': 'Monitoring',
     'admin.viewStore': 'View Store',
     'admin.logout': 'Sign out',
 
@@ -159,6 +160,7 @@ const dictionaries: Record<Locale, Dict> = {
     'admin.nav.addProduct': 'Ajouter produit',
     'admin.nav.stock': 'Stock',
     'admin.nav.reports': 'Rapports',
+    'admin.nav.monitoring': 'Monitoring',
     'admin.viewStore': 'Voir la boutique',
     'admin.logout': 'Se déconnecter',
 

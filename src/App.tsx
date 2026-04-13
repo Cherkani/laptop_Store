@@ -20,6 +20,7 @@ import { AdminInventoryPage } from '@/pages/admin/AdminInventoryPage'
 import { AdminDailyPage } from '@/pages/admin/AdminDailyPage'
 import { AdminSystemPage } from '@/pages/admin/AdminSystemPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
+import { AdminMonitoringPage } from '@/pages/admin/AdminMonitoringPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +72,7 @@ export default function App() {
               <Route path="inventory" element={<AdminInventoryPage />} />
               <Route path="daily" element={<AdminDailyPage />} />
               <Route path="reports" element={<AdminReportsPage />} />
+              <Route path="monitoring" element={<AdminMonitoringPage />} />
             </Route>
           </Routes>
           <Toaster />

@@ -342,7 +342,7 @@ function DailyPostingTracker() {
 // ── Delivery tracker ──────────────────────────────────────────────
 
 const ADMINS = ['Aymen', 'Adam']
-const IG_DAILY_GOAL = 6
+const IG_DAILY_GOAL = 3
 
 function DeliveryTracker() {
   const qc = useQueryClient()

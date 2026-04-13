@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft, ShoppingCart, Minus, Plus, Cpu, MemoryStick, HardDrive,
@@ -14,6 +14,8 @@ import { formatPrice, getImageSrc } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { sendWhatsAppLead } from '@/features/products/services/leadCaptureService'
 import { useI18n } from '@/contexts/i18n'
+import { trackEvent } from '@/features/analytics/services/eventTrackingService'
+import { useTheme } from '@/contexts/theme'
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -24,6 +26,21 @@ export function ProductDetailPage() {
   const [isOrderingOnWhatsApp, setIsOrderingOnWhatsApp] = useState(false)
   const { addItem, toggleCart } = useCartStore()
   const { t } = useI18n()
+  const { resolvedTheme, setTheme } = useTheme()
+
+  useEffect(() => {
+    if (resolvedTheme === 'dark') setTheme('light')
+  }, [resolvedTheme, setTheme])
+
+  useEffect(() => {
+    if (!product) return
+    void trackEvent({
+      eventType: 'product_view',
+      productId: product.id,
+      productName: product.name,
+      metadata: { source: 'product_detail' },
+    })
+  }, [product])
 
   if (isLoading) {
     return (
@@ -80,6 +97,12 @@ export function ProductDetailPage() {
     setIsAdding(true)
     try {
       await addItem(product.id, quantity)
+      void trackEvent({
+        eventType: 'add_to_cart',
+        productId: product.id,
+        productName: product.name,
+        metadata: { source: 'product_detail', quantity },
+      })
       toast({
         title: t('toast.addedToCart'),
         description: `${quantity}x ${product.name}`,
@@ -94,32 +117,33 @@ export function ProductDetailPage() {
 
   const handleWhatsAppOrder = async () => {
     setIsOrderingOnWhatsApp(true)
-    const result = await sendWhatsAppLead({ product, quantity })
-    if (result.persisted) {
+    try {
+      const result = await sendWhatsAppLead({ product, quantity })
       toast({
         title: t('toast.whatsappOpened'),
         description: result.googleSynced ? t('toast.leadSynced') : t('toast.leadSavedOnly'),
       })
-    } else {
+    } catch {
       toast({
         title: t('toast.whatsappSaveFail'),
-        description: result.errorMessage || t('toast.runMigration'),
+        description: t('toast.runMigration'),
         variant: 'destructive',
       })
+    } finally {
+      setIsOrderingOnWhatsApp(false)
     }
-    setIsOrderingOnWhatsApp(false)
   }
 
   const specs = [
     { icon: Cpu, label: 'Processor', value: product.processor },
     { icon: MemoryStick, label: 'Memory', value: product.ram },
     { icon: HardDrive, label: 'Storage', value: product.storage },
-    { icon: Monitor, label: 'Display', value: `${product.screen_size}` },
+    { icon: Monitor, label: 'Display', value: product.screen_size },
     { icon: Tag, label: 'Graphics', value: product.graphics_card },
     ...(product.weight
       ? [{ icon: Weight, label: 'Weight', value: product.weight }]
       : []),
-  ]
+  ].filter(spec => Boolean(spec.value))
 
   const perks = [
     { icon: Truck, text: t('product.perk.shipping') },
@@ -241,7 +265,7 @@ export function ProductDetailPage() {
                 </Badge>
               )}
               {product.is_featured && (
-                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-500/150/10 text-amber-300 hover:bg-amber-500/150/10">
+                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-500/10 text-amber-700 hover:bg-amber-500/10">
                   Featured
                 </Badge>
               )}
@@ -253,11 +277,11 @@ export function ProductDetailPage() {
                   Out of Stock
                 </Badge>
               ) : product.stock_quantity <= 3 ? (
-                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-500/15 text-amber-200 hover:bg-amber-500/15">
+                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-amber-500/15 text-amber-700 hover:bg-amber-500/15">
                   Only {product.stock_quantity} left
                 </Badge>
               ) : (
-                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/15">
+                <Badge className="rounded-full px-3 py-1 text-xs font-semibold bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/15">
                   In Stock
                 </Badge>
               )}
@@ -302,24 +326,26 @@ export function ProductDetailPage() {
             <Separator className="bg-muted" />
 
             {/* Spec cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {specs.map(({ icon: Icon, label, value }) => (
-                <div
-                  key={label}
-                  className="p-3.5 rounded-2xl bg-muted/50/80 border border-border-subtle hover:border-border transition-colors"
-                >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Icon className="h-3.5 w-3.5 text-blue-500" />
-                    <span className="text-[10px] font-semibold text-on-surface-subtle uppercase tracking-wider">
-                      {label}
-                    </span>
+            {specs.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {specs.map(({ icon: Icon, label, value }) => (
+                  <div
+                    key={label}
+                    className="p-3.5 rounded-2xl bg-muted/60 border border-border-subtle hover:border-border transition-colors"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Icon className="h-3.5 w-3.5 text-blue-500" />
+                      <span className="text-[10px] font-semibold text-on-surface-subtle uppercase tracking-wider">
+                        {label}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-on-surface leading-snug">
+                      {value}
+                    </p>
                   </div>
-                  <p className="text-sm font-semibold text-on-surface leading-snug">
-                    {value}
-                  </p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <Separator className="bg-muted" />
 
@@ -427,7 +453,7 @@ export function ProductDetailPage() {
                     <tr
                       key={spec.id}
                       className={
-                        i % 2 === 0 ? 'bg-muted/50/50' : 'bg-white'
+                        i % 2 === 0 ? 'bg-muted/40' : 'bg-white'
                       }
                     >
                       <td className="px-8 py-4 font-semibold text-on-surface-subtle w-1/3">

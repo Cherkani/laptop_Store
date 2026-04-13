@@ -1,6 +1,7 @@
 import { useMemo, useState, type ComponentType } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import {
+  Activity,
   BarChart3,
   CalendarCheck,
   ChevronRight,
@@ -63,6 +64,16 @@ const navGroupsData: NavGroup[] = [
         description: {
           fr: 'Analyses et exports',
           en: 'Analytics and exports',
+        },
+      },
+      {
+        to: '/admin/monitoring',
+        labelKey: 'admin.nav.monitoring',
+        icon: Activity,
+        exact: true,
+        description: {
+          fr: 'Clics et produits les plus vus',
+          en: 'Clicks and most viewed products',
         },
       },
     ],
