@@ -38,12 +38,12 @@ function PeriodFilter({ value, onChange }: { value: Period; onChange: (p: Period
 
 type AdminProduct = Product & { product_images: ProductImage[] }
 
-function StatRow({ label, value, sub, color = 'text-slate-900' }: { label: string; value: string | number; sub?: string; color?: string }) {
+function StatRow({ label, value, sub, color = 'text-on-surface' }: { label: string; value: string | number; sub?: string; color?: string }) {
   return (
     <div className="flex items-center justify-between py-2.5">
       <div>
-        <span className="text-sm text-slate-700">{label}</span>
-        {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
+        <span className="text-sm text-on-surface-subtle">{label}</span>
+        {sub && <p className="text-xs text-on-surface-faint">{sub}</p>}
       </div>
       <span className={`text-sm font-bold ${color}`}>{value}</span>
     </div>
@@ -55,8 +55,8 @@ function BarRow({ label, value, max, color = 'bg-blue-500', sub }: { label: stri
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-700 truncate max-w-[60%]">{label}</span>
-        <span className="text-xs text-muted-foreground">{sub ?? value}</span>
+        <span className="text-sm text-on-surface-subtle truncate max-w-[60%]">{label}</span>
+        <span className="text-xs text-on-surface-faint">{sub ?? value}</span>
       </div>
       <div className="h-2 bg-surface-sunken rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full`} style={{ width: `${pct}%` }} />
@@ -180,7 +180,7 @@ export function AdminReportsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-on-surface">Rapports & Analyse</h1>
-          <p className="text-muted-foreground mt-1">Aperçu du catalogue et performances produits</p>
+          <p className="text-on-surface-subtle mt-1">Aperçu du catalogue et performances produits</p>
         </div>
         <div className="flex items-center gap-2">
           <PeriodFilter value={period} onChange={setPeriod} />
@@ -198,29 +198,29 @@ export function AdminReportsPage() {
             label: `Ajoutés (${PERIOD_LABELS[period].toLowerCase()})`,
             value: isLoading ? '…' : periodProducts.length,
             icon: TrendingUp,
-            color: 'text-cyan-600',
-            bg: 'bg-cyan-50',
+            color: 'text-cyan-500',
+            bg: 'bg-cyan-500/10',
           },
           {
             label: `Clics WhatsApp (${PERIOD_LABELS[period].toLowerCase()})`,
             value: isLoading ? '…' : periodLeads.length,
             icon: MessageCircle,
-            color: 'text-emerald-600',
-            bg: 'bg-emerald-50',
+            color: 'text-emerald-500',
+            bg: 'bg-emerald-500/10',
           },
           {
             label: 'Total catalogue',
             value: isLoading ? '…' : totalProducts,
             icon: Package,
-            color: 'text-blue-600',
-            bg: 'bg-blue-50',
+            color: 'text-blue-500',
+            bg: 'bg-blue-500/10',
           },
           {
             label: 'Valeur inventaire',
             value: isLoading ? '…' : formatPrice(inventoryValue),
             icon: Tag,
-            color: 'text-purple-600',
-            bg: 'bg-purple-50',
+            color: 'text-purple-500',
+            bg: 'bg-purple-500/10',
           },
         ].map(s => (
           <Card key={s.label}>
@@ -253,7 +253,7 @@ export function AdminReportsPage() {
             {periodLeadsByProduct.slice(0, 10).map((item, i) => (
               <div key={i} className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700 truncate max-w-[70%]">
+                  <span className="text-sm text-on-surface-subtle truncate max-w-[70%]">
                     <span className="font-bold text-muted-foreground mr-2">#{i + 1}</span>
                     {item.name}
                   </span>
@@ -274,10 +274,10 @@ export function AdminReportsPage() {
       {/* All-time Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total produits', value: totalProducts, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Unités en stock', value: totalStock, icon: Layers, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Valeur inventaire', value: formatPrice(inventoryValue), icon: Tag, color: 'text-purple-600', bg: 'bg-purple-50' },
-          { label: 'En vedette', value: featuredCount, icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { label: 'Total produits', value: totalProducts, icon: Package, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+          { label: 'Unités en stock', value: totalStock, icon: Layers, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Valeur inventaire', value: formatPrice(inventoryValue), icon: Tag, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+          { label: 'En vedette', value: featuredCount, icon: Star, color: 'text-amber-500', bg: 'bg-amber-500/10' },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="pt-5">
@@ -335,7 +335,7 @@ export function AdminReportsPage() {
                     <div className={`w-3 h-3 rounded-full ${s.color} shrink-0`} />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm text-slate-700">{s.label}</span>
+                        <span className="text-sm text-on-surface-subtle">{s.label}</span>
                         <Badge variant={s.badge} className="text-xs">{s.count}</Badge>
                       </div>
                       <div className="h-1.5 bg-surface-sunken rounded-full">
@@ -369,7 +369,7 @@ export function AdminReportsPage() {
             : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="text-xs uppercase tracking-wide text-slate-500 bg-slate-50">
+                  <thead className="text-xs uppercase tracking-wide text-on-surface-faint bg-surface-sunken">
                     <tr>
                       <th className="text-left px-4 py-2.5">Brand</th>
                       <th className="text-left px-4 py-2.5">Products</th>
@@ -380,7 +380,7 @@ export function AdminReportsPage() {
                   </thead>
                   <tbody className="divide-y">
                     {brandStats.map(([brand, s]) => (
-                      <tr key={brand} className="hover:bg-slate-50">
+                      <tr key={brand} className="hover:bg-surface-sunken">
                         <td className="px-4 py-3 font-medium text-on-surface">{brand}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.count}</td>
                         <td className="px-4 py-3 text-muted-foreground">{s.totalStock}</td>
@@ -530,7 +530,7 @@ export function AdminReportsPage() {
             : (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="bg-slate-50 text-slate-500 uppercase tracking-wide">
+                  <thead className="bg-surface-sunken text-on-surface-faint uppercase tracking-wide">
                     <tr>
                       {['Name', 'Brand', 'Processor', 'RAM', 'Storage', 'Price', 'Stock', 'Value', 'Status'].map(h => (
                         <th key={h} className="text-left px-4 py-2.5">{h}</th>
@@ -539,7 +539,7 @@ export function AdminReportsPage() {
                   </thead>
                   <tbody className="divide-y">
                     {products.map(p => (
-                      <tr key={p.id} className="hover:bg-slate-50">
+                      <tr key={p.id} className="hover:bg-surface-sunken">
                         <td className="px-4 py-2.5 font-medium text-on-surface max-w-[160px] truncate">{p.name}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.brand}</td>
                         <td className="px-4 py-2.5 text-muted-foreground">{p.processor}</td>

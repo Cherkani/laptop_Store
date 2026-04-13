@@ -55,7 +55,7 @@ export function SignupForm() {
   ]
 
   return (
-    <div className="min-h-screen flex bg-white">
+    <div className="min-h-screen flex bg-surface-base">
       {/* Left decorative panel */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-[#1d1d1f] items-center justify-center overflow-hidden">
         {/* Abstract background shapes */}

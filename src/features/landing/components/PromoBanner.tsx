@@ -12,7 +12,7 @@ export function PromoBanner() {
   return (
     <section className="relative overflow-hidden">
       {/* ── full-bleed dark background ── */}
-      <div className="absolute inset-0 bg-[#080c14]" />
+      <div className="absolute inset-0 bg-[#090f1f]" />
 
       {/* background image — right half only */}
       <div className="absolute inset-y-0 right-0 w-full md:w-[62%]">
@@ -23,9 +23,9 @@ export function PromoBanner() {
           className="h-full w-full object-cover object-center opacity-30"
         />
         {/* left-to-right mask so text side stays dark */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080c14] via-[#080c14]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#090f1f] via-[#090f1f]/60 to-transparent" />
         {/* bottom mask */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080c14]/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090f1f]/80 via-transparent to-transparent" />
       </div>
 
       {/* subtle amber glow bottom-left */}
@@ -76,7 +76,7 @@ export function PromoBanner() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-7 py-3.5 text-sm font-bold text-[#070c15] shadow-xl shadow-amber-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/40 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-7 py-3.5 text-sm font-bold text-on-primary shadow-xl shadow-amber-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/40 active:scale-95"
               >
                 Voir toutes les offres
                 <ArrowRight className="h-4 w-4" />

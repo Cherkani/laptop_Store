@@ -72,7 +72,7 @@ export function AdminLayout() {
             <img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain" />
             <div>
               <p className="text-sm font-bold text-on-surface leading-none">TechFiable Pro</p>
-              <p className="text-xs text-slate-400 mt-0.5">Admin Backoffice</p>
+              <p className="text-xs text-on-surface-faint mt-0.5">Admin Backoffice</p>
             </div>
           </Link>
         </div>

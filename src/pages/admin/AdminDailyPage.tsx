@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   CheckCircle2, Circle, Plus, Package, Target, MessageCircle, TrendingUp,
+  Truck, Share2, CheckCheck, XCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -9,7 +10,10 @@ import { AdCheckHeatmap } from '@/features/admin/components/AdCheckHeatmap'
 import { useAdminProducts } from '@/features/admin/hooks/useAdminProducts'
 import { useWhatsAppLeads } from '@/features/admin/hooks/useBackoffice'
 import { getImageSrc, formatPrice } from '@/lib/utils'
-import type { Product, ProductImage } from '@/types/database.types'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { adminService } from '@/features/admin/services/adminService'
+import { toast } from '@/hooks/use-toast'
+import type { Product, ProductImage, Delivery } from '@/types/database.types'
 
 const DAILY_GOAL = 3
 const TODAY = new Date().toISOString().slice(0, 10)
@@ -223,7 +227,7 @@ function CatalogueHeatmap() {
         totalLabel={`ajout${totalAdds !== 1 ? 's' : ''}`}
         total={totalAdds}
         counts={addCounts}
-        colorClass={l => ({ 0: 'bg-surface-sunken dark:bg-slate-800', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[l])}
+        colorClass={l => ({ 0: 'bg-surface-sunken', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[l])}
         tooltip={(date, count) =>
           count === 0
             ? `${date.toLocaleDateString('fr-FR')} — aucun ajout`
@@ -236,7 +240,7 @@ function CatalogueHeatmap() {
         totalLabel={`vérif${totalVerifs !== 1 ? 's' : ''}`}
         total={totalVerifs}
         counts={verifCounts}
-        colorClass={l => ({ 0: 'bg-surface-sunken dark:bg-slate-800', 1: 'bg-amber-200', 2: 'bg-amber-400', 3: 'bg-amber-500', 4: 'bg-amber-700' }[l])}
+        colorClass={l => ({ 0: 'bg-surface-sunken', 1: 'bg-amber-200', 2: 'bg-amber-400', 3: 'bg-amber-500', 4: 'bg-amber-700' }[l])}
         tooltip={(date, count) =>
           count === 0
             ? `${date.toLocaleDateString('fr-FR')} — aucune vérification`
@@ -335,6 +339,167 @@ function DailyPostingTracker() {
   )
 }
 
+// ── Delivery tracker ──────────────────────────────────────────────
+
+const ADMINS = ['Aymen', 'Adam']
+const IG_DAILY_GOAL = 6
+
+function DeliveryTracker() {
+  const qc = useQueryClient()
+  const { data: deliveries = [], isLoading } = useQuery({
+    queryKey: ['deliveries'],
+    queryFn: () => adminService.getDeliveries(),
+  })
+
+  const pending = (deliveries as Delivery[]).filter(d => d.status === 'pending')
+  const deliveredToday = (deliveries as Delivery[]).filter(
+    d => d.status === 'delivered' && d.delivered_at?.slice(0, 10) === TODAY,
+  )
+
+  const [deliveredBy, setDeliveredBy] = useState<Record<string, string>>({})
+
+  const markDelivered = useMutation({
+    mutationFn: ({ id, by }: { id: string; by: string }) => adminService.markDelivered(id, by),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['deliveries'] })
+      toast({ title: 'Livraison confirmée ✓' })
+    },
+    onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+  })
+
+  const markFailed = useMutation({
+    mutationFn: (id: string) => adminService.markDeliveryFailed(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['deliveries'] })
+      toast({ title: 'Livraison marquée échouée' })
+    },
+    onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+  })
+
+  return (
+    <div className="bg-surface-raised rounded-2xl border border-border-faint shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border-faint">
+        <div className="flex items-center gap-2">
+          <Truck className="h-4 w-4 text-cyan-500" />
+          <p className="text-sm font-semibold text-on-surface">Livraisons en attente</p>
+        </div>
+        <div className="flex gap-1.5">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+            {pending.length} en attente
+          </span>
+          {deliveredToday.length > 0 && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+              {deliveredToday.length} livrée{deliveredToday.length > 1 ? 's' : ''} auj.
+            </span>
+          )}
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="p-4 space-y-2">
+          {[1, 2].map(i => <div key={i} className="h-14 bg-surface-sunken rounded-xl animate-pulse" />)}
+        </div>
+      ) : pending.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <CheckCheck className="h-7 w-7 text-emerald-400 mb-2" />
+          <p className="text-sm text-on-surface-subtle">Aucune livraison en attente</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border-faint">
+          {pending.map(d => (
+            <div key={d.id} className="px-5 py-3 flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-on-surface truncate">{d.product_name}</p>
+                {d.client_name && <p className="text-xs text-on-surface-subtle">{d.client_name}{d.client_phone ? ` · ${d.client_phone}` : ''}</p>}
+                {d.address && <p className="text-xs text-on-surface-faint truncate">{d.address}</p>}
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <select
+                  value={deliveredBy[d.id] ?? ''}
+                  onChange={e => setDeliveredBy(prev => ({ ...prev, [d.id]: e.target.value }))}
+                  className="text-xs border border-border-faint rounded-lg px-2 py-1 bg-surface-base text-on-surface h-7"
+                >
+                  <option value="">Qui ?</option>
+                  {ADMINS.map(a => <option key={a} value={a}>{a}</option>)}
+                </select>
+                <button
+                  disabled={!deliveredBy[d.id] || markDelivered.isPending}
+                  onClick={() => markDelivered.mutate({ id: d.id, by: deliveredBy[d.id] })}
+                  title="Confirmer livraison"
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-emerald-500 hover:bg-emerald-500/10 disabled:opacity-30 transition-colors"
+                >
+                  <CheckCheck className="h-4 w-4" />
+                </button>
+                <button
+                  disabled={markFailed.isPending}
+                  onClick={() => markFailed.mutate(d.id)}
+                  title="Marquer échouée"
+                  className="h-7 w-7 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <XCircle className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Instagram objective tracker ────────────────────────────────────
+
+function InstagramObjective() {
+  const { data: rawProducts = [], isLoading } = useAdminProducts()
+  const products = rawProducts as AdminProduct[]
+
+  const postedToday = products.filter(p => p.instagram_posted_at?.slice(0, 10) === TODAY)
+  const done = postedToday.length
+  const met = done >= IG_DAILY_GOAL
+  const pct = Math.min(100, Math.round((done / IG_DAILY_GOAL) * 100))
+
+  return (
+    <div className={cn(
+      'rounded-2xl border shadow-sm overflow-hidden',
+      met ? 'bg-pink-500/5 border-pink-500/20' : done > 0 ? 'bg-pink-500/5 border-pink-500/15' : 'bg-surface-raised border-border-faint',
+    )}>
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border-faint">
+        <div className="flex items-center gap-2">
+          <Share2 className="h-4 w-4 text-pink-500" />
+          <p className="text-sm font-semibold text-on-surface">Objectif Instagram du jour</p>
+        </div>
+        <p className={cn('text-2xl font-bold leading-none', met ? 'text-pink-500' : 'text-on-surface-faint')}>
+          {isLoading ? '…' : done}<span className="text-sm font-normal text-on-surface-faint">/{IG_DAILY_GOAL}</span>
+        </p>
+      </div>
+      <div className="px-5 py-3">
+        <div className="flex-1 h-2 bg-surface-sunken rounded-full overflow-hidden mb-3">
+          <div
+            className={cn('h-full rounded-full transition-all duration-500', met ? 'bg-pink-500' : 'bg-pink-400')}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {Array.from({ length: IG_DAILY_GOAL }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                'flex-1 h-1.5 rounded-full min-w-[16px]',
+                i < done ? 'bg-pink-500' : 'bg-surface-sunken',
+              )}
+            />
+          ))}
+        </div>
+        {!isLoading && (
+          <p className="text-xs text-on-surface-subtle mt-2">
+            {met ? `Objectif atteint ✓ — ${done - IG_DAILY_GOAL > 0 ? `+${done - IG_DAILY_GOAL} bonus` : 'parfait !'}` : `${IG_DAILY_GOAL - done} post${IG_DAILY_GOAL - done > 1 ? 's' : ''} restant${IG_DAILY_GOAL - done > 1 ? 's' : ''}`}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── WhatsApp click stats ───────────────────────────────────────────
 
 function WhatsAppStats({ period }: { period: Period }) {
@@ -394,7 +559,7 @@ function WhatsAppStats({ period }: { period: Period }) {
             Clics WhatsApp
           </p>
           <div className="flex gap-1.5">
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
               {todayCount} auj.
             </span>
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-sunken text-on-surface-subtle border border-border-faint">
@@ -502,12 +667,14 @@ export function AdminDailyPage() {
         {/* Left — 2/3 */}
         <div className="lg:col-span-2 space-y-6">
           <DailyPostingTracker />
+          <DeliveryTracker />
           <CatalogueHeatmap />
           <AdCheckHeatmap />
         </div>
 
         {/* Right — 1/3 */}
         <div className="space-y-6">
+          <InstagramObjective />
           <WhatsAppStats period={period} />
         </div>
       </div>

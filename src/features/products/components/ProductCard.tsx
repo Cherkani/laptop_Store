@@ -100,10 +100,10 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-white via-white to-[#f7f9fc] shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-[6px] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)] dark:border-slate-800 dark:from-[#0f172a] dark:via-[#0b1220] dark:to-[#070b14] dark:shadow-[0_10px_30px_rgba(0,0,0,0.65)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.8)]">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface-raised shadow-[0_2px_16px_hsl(var(--foreground)/0.06)] transition-all duration-250 hover:-translate-y-[5px] hover:shadow-[0_14px_36px_hsl(var(--foreground)/0.11)]">
 
         {/* Image area */}
-        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#f2f5fb] via-white to-[#eef3ff] dark:from-[#121a2b] dark:via-[#0d1422] dark:to-[#0a0f1c]">
+        <div className="relative aspect-square overflow-hidden bg-surface-sunken">
           {primarySrc ? (
             <>
               <img
@@ -153,7 +153,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Discount badge top-right */}
           {savings !== null && (
-            <span className="absolute right-3 top-3 rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-on-surface">
+            <span className="absolute right-3 top-3 rounded-full bg-red-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
               -{savings}%
             </span>
           )}
@@ -163,7 +163,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex flex-1 flex-col gap-3 p-4">
           {/* Brand + rating */}
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-on-surface-faint dark:text-slate-400">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-on-surface-faint">
               {product.brand}
             </p>
             <div className="flex items-center gap-1">
@@ -173,33 +173,33 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           {/* Name */}
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-on-surface transition-colors duration-200 group-hover:text-amber-500 dark:text-slate-100">
+          <h3 className="line-clamp-2 text-sm font-bold leading-snug tracking-[-0.01em] text-on-surface transition-colors duration-200 group-hover:text-amber-500">
             {product.name}
           </h3>
 
           {/* Specs */}
-          <p className="line-clamp-1 text-[11px] text-on-surface-faint dark:text-slate-400">
+          <p className="line-clamp-1 text-[11px] text-on-surface-faint">
             {product.processor} · {product.ram} · {product.storage}
           </p>
 
           {/* Price */}
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold tracking-tight text-on-surface dark:text-slate-50">
+              <span className="num text-xl font-extrabold tracking-[-0.02em] text-on-surface">
                 {formatPrice(product.price)}
               </span>
               {product.original_price && product.original_price > product.price && (
-                <span className="text-xs text-on-surface-faint line-through dark:text-slate-500">
+                <span className="num text-xs text-on-surface-faint line-through">
                   {formatPrice(product.original_price)}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-on-surface-faint dark:text-slate-400">TVA incluse · Paiement en 3x</p>
+            <p className="text-[11px] text-on-surface-faint">TVA incluse · Paiement en 3x</p>
           </div>
 
           {/* Screen size */}
           {product.screen_size && (
-            <span className="w-fit rounded-full border border-border-subtle bg-surface-raised/60 px-2.5 py-0.5 text-[11px] font-medium text-on-surface-faint dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300">
+            <span className="w-fit rounded-full border border-border-subtle bg-surface-sunken px-2.5 py-0.5 text-[11px] font-medium text-on-surface-subtle">
               {product.screen_size}
             </span>
           )}
@@ -210,7 +210,7 @@ export function ProductCard({ product }: ProductCardProps) {
               size="sm"
               onClick={handleAddToCart}
               disabled={isOutOfStock || isAdding}
-              className="flex-1 rounded-xl bg-amber-500 text-xs font-bold text-[#0a0f1a] shadow-md shadow-amber-500/20 hover:bg-amber-400 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-amber-500 text-xs font-bold text-on-primary shadow-md shadow-amber-500/20 hover:bg-amber-400 disabled:opacity-50"
             >
               <ShoppingCart className="mr-1.5 h-3.5 w-3.5" />
               {isAdding ? 'Ajout...' : 'Ajouter'}
@@ -227,17 +227,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </Button>
           </div>
 
-          {/* Voir le produit - shows on hover */}
-          <div
-            className={cn(
-              'overflow-hidden transition-all duration-300',
-              isHovered ? 'max-h-10 opacity-100' : 'max-h-0 opacity-0',
-            )}
-          >
-            <div className="flex items-center justify-center rounded-xl border border-border-subtle bg-surface-raised/60 py-2 text-xs font-semibold text-on-surface-subtle">
-              Voir le produit →
-            </div>
-          </div>
         </div>
       </div>
 

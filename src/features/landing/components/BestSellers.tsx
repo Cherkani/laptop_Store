@@ -71,7 +71,7 @@ export function BestSellers() {
                 className={cn(
                   'rounded-lg px-5 py-2 text-sm font-semibold transition-all duration-200',
                   activeOS === os
-                    ? 'bg-[#0f5dcf] text-on-surface shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
+                    ? 'bg-brand-blue text-white shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
                     : 'text-on-surface-subtle hover:text-on-surface-muted',
                 )}
               >

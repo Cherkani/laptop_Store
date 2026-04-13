@@ -392,7 +392,7 @@ export function FeaturedProducts() {
                     <button
                       onClick={handleAddToCart}
                       disabled={frontItem.stock_quantity === 0 || isAdding}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/25 transition hover:bg-amber-400 active:scale-[0.97] disabled:opacity-50"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-bold text-on-primary shadow-lg shadow-amber-500/25 transition hover:bg-amber-400 active:scale-[0.97] disabled:opacity-50"
                     >
                       <ShoppingCart className="h-4 w-4" />
                       {isAdding ? 'Ajout…' : 'Ajouter au panier'}

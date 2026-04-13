@@ -59,7 +59,14 @@ export default {
           sunken:  'hsl(var(--surface-sunken))',  /* info bars, top bars    */
           raised:  'hsl(var(--surface-raised))',  /* cards, panels          */
           overlay: 'hsl(var(--surface-overlay))', /* drawers, modals        */
+          ink:     'hsl(var(--surface-ink))',     /* always-dark sections   */
         },
+
+        /* ── Accent button token (dark navy text on amber background) ── */
+        'on-primary': 'hsl(var(--primary-foreground))',  /* resolves to deep navy, not pure black */
+
+        /* ── Brand blue (filter tabs, advisor links, progress bars) ── */
+        'brand-blue': 'hsl(var(--brand-blue))',
 
         /* ── On-surface text tokens (use these instead of text-white/XX) ── */
         'on-surface': {

@@ -88,14 +88,14 @@ export function ActivityHeatmap() {
   })
 
   if (isLoading) {
-    return <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 h-40 animate-pulse" />
+    return <div className="bg-surface-raised rounded-2xl border border-border-faint shadow-sm p-5 h-40 animate-pulse" />
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+    <div className="bg-surface-raised rounded-2xl border border-border-faint shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold text-slate-900">Activité catalogue</p>
-        <span className="text-xs font-medium text-slate-400">{products.length} produits ajoutés (12 mois)</span>
+        <p className="text-sm font-semibold text-on-surface">Activité catalogue</p>
+        <span className="text-xs font-medium text-on-surface-faint">{products.length} produits ajoutés (12 mois)</span>
       </div>
 
       <div className="overflow-x-auto">
@@ -105,7 +105,7 @@ export function ActivityHeatmap() {
               const ml = monthLabels.find(m => m.col === col)
               return (
                 <div key={col} className="shrink-0" style={{ width: 11, marginRight: 2 }}>
-                  {ml && <span className="text-[10px] text-slate-400 whitespace-nowrap">{ml.label}</span>}
+                  {ml && <span className="text-[10px] text-on-surface-faint whitespace-nowrap">{ml.label}</span>}
                 </div>
               )
             })}
@@ -114,7 +114,7 @@ export function ActivityHeatmap() {
           <div className="flex gap-[2px]">
             <div className="flex flex-col gap-[2px] mr-1 shrink-0">
               {['', 'Lun', '', 'Mer', '', 'Ven', ''].map((d, i) => (
-                <div key={i} className="h-[11px] text-[9px] text-slate-300 flex items-center" style={{ width: 16 }}>
+                <div key={i} className="h-[11px] text-[9px] text-on-surface-faint flex items-center" style={{ width: 16 }}>
                   {d}
                 </div>
               ))}
@@ -139,8 +139,8 @@ export function ActivityHeatmap() {
                       className={cn(
                         'rounded-[2px] shrink-0',
                         isFuture
-                          ? 'bg-slate-50'
-                          : ({ 0: 'bg-slate-100', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[level]),
+                          ? 'bg-surface-sunken opacity-50'
+                          : ({ 0: 'bg-surface-sunken', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[level]),
                       )}
                       style={{ width: 11, height: 11 }}
                     />
@@ -151,15 +151,15 @@ export function ActivityHeatmap() {
           </div>
 
           <div className="flex items-center gap-1.5 mt-3 justify-end">
-            <span className="text-[10px] text-slate-400">Moins</span>
+            <span className="text-[10px] text-on-surface-faint">Moins</span>
             {([0, 1, 2, 3, 4] as const).map(l => (
               <div
                 key={l}
-                className={cn('rounded-[2px]', { 0: 'bg-slate-100', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[l])}
+                className={cn('rounded-[2px]', { 0: 'bg-surface-sunken', 1: 'bg-cyan-200', 2: 'bg-cyan-400', 3: 'bg-cyan-500', 4: 'bg-cyan-700' }[l])}
                 style={{ width: 11, height: 11 }}
               />
             ))}
-            <span className="text-[10px] text-slate-400">Plus</span>
+            <span className="text-[10px] text-on-surface-faint">Plus</span>
           </div>
         </div>
       </div>

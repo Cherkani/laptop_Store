@@ -58,6 +58,8 @@ export interface Database {
           stock_quantity: number
           is_featured: boolean
           category: string
+          instagram_posted_at: string | null
+          unavailable_reason: string | null
           created_by: string | null
           updated_by: string | null
           created_at: string
@@ -81,6 +83,8 @@ export interface Database {
           stock_quantity?: number
           is_featured?: boolean
           category?: string
+          instagram_posted_at?: string | null
+          unavailable_reason?: string | null
           created_by?: string | null
           updated_by?: string | null
           created_at?: string
@@ -104,12 +108,70 @@ export interface Database {
           stock_quantity?: number
           is_featured?: boolean
           category?: string
+          instagram_posted_at?: string | null
+          unavailable_reason?: string | null
           created_by?: string | null
           updated_by?: string | null
           created_at?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      deliveries: {
+        Row: {
+          id: string
+          product_id: string | null
+          product_name: string
+          client_name: string | null
+          client_phone: string | null
+          address: string | null
+          notes: string | null
+          status: 'pending' | 'delivered' | 'failed'
+          delivered_by: string | null
+          delivered_at: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id?: string | null
+          product_name: string
+          client_name?: string | null
+          client_phone?: string | null
+          address?: string | null
+          notes?: string | null
+          status?: 'pending' | 'delivered' | 'failed'
+          delivered_by?: string | null
+          delivered_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          client_name?: string | null
+          client_phone?: string | null
+          address?: string | null
+          notes?: string | null
+          status?: 'pending' | 'delivered' | 'failed'
+          delivered_by?: string | null
+          delivered_at?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       product_images: {
         Row: {
@@ -381,6 +443,7 @@ export interface Database {
 }
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
+export type Delivery = Database['public']['Tables']['deliveries']['Row']
 export type Product = Database['public']['Tables']['products']['Row']
 export type ProductImage = Database['public']['Tables']['product_images']['Row']
 export type Specification = Database['public']['Tables']['specifications']['Row']

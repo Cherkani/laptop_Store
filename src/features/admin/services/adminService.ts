@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Product, ProductImage, Specification } from '@/types/database.types'
+import type { Delivery, Product, ProductImage, Specification } from '@/types/database.types'
 
 export type ProductInsert = {
   name: string
@@ -83,7 +83,7 @@ export const adminService = {
     if (error) throw error
   },
 
-  // Mark as sold/gone on the source — hide from catalog
+  // Mark as sold/gone on the source — hide from catalog (legacy, no reason)
   async markUnavailable(id: string, note?: string) {
     const { error } = await supabase
       .from('products')
@@ -91,6 +91,33 @@ export const adminService = {
         is_available: false,
         last_checked_at: new Date().toISOString(),
         availability_note: note ?? 'Vendu chez la source',
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  // Mark unavailable with a structured reason
+  async markUnavailableWithReason(id: string, reason: string, note?: string) {
+    const { error } = await supabase
+      .from('products')
+      .update({
+        is_available: false,
+        unavailable_reason: reason,
+        last_checked_at: new Date().toISOString(),
+        availability_note: note ?? null,
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  // Mark product as posted on Instagram
+  async markInstagramPosted(id: string) {
+    const { error } = await supabase
+      .from('products')
+      .update({
+        instagram_posted_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       } as never)
       .eq('id', id)
@@ -138,6 +165,55 @@ export const adminService = {
   async deleteProductImage(imageId: string, imagePath: string) {
     await supabase.storage.from('product-images').remove([imagePath])
     const { error } = await supabase.from('product_images').delete().eq('id', imageId)
+    if (error) throw error
+  },
+
+  // ── Deliveries ────────────────────────────────────────────────
+
+  async getDeliveries(): Promise<Delivery[]> {
+    const { data, error } = await supabase
+      .from('deliveries')
+      .select('*')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    return (data ?? []) as Delivery[]
+  },
+
+  async createDelivery(draft: {
+    product_id?: string | null
+    product_name: string
+    client_name?: string | null
+    client_phone?: string | null
+    address?: string | null
+    notes?: string | null
+  }): Promise<Delivery> {
+    const { data, error } = await supabase
+      .from('deliveries')
+      .insert({ ...draft, status: 'pending' } as never)
+      .select()
+      .single()
+    if (error) throw error
+    return data as unknown as Delivery
+  },
+
+  async markDelivered(id: string, deliveredBy: string): Promise<void> {
+    const { error } = await supabase
+      .from('deliveries')
+      .update({
+        status: 'delivered',
+        delivered_by: deliveredBy,
+        delivered_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  async markDeliveryFailed(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('deliveries')
+      .update({ status: 'failed', updated_at: new Date().toISOString() } as never)
+      .eq('id', id)
     if (error) throw error
   },
 

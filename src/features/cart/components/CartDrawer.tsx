@@ -107,7 +107,7 @@ export function CartDrawer() {
               <Button
                 asChild
                 onClick={closeCart}
-                className="rounded-xl bg-amber-500 px-8 text-sm font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/20 hover:bg-amber-400"
+                className="rounded-xl bg-amber-500 px-8 text-sm font-bold text-on-primary shadow-lg shadow-amber-500/20 hover:bg-amber-400"
               >
                 <Link to="/products">Explorer les laptops</Link>
               </Button>
@@ -205,7 +205,7 @@ export function CartDrawer() {
             </p>
 
             {/* Checkout CTA */}
-            <Button className="h-12 w-full rounded-xl bg-amber-500 text-[15px] font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/30 active:scale-95">
+            <Button className="h-12 w-full rounded-xl bg-amber-500 text-[15px] font-bold text-on-primary shadow-lg shadow-amber-500/25 transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/30 active:scale-95">
               Commander
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

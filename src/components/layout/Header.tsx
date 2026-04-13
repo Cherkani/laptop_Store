@@ -239,7 +239,7 @@ export function Header() {
                           <Link
                             key={brand}
                             to={`/products?os=${item.key === 'windows' ? 'Windows' : 'macOS'}&brand=${encodeURIComponent(brand.replace('MacBook ', 'Apple'))}`}
-                            className="group flex items-center gap-2 rounded-xl border border-border/70 bg-white/80 px-3.5 py-2.5 text-[14px] font-semibold text-foreground/80 transition hover:-translate-y-[1px] hover:border-amber-400/70 hover:bg-white hover:text-foreground shadow-sm"
+                            className="group flex items-center gap-2 rounded-xl border border-border/70 bg-surface-raised/80 px-3.5 py-2.5 text-[14px] font-semibold text-foreground/80 transition hover:-translate-y-[1px] hover:border-amber-400/70 hover:bg-surface-raised hover:text-foreground shadow-sm"
                           >
                             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-foreground/[0.03]">
                               <img
@@ -254,7 +254,7 @@ export function Header() {
                       </div>
                       <Link
                         to={item.href}
-                        className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-amber-500 py-3 text-sm font-bold tracking-tight text-[#0a0f1a] shadow-lg shadow-amber-500/25 transition hover:bg-amber-400"
+                        className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-amber-500 py-3 text-sm font-bold tracking-tight text-on-primary shadow-lg shadow-amber-500/25 transition hover:bg-amber-400"
                       >
                         Voir tout {item.key === 'windows' ? 'Windows' : 'Mac'}
                       </Link>
@@ -348,9 +348,9 @@ export function Header() {
                 {isUserMenuOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
-                    <div className="absolute right-0 top-full z-60 mt-2 w-64 rounded-2xl border border-white/10 bg-white/90 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl dark:border-white/5 dark:bg-[#0b1220]/90">
+                    <div className="absolute right-0 top-full z-60 mt-2 w-64 rounded-2xl border border-border-faint bg-surface-overlay/90 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl">
                       <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/30">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-bold text-on-primary shadow-lg shadow-amber-500/30">
                           {userInitial}
                         </div>
                         <div className="min-w-0">
@@ -398,7 +398,7 @@ export function Header() {
                 <Button
                   size="sm"
                   asChild
-                  className="rounded-full bg-amber-500 text-[#0a0f1a] shadow-md shadow-amber-500/20 hover:bg-amber-400"
+                  className="rounded-full bg-amber-500 text-on-primary shadow-md shadow-amber-500/20 hover:bg-amber-400"
                 >
                   <Link to="/signup">{t('auth.signUp')}</Link>
                 </Button>
@@ -499,7 +499,7 @@ export function Header() {
                     <Link to="/login">{t('auth.signIn')}</Link>
                   </Button>
                   <Button
-                    className="flex-1 rounded-full bg-amber-500 text-[#0a0f1a] hover:bg-amber-400"
+                    className="flex-1 rounded-full bg-amber-500 text-on-primary hover:bg-amber-400"
                     asChild
                     onClick={() => setIsMenuOpen(false)}
                   >

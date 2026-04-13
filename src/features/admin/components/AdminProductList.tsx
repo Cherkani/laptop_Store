@@ -1,14 +1,25 @@
 import { useState } from 'react'
-import { Pencil, Trash2, Plus, Search, Loader2, PackageOpen, ExternalLink, EyeOff, Eye, LayoutGrid, LayoutList } from 'lucide-react'
+import { Pencil, Trash2, Plus, Search, Loader2, PackageOpen, ExternalLink, EyeOff, Eye, LayoutGrid, LayoutList, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdminProducts, useDeleteProduct, useToggleAvailability } from '../hooks/useAdminProducts'
 import { useAdminProfiles } from '../hooks/useBackoffice'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { adminService } from '../services/adminService'
+import { toast } from '@/hooks/use-toast'
 import { formatPrice, getImageSrc } from '@/lib/utils'
 import { StockBadge } from '@/components/shared/StockBadge'
 import type { Product, ProductImage, Profile } from '@/types/database.types'
+
+const UNAVAILABLE_REASONS = [
+  { value: 'vendu_source', label: 'Vendu chez la source' },
+  { value: 'prix_change',  label: 'Prix changé — plus rentable' },
+  { value: 'retire',       label: 'Annonce retirée par le vendeur' },
+  { value: 'autre',        label: 'Autre raison' },
+]
 
 type ProductWithImages = Product & {
   product_images: ProductImage[]
@@ -17,6 +28,8 @@ type ProductWithImages = Product & {
   margin_amount?: number | null
   is_available?: boolean
   created_by?: string | null
+  instagram_posted_at?: string | null
+  unavailable_reason?: string | null
 }
 
 function AuthorChip({ userId, profiles }: { userId: string | null | undefined; profiles: Profile[] }) {
@@ -29,7 +42,7 @@ function AuthorChip({ userId, profiles }: { userId: string | null | undefined; p
     Aymen: 'bg-cyan-100 text-cyan-700',
     Adam:  'bg-violet-100 text-violet-700',
   }
-  const colorClass = colors[name] ?? 'bg-slate-100 text-slate-600'
+  const colorClass = colors[name] ?? 'bg-surface-sunken text-on-surface-subtle'
   return (
     <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${colorClass}`}>
       <span className="w-3.5 h-3.5 rounded-full bg-current/20 flex items-center justify-center text-[9px] font-bold leading-none">
@@ -46,6 +59,7 @@ interface AdminProductListProps {
 }
 
 export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
+  const qc = useQueryClient()
   const { data: products = [], isLoading } = useAdminProducts()
   const { data: profiles = [] } = useAdminProfiles()
   const deleteProduct = useDeleteProduct()
@@ -54,6 +68,28 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
   const [filter, setFilter] = useState<'all' | 'available' | 'unavailable'>('all')
   const [view, setView] = useState<'list' | 'grid'>('list')
   const [deleteTarget, setDeleteTarget] = useState<ProductWithImages | null>(null)
+  const [hideTarget, setHideTarget] = useState<ProductWithImages | null>(null)
+  const [hideReason, setHideReason] = useState('vendu_source')
+
+  const instagramMut = useMutation({
+    mutationFn: (id: string) => adminService.markInstagramPosted(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-products'] })
+      toast({ title: 'Posté sur Instagram ✓' })
+    },
+    onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+  })
+
+  const hideMut = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      adminService.markUnavailableWithReason(id, reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-products'] })
+      toast({ title: 'Produit masqué', description: UNAVAILABLE_REASONS.find(r => r.value === hideReason)?.label })
+      setHideTarget(null)
+    },
+    onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+  })
 
   const filtered = (products as ProductWithImages[]).filter(p => {
     const matchesSearch =
@@ -72,7 +108,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
     return (
       <div className="space-y-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-16 bg-slate-100 rounded-xl animate-pulse" />
+          <div key={i} className="h-16 bg-surface-sunken rounded-xl animate-pulse" />
         ))}
       </div>
     )
@@ -84,46 +120,46 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           <div className="relative w-full sm:w-60">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-on-surface-faint" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Marque, nom..."
-              className="pl-9 h-9 bg-white"
+              className="pl-9 h-9 bg-surface-raised"
             />
           </div>
           {/* Filter tabs */}
-          <div className="flex rounded-lg border bg-white overflow-hidden text-xs font-medium shadow-sm">
+          <div className="flex rounded-lg border border-border-faint bg-surface-raised overflow-hidden text-xs font-medium shadow-sm">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-1.5 transition-colors ${filter === 'all' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-3 py-1.5 transition-colors ${filter === 'all' ? 'bg-on-surface text-white' : 'text-on-surface-subtle hover:bg-surface-sunken'}`}
             >
               Tous ({products.length})
             </button>
             <button
               onClick={() => setFilter('available')}
-              className={`px-3 py-1.5 transition-colors border-x ${filter === 'available' ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-3 py-1.5 transition-colors border-x border-border-faint ${filter === 'available' ? 'bg-emerald-600 text-white' : 'text-on-surface-subtle hover:bg-surface-sunken'}`}
             >
               Dispo ({availableCount})
             </button>
             <button
               onClick={() => setFilter('unavailable')}
-              className={`px-3 py-1.5 transition-colors ${filter === 'unavailable' ? 'bg-red-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-3 py-1.5 transition-colors ${filter === 'unavailable' ? 'bg-red-500 text-white' : 'text-on-surface-subtle hover:bg-surface-sunken'}`}
             >
               Masqués ({unavailableCount})
             </button>
           </div>
           {/* View toggle */}
-          <div className="flex rounded-lg border bg-white overflow-hidden shadow-sm">
+          <div className="flex rounded-lg border border-border-faint bg-surface-raised overflow-hidden shadow-sm">
             <button
               onClick={() => setView('list')}
-              className={`px-2.5 py-1.5 transition-colors ${view === 'list' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-50'}`}
+              className={`px-2.5 py-1.5 transition-colors ${view === 'list' ? 'bg-on-surface text-white' : 'text-on-surface-faint hover:bg-surface-sunken'}`}
             >
               <LayoutList className="h-4 w-4" />
             </button>
             <button
               onClick={() => setView('grid')}
-              className={`px-2.5 py-1.5 transition-colors border-l ${view === 'grid' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-50'}`}
+              className={`px-2.5 py-1.5 transition-colors border-l border-border-faint ${view === 'grid' ? 'bg-on-surface text-white' : 'text-on-surface-faint hover:bg-surface-sunken'}`}
             >
               <LayoutGrid className="h-4 w-4" />
             </button>
@@ -137,12 +173,12 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
 
       {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border bg-white">
-          <PackageOpen className="h-12 w-12 text-slate-200 mb-4" />
-          <h3 className="font-semibold text-slate-700">
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl border border-border-faint bg-surface-raised">
+          <PackageOpen className="h-12 w-12 text-on-surface-faint mb-4" />
+          <h3 className="font-semibold text-on-surface-subtle">
             {search ? 'Aucun résultat' : filter === 'unavailable' ? 'Aucun produit masqué' : 'Catalogue vide'}
           </h3>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-on-surface-faint mt-1">
             {search ? 'Essayez un autre terme' : 'Ajoutez votre premier laptop'}
           </p>
           {!search && filter === 'all' && (
@@ -153,10 +189,10 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
         </div>
       ) : view === 'list' ? (
         /* ── LIST VIEW ── */
-        <div className="rounded-2xl border overflow-hidden bg-white shadow-sm">
+        <div className="rounded-2xl border border-border-faint overflow-hidden bg-surface-raised shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-400 text-[11px] uppercase tracking-wider">
+              <thead className="bg-surface-sunken text-on-surface-faint text-[11px] uppercase tracking-wider">
                 <tr>
                   <th className="text-left px-5 py-3 font-semibold">Produit</th>
                   <th className="text-left px-4 py-3 font-semibold">Marque</th>
@@ -167,7 +203,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                   <th className="text-right px-5 py-3 font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-border-faint">
                 {filtered.map(product => {
                   const images = product.product_images?.sort((a, b) => a.display_order - b.display_order) ?? []
                   const image = images.find(i => i.is_primary) ?? images[0]
@@ -176,14 +212,14 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                   return (
                     <tr
                       key={product.id}
-                      className={`transition-colors group ${isAvailable ? 'hover:bg-slate-50/60' : 'bg-red-50/30 hover:bg-red-50/50'}`}
+                      className={`transition-colors group ${isAvailable ? 'hover:bg-surface-sunken' : 'bg-red-500/5 hover:bg-red-500/10'}`}
                     >
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200 relative">
+                          <div className="w-11 h-11 rounded-xl bg-surface-sunken overflow-hidden shrink-0 border border-border-faint relative">
                             {image
                               ? <img src={getImageSrc(image) ?? ''} alt={product.name} className="w-full h-full object-cover" />
-                              : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300 text-lg">□</div>
+                              : <div className="w-full h-full flex items-center justify-center text-on-surface-faint text-lg">□</div>
                             }
                             {!isAvailable && (
                               <div className="absolute inset-0 bg-red-400/30 flex items-center justify-center">
@@ -193,14 +229,14 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                           </div>
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <p className="font-semibold text-slate-900 line-clamp-1 text-sm">{product.name}</p>
+                              <p className="font-semibold text-on-surface line-clamp-1 text-sm">{product.name}</p>
                               {product.source_url && (
                                 <a
                                   href={product.source_url}
                                   target="_blank"
                                   rel="noreferrer"
                                   onClick={e => e.stopPropagation()}
-                                  className="text-blue-300 hover:text-blue-500 shrink-0"
+                                  className="text-brand-blue hover:opacity-70 shrink-0"
                                   title="Store source"
                                 >
                                   <ExternalLink className="h-3 w-3" />
@@ -208,33 +244,33 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                               )}
                             </div>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              <p className="text-xs text-slate-400">{product.processor} · {product.ram} · {product.storage}</p>
+                              <p className="text-xs text-on-surface-faint">{product.processor} · {product.ram} · {product.storage}</p>
                               <AuthorChip userId={product.created_by} profiles={profiles} />
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-sm text-slate-600 font-medium">{product.brand}</span>
+                        <span className="text-sm text-on-surface-subtle font-medium">{product.brand}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-sm font-bold text-slate-900">{formatPrice(product.price)}</span>
+                        <span className="text-sm font-bold text-on-surface">{formatPrice(product.price)}</span>
                         {product.source_price != null && (
-                          <p className="text-[11px] text-slate-400">Achat: {formatPrice(product.source_price)}</p>
+                          <p className="text-[11px] text-on-surface-faint">Achat: {formatPrice(product.source_price)}</p>
                         )}
                       </td>
                       <td className="px-4 py-3.5">
                         {hasMargin ? (
-                          <span className="text-sm font-semibold text-emerald-600">+{formatPrice(product.margin_amount!)}</span>
+                          <span className="text-sm font-semibold text-emerald-500">+{formatPrice(product.margin_amount!)}</span>
                         ) : (
-                          <span className="text-xs text-slate-300">—</span>
+                          <span className="text-xs text-on-surface-faint">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`text-sm font-bold ${
                           product.stock_quantity === 0 ? 'text-red-500'
                           : product.stock_quantity <= 3 ? 'text-amber-500'
-                          : 'text-emerald-600'
+                          : 'text-emerald-500'
                         }`}>
                           {product.stock_quantity}
                         </span>
@@ -242,31 +278,57 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                       <td className="px-4 py-3.5">
                         <div className="flex gap-1 flex-wrap">
                           {isAvailable
-                            ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">● Visible</span>
-                            : <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-600">● Masqué</span>
+                            ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-500">● Visible</span>
+                            : <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-500">● Masqué</span>
                           }
-                          {product.is_featured && <Badge className="text-[10px] h-5 bg-amber-100 text-amber-700 hover:bg-amber-100">⭐</Badge>}
+                          {product.is_featured && <Badge className="text-[10px] h-5 bg-amber-500/10 text-amber-500 hover:bg-amber-500/10">⭐</Badge>}
+                          {product.instagram_posted_at && <Badge className="text-[10px] h-5 bg-pink-500/10 text-pink-500 hover:bg-pink-500/10 gap-0.5"><Share2 className="h-2.5 w-2.5" />IG</Badge>}
                           <StockBadge quantity={product.stock_quantity} />
                         </div>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={() => toggleAvailability.mutate({ id: product.id, is_available: !isAvailable })}
-                            disabled={toggleAvailability.isPending}
-                            title={isAvailable ? 'Masquer du catalogue' : 'Remettre en vente'}
-                            className={`h-8 w-8 rounded-lg flex items-center justify-center transition-colors ${
-                              isAvailable
-                                ? 'text-slate-400 hover:text-red-500 hover:bg-red-50'
-                                : 'text-emerald-500 hover:bg-emerald-50'
-                            }`}
-                          >
-                            {isAvailable ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                          </button>
+                          {/* Instagram posted indicator / button */}
+                          {product.instagram_posted_at ? (
+                            <span
+                              title={`Posté le ${new Date(product.instagram_posted_at).toLocaleDateString('fr-FR')}`}
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-pink-500"
+                            >
+                              <Share2 className="h-3.5 w-3.5" />
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => instagramMut.mutate(product.id)}
+                              disabled={instagramMut.isPending}
+                              title="Marquer comme posté sur Instagram"
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-on-surface-faint hover:text-pink-500 hover:bg-pink-500/10 transition-colors"
+                            >
+                              <Share2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {/* Hide / show */}
+                          {isAvailable ? (
+                            <button
+                              onClick={() => { setHideReason('vendu_source'); setHideTarget(product) }}
+                              title="Masquer du catalogue"
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-on-surface-faint hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                            >
+                              <EyeOff className="h-3.5 w-3.5" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => toggleAvailability.mutate({ id: product.id, is_available: true })}
+                              disabled={toggleAvailability.isPending}
+                              title="Remettre en vente"
+                              className="h-8 w-8 rounded-lg flex items-center justify-center text-emerald-500 hover:bg-emerald-500/10 transition-colors"
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 gap-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                            className="h-8 gap-1.5 text-on-surface-subtle hover:text-on-surface hover:bg-surface-sunken"
                             onClick={() => onEdit(product.id)}
                           >
                             <Pencil className="h-3.5 w-3.5" />
@@ -274,7 +336,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                           </Button>
                           <button
                             onClick={() => setDeleteTarget(product)}
-                            className="h-8 w-8 rounded-lg flex items-center justify-center text-red-300 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            className="h-8 w-8 rounded-lg flex items-center justify-center text-on-surface-faint hover:text-red-500 hover:bg-red-500/10 transition-colors"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -286,7 +348,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
               </tbody>
             </table>
           </div>
-          <div className="px-5 py-2.5 bg-slate-50 border-t text-xs text-slate-400">
+          <div className="px-5 py-2.5 bg-surface-sunken border-t border-border-faint text-xs text-on-surface-faint">
             {filtered.length} produit{filtered.length > 1 ? 's' : ''} affiché{filtered.length > 1 ? 's' : ''} sur {products.length}
           </div>
         </div>
@@ -317,6 +379,12 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                   {product.is_featured && (
                     <span className="absolute top-2 left-2 bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">⭐ Featured</span>
                   )}
+                  {/* Instagram badge */}
+                  {product.instagram_posted_at && (
+                    <span className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1" title="Posté sur Instagram">
+                      <Share2 className="h-3 w-3" />
+                    </span>
+                  )}
                   {/* Actions overlay */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     <button
@@ -325,12 +393,31 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
-                    <button
-                      onClick={() => toggleAvailability.mutate({ id: product.id, is_available: !isAvailable })}
-                      className={`h-9 w-9 rounded-xl bg-white flex items-center justify-center transition-colors ${isAvailable ? 'text-slate-700 hover:bg-red-400 hover:text-white' : 'text-emerald-600 hover:bg-emerald-400 hover:text-white'}`}
-                    >
-                      {isAvailable ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                    {isAvailable ? (
+                      <button
+                        onClick={() => { setHideReason('vendu_source'); setHideTarget(product) }}
+                        className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-slate-700 hover:bg-red-400 hover:text-white transition-colors"
+                      >
+                        <EyeOff className="h-4 w-4" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => toggleAvailability.mutate({ id: product.id, is_available: true })}
+                        className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-emerald-600 hover:bg-emerald-400 hover:text-white transition-colors"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    )}
+                    {!product.instagram_posted_at && (
+                      <button
+                        onClick={() => instagramMut.mutate(product.id)}
+                        disabled={instagramMut.isPending}
+                        className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-pink-400 hover:bg-pink-500 hover:text-white transition-colors"
+                        title="Marquer posté sur Instagram"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </button>
+                    )}
                     <button
                       onClick={() => setDeleteTarget(product)}
                       className="h-9 w-9 rounded-xl bg-white flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors"
@@ -371,6 +458,40 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
           })}
         </div>
       )}
+
+      {/* Hide-with-reason dialog */}
+      <Dialog open={!!hideTarget} onOpenChange={open => !open && setHideTarget(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Masquer le produit</DialogTitle>
+            <DialogDescription>
+              Choisissez la raison pour masquer <strong className="text-slate-900">{hideTarget?.name}</strong> du catalogue.
+            </DialogDescription>
+          </DialogHeader>
+          <Select value={hideReason} onValueChange={setHideReason}>
+            <SelectTrigger className="mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {UNAVAILABLE_REASONS.map(r => (
+                <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={() => setHideTarget(null)}>Annuler</Button>
+            <Button
+              variant="destructive"
+              disabled={hideMut.isPending}
+              onClick={() => {
+                if (hideTarget) hideMut.mutate({ id: hideTarget.id, reason: hideReason })
+              }}
+            >
+              {hideMut.isPending ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Masquage...</> : 'Masquer'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>

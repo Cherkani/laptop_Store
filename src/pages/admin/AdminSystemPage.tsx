@@ -30,7 +30,7 @@ export function AdminSystemPage() {
           <CardContent>
             <div className="rounded-lg border p-3 bg-surface-raised">
               <p className="text-sm font-medium text-on-surface">Numéro configuré</p>
-              <p className="text-sm text-slate-600 mt-1">{whatsappNumber || 'Non configuré'}</p>
+              <p className="text-sm text-on-surface-subtle mt-1">{whatsappNumber || 'Non configuré'}</p>
             </div>
           </CardContent>
         </Card>
@@ -46,7 +46,7 @@ export function AdminSystemPage() {
           <CardContent className="space-y-3">
             <div className="rounded-lg border p-3 bg-surface-raised">
               <p className="text-sm font-medium text-on-surface">Webhook URL</p>
-              <p className="text-xs text-slate-600 mt-1 break-all">{googleWebhook || 'Non configuré'}</p>
+              <p className="text-xs text-on-surface-subtle mt-1 break-all">{googleWebhook || 'Non configuré'}</p>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs bg-surface-sunken text-on-surface-muted">
               <BadgeCheck className="h-3.5 w-3.5" />

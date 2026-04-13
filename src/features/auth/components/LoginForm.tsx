@@ -165,7 +165,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 py-3.5 text-[15px] font-bold text-[#0a0f1a] shadow-lg shadow-amber-500/25 transition hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/30 active:scale-[0.98] disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-500 py-3.5 text-[15px] font-bold text-on-primary shadow-lg shadow-amber-500/25 transition hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-amber-400/30 active:scale-[0.98] disabled:opacity-60"
             >
               {isLoading ? (
                 <><Loader2 className="h-4 w-4 animate-spin" /> Connexion...</>

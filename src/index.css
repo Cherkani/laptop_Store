@@ -9,218 +9,279 @@
    All theme colors live here. Components use Tailwind tokens
    (bg-surface, bg-surface-raised, text-on-surface, etc.)
    that reference these variables — never hardcode hex values.
+
+   LIGHT MODE philosophy: warm cream paper — the page feels
+   like a premium lookbook, not a hospital form. Surfaces use
+   slightly warm off-whites so cards don't look like sterile
+   boxes. Text is ink-dark blue-grey for richness, not #000.
+
+   DARK MODE philosophy: deep sapphire-navy — surfaces range
+   from near-black at the base up through midnight-blue panels
+   to slate-indigo cards. Text is warm almost-white so it never
+   feels like a grey wall.
    ============================================================ */
 
 @layer base {
   /* ----------------------------------------------------------
-     LIGHT MODE (default)
+     LIGHT MODE
+     Palette: warm cream paper + ink navy text
   ---------------------------------------------------------- */
   :root {
-    /* shadcn-ui base tokens */
-    --background:        210 20% 98%;   /* near-white page bg */
-    --foreground:        222 47% 11%;   /* near-black text */
-    --card:              0 0% 100%;
-    --card-foreground:   222 47% 11%;
-    --popover:           0 0% 100%;
-    --popover-foreground:222 47% 11%;
-    --primary:           36 92% 50%;   /* amber */
-    --primary-foreground:222 47% 11%;
-    --secondary:         210 16% 92%;
-    --secondary-foreground:222 47% 11%;
-    --muted:             210 16% 93%;
-    --muted-foreground:  215 16% 47%;
-    --accent:            210 16% 92%;
-    --accent-foreground: 222 47% 11%;
-    --destructive:       354 78% 55%;
-    --destructive-foreground:0 0% 98%;
-    --border:            214 20% 86%;
-    --input:             214 20% 86%;
-    --ring:              36 92% 50%;
-    --radius:            0.7rem;
+    /* ── shadcn-ui base tokens ── */
+    --background:          34 30% 97%;     /* #f8f6f2 — warm cream page bg         */
+    --foreground:          222 35% 13%;    /* #151e30 — rich ink navy, not #000     */
+    --card:                36 40% 99%;     /* #fefdfb — barely-warm card white      */
+    --card-foreground:     222 35% 13%;
+    --popover:             36 40% 99%;
+    --popover-foreground:  222 35% 13%;
+    --primary:             36 92% 50%;     /* amber brand */
+    --primary-foreground:  222 35% 10%;    /* deep navy on amber buttons */
+    --secondary:           34 20% 92%;     /* warm light grey */
+    --secondary-foreground:222 30% 20%;
+    --muted:               34 18% 91%;
+    --muted-foreground:    220 14% 46%;
+    --accent:              34 20% 92%;
+    --accent-foreground:   222 35% 13%;
+    --destructive:         354 72% 52%;
+    --destructive-foreground: 0 0% 98%;
+    --border:              30 16% 85%;     /* warm grey border */
+    --input:               30 16% 85%;
+    --ring:                36 92% 50%;
+    --radius:              0.7rem;
 
-    /* Surface hierarchy (replaces hardcoded #0a0f1a / #070c15 / #0f1726) */
-    --surface-base:      210 20% 98%;  /* page-level bg       → bg-surface-base    */
-    --surface-sunken:    210 16% 94%;  /* slightly recessed   → bg-surface-sunken  */
-    --surface-raised:    0 0% 100%;    /* cards, panels       → bg-surface-raised  */
-    --surface-overlay:   0 0% 100%;    /* modals, drawers     → bg-surface-overlay */
+    /* ── Surface hierarchy ──────────────────────────────────
+       base    = warm cream page              #f7f5f1
+       sunken  = slightly deeper section bg   #eeece7
+       raised  = card / panel surface         #fefdfb
+       overlay = drawer / modal surface       #ffffff
+    ── */
+    --surface-base:        34 28% 96%;
+    --surface-sunken:      34 18% 91%;
+    --surface-raised:      36 40% 99%;
+    --surface-overlay:     0 0% 100%;
 
-    /* Foreground opacity scale (replaces text-white/XX) */
-    --on-surface:        222 47% 11%;  /* primary text        → text-on-surface     */
-    --on-surface-muted:  215 16% 40%;  /* secondary text      → text-on-surface-muted */
-    --on-surface-subtle: 215 16% 60%;  /* tertiary text       → text-on-surface-subtle */
-    --on-surface-faint:  215 16% 72%;  /* placeholder/hints   → text-on-surface-faint  */
+    /* ── Text hierarchy ─────────────────────────────────────
+       on-surface       = ink navy — rich, readable           #151e30
+       on-surface-muted = medium slate — secondary labels     #455069
+       on-surface-subtle= softer slate — tertiary / captions  #7483a0
+       on-surface-faint = lightest — placeholders / hints     #a2adc2
+    ── */
+    --on-surface:          222 35% 13%;
+    --on-surface-muted:    220 22% 36%;
+    --on-surface-subtle:   220 18% 56%;
+    --on-surface-faint:    220 14% 70%;
 
-    /* Border opacity scale (replaces border-white/XX) */
-    --border-subtle:     214 20% 90%;
-    --border-faint:      214 20% 93%;
+    /* ── Border scale ── */
+    --border-subtle:       30 14% 88%;
+    --border-faint:        30 12% 92%;
 
-    /* Decorative highlight (for brand-colored glow borders etc.) */
-    --highlight:         36 92% 50%;
+    /* ── Special ── */
+    --highlight:           36 92% 50%;
+    --surface-ink:         222 40% 9%;    /* always-dark sections */
+    --brand-blue:          218 82% 45%;
 
-    /* Theme-shell gradient colors (for .theme-shell class) */
-    --shell-glow-a: 205 100% 67%;  /* blue orb */
-    --shell-glow-b: 36 90% 55%;   /* amber orb */
+    /* ── Decorative orb colours ── */
+    --shell-glow-a:        205 90% 60%;
+    --shell-glow-b:        36 90% 55%;
   }
 
   /* ----------------------------------------------------------
      DARK MODE
+     Palette: deep sapphire-navy + warm pearl text
   ---------------------------------------------------------- */
   .dark {
-    /* shadcn-ui base tokens */
-    --background:        220 32% 8%;
-    --foreground:        210 36% 96%;
-    --card:              220 30% 10%;
-    --card-foreground:   210 36% 96%;
-    --popover:           220 28% 11%;
-    --popover-foreground:210 36% 96%;
-    --primary:           36 92% 55%;
-    --primary-foreground:210 36% 98%;
-    --secondary:         217 28% 16%;
-    --secondary-foreground:210 36% 94%;
-    --muted:             220 18% 18%;
-    --muted-foreground:  215 16% 62%;
-    --accent:            220 18% 18%;
-    --accent-foreground: 210 36% 96%;
-    --destructive:       354 78% 55%;
-    --destructive-foreground:210 40% 98%;
-    --border:            220 18% 22%;
-    --input:             220 18% 22%;
-    --ring:              36 92% 55%;
+    /* ── shadcn-ui base tokens ── */
+    --background:          226 35% 8%;     /* #0d1117 — deep sapphire-navy         */
+    --foreground:          214 28% 92%;    /* #e2e8f0 — warm pearl, not pure white  */
+    --card:                226 32% 11%;    /* #141b27 — midnight navy panel         */
+    --card-foreground:     214 28% 92%;
+    --popover:             226 30% 13%;    /* #18202e                               */
+    --popover-foreground:  214 28% 92%;
+    --primary:             36 94% 56%;     /* amber — slightly brighter in dark     */
+    --primary-foreground:  222 40% 8%;     /* very dark navy on amber, never pure black */
+    --secondary:           224 26% 18%;    /* #1e2736 — elevated panel              */
+    --secondary-foreground:214 24% 80%;
+    --muted:               224 22% 16%;    /* #1a2130                               */
+    --muted-foreground:    214 16% 58%;    /* #8896ae                               */
+    --accent:              224 22% 16%;
+    --accent-foreground:   214 28% 92%;
+    --destructive:         354 72% 52%;
+    --destructive-foreground: 214 28% 96%;
+    --border:              224 22% 20%;    /* #232d3f — visible but not harsh       */
+    --input:               224 22% 20%;
+    --ring:                36 94% 56%;
 
-    /* Surface hierarchy */
-    --surface-base:      210 60% 7%;   /* deep navy-sky base  */
-    --surface-sunken:    205 55% 10%;  /* sky-blue tinted alt */
-    --surface-raised:    210 45% 13%;  /* cards, panels       */
-    --surface-overlay:   210 40% 16%;  /* drawers / modals    */
+    /* ── Surface hierarchy ──────────────────────────────────
+       base    = deepest navy page bg        #0d1117
+       sunken  = recessed sections            #0a0f1a
+       raised  = cards, panels               #141b27
+       overlay = drawers, modals             #18202e
+    ── */
+    --surface-base:        226 35% 8%;
+    --surface-sunken:      226 40% 6%;
+    --surface-raised:      226 32% 11%;
+    --surface-overlay:     226 30% 13%;
 
-    /* Foreground opacity scale */
-    --on-surface:        210 36% 96%;
-    --on-surface-muted:  210 20% 75%;
-    --on-surface-subtle: 210 16% 55%;
-    --on-surface-faint:  210 14% 38%;
+    /* ── Text hierarchy ─────────────────────────────────────
+       on-surface       = warm pearl         #e2e8f0
+       on-surface-muted = softer blue-white  #94a3b8
+       on-surface-subtle= medium slate       #64748b
+       on-surface-faint = dim slate          #3f4f65
+    ── */
+    --on-surface:          214 28% 92%;
+    --on-surface-muted:    214 18% 64%;
+    --on-surface-subtle:   214 14% 44%;
+    --on-surface-faint:    214 12% 30%;
 
-    /* Border opacity scale */
-    --border-subtle:     210 30% 22%;
-    --border-faint:      210 30% 16%;
+    /* ── Border scale ── */
+    --border-subtle:       224 22% 22%;
+    --border-faint:        226 24% 15%;
 
-    --highlight:         36 92% 55%;
-    --shell-glow-a: 199 89% 48%;
-    --shell-glow-b: 36 90% 55%;
+    /* ── Special ── */
+    --highlight:           36 94% 56%;
+    --surface-ink:         222 40% 5%;
+    --brand-blue:          218 84% 58%;    /* brighter in dark for legibility */
+
+    /* ── Decorative orb colours ── */
+    --shell-glow-a:        199 80% 48%;
+    --shell-glow-b:        36 90% 55%;
   }
 
-  * {
-    @apply border-border;
-  }
+  /* ── Reset ── */
+  * { @apply border-border; }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     text-rendering: optimizeLegibility;
-    transition: background-color 220ms ease, color 220ms ease;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 240ms ease, color 240ms ease;
+  }
+
+  /* ── Typography baseline ── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Sora', 'Manrope', ui-sans-serif, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+
+  p, li, label, span {
+    line-height: 1.65;
+  }
+
+  /* ── Selection colour ── */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.22);
+    color: hsl(var(--on-surface));
   }
 }
 
 /* ============================================================
    THEME-AWARE DECORATIVE CLASSES
-   Use these instead of hardcoding gradient hex values.
    ============================================================ */
 
+/* Page-level background with subtle gradient orbs */
 .theme-shell {
   position: relative;
   isolation: isolate;
   background-color: hsl(var(--surface-base));
   background-image:
-    radial-gradient(980px 540px at 15% -10%, hsl(var(--shell-glow-a) / 0.10), transparent 60%),
-    radial-gradient(760px 460px at 90% 16%,  hsl(var(--shell-glow-b) / 0.14), transparent 62%);
+    radial-gradient(980px 540px at 15% -10%, hsl(var(--shell-glow-a) / 0.08), transparent 60%),
+    radial-gradient(760px 460px at 90% 16%,  hsl(var(--shell-glow-b) / 0.12), transparent 62%);
 }
 
+/* Subtle grid texture — fades after 25% */
 .theme-shell::before {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.35;
   background-image:
-    linear-gradient(hsl(var(--foreground) / 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--foreground) / 0.03) 1px, transparent 1px);
+    linear-gradient(hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
-  mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 75%);
+  mask-image: linear-gradient(to bottom, black 0%, black 20%, transparent 70%);
   z-index: -1;
 }
 
+/* Frosted glass card */
 .glass-card {
-  background: hsl(var(--surface-overlay) / 0.80);
+  background: hsl(var(--surface-overlay) / 0.78);
   border: 1px solid hsl(var(--border));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
 }
 
+/* Gradient headline — foreground → amber */
 .headline-gradient {
-  background: linear-gradient(115deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
+  background: linear-gradient(118deg,
+    hsl(var(--foreground)) 0%,
+    hsl(var(--foreground) / 0.85) 40%,
+    hsl(var(--primary)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
+/* Amber CTA button (brand accent) */
 .accent-button {
-  background: linear-gradient(135deg, #0284c7 0%, #0f5dcf 55%, #1e40af 100%);
-  box-shadow: 0 12px 30px rgba(15, 92, 207, 0.3);
+  background: linear-gradient(135deg,
+    hsl(var(--primary)) 0%,
+    hsl(36 90% 46%) 100%);
+  box-shadow: 0 10px 28px hsl(var(--primary) / 0.30);
+  transition: filter 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
-
 .accent-button:hover {
-  filter: brightness(1.04);
+  filter: brightness(1.06);
+  box-shadow: 0 14px 36px hsl(var(--primary) / 0.38);
+  transform: translateY(-1px);
 }
 
+/* Card hover elevation */
 .lift-card {
-  transition:
-    transform 260ms ease,
-    box-shadow 260ms ease;
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 260ms ease;
 }
-
 .lift-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 34px hsl(var(--foreground) / 0.10);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px hsl(var(--foreground) / 0.10);
 }
 
-.orb-float {
-  animation: orb-float 9s ease-in-out infinite;
-}
-
-.orb-float-delay {
-  animation: orb-float 10.5s ease-in-out infinite;
-  animation-delay: 1.4s;
-}
+/* Floating animation for decorative orbs */
+.orb-float         { animation: orb-float 9s ease-in-out infinite; }
+.orb-float-delay   { animation: orb-float 10.5s ease-in-out infinite; animation-delay: 1.4s; }
 
 @keyframes orb-float {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50%       { transform: translate3d(0, -14px, 0) scale(1.05); }
 }
 
+/* Fade-in-up entry animation */
 .animate-fade-in-up {
   opacity: 0;
-  animation: fade-in-up 0.7s ease forwards;
+  animation: fade-in-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Marquee */
+/* Infinite marquee */
 .marquee { position: relative; overflow: hidden; }
 .marquee__track {
   display: inline-flex;
   white-space: nowrap;
-  animation: marquee 18s linear infinite;
+  animation: marquee 20s linear infinite;
 }
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
+/* ============================================================
+   UTILITIES
+   ============================================================ */
 @layer utilities {
   .line-clamp-2 {
     overflow: hidden;
@@ -240,13 +301,14 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  /* Tabular numbers for prices and counters */
+  .num { font-variant-numeric: tabular-nums; }
 }
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track  { background: hsl(var(--muted)); }
-::-webkit-scrollbar-thumb  { background: hsl(var(--muted-foreground) / 0.32); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.48); }
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar               { width: 7px; height: 7px; }
+::-webkit-scrollbar-track         { background: hsl(var(--surface-sunken)); }
+::-webkit-scrollbar-thumb         { background: hsl(var(--on-surface-faint) / 0.5); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover   { background: hsl(var(--on-surface-subtle) / 0.6); }

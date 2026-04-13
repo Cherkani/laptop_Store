@@ -34,7 +34,7 @@ export function ProductsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.35)]">
-              <Laptop className="w-5 h-5 text-[#0b101a]" />
+              <Laptop className="w-5 h-5 text-on-primary" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-on-surface tracking-tight">
               Refurbished Laptops
@@ -60,7 +60,7 @@ export function ProductsPage() {
               <SlidersHorizontal className="h-4 w-4" />
               Filters
               {activeFilterCount > 0 && (
-                <span className="ml-1 w-5 h-5 rounded-full bg-amber-500 text-[#0b101a] text-[10px] font-bold flex items-center justify-center">
+                <span className="ml-1 w-5 h-5 rounded-full bg-amber-500 text-on-primary text-[10px] font-bold flex items-center justify-center">
                   {activeFilterCount}
                 </span>
               )}
@@ -147,9 +147,9 @@ export function ProductsPage() {
             className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm"
             onClick={() => setIsMobileFilterOpen(false)}
           />
-          <div className="fixed left-0 top-0 h-full w-80 max-w-[85vw] z-[1001] bg-white shadow-2xl overflow-y-auto">
-            <div className="sticky top-0 bg-white/95 backdrop-blur flex items-center justify-between px-5 py-4 border-b border-gray-100 z-10">
-              <h2 className="font-bold text-lg text-[#1d1d1f]">Filters</h2>
+          <div className="fixed left-0 top-0 h-full w-80 max-w-[85vw] z-[1001] bg-surface-overlay shadow-2xl overflow-y-auto">
+            <div className="sticky top-0 bg-surface-overlay/95 backdrop-blur flex items-center justify-between px-5 py-4 border-b border-border-faint z-10">
+              <h2 className="font-bold text-lg text-on-surface">Filters</h2>
               <Button
                 variant="ghost"
                 size="icon"
