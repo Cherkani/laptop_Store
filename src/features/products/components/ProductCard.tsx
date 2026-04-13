@@ -56,12 +56,18 @@ export function ProductCard({ product }: ProductCardProps) {
     const loadWhatsapp = async () => {
       const { data, error } = await supabase
         .from('app_settings')
-        .select('value')
-        .eq('key', 'whatsapp_number')
-        .maybeSingle()
+        .select('key, value')
+        .in('key', ['whatsapp_number_primary', 'whatsapp_number_secondary', 'whatsapp_number'])
 
-      if (cancelled || error || !data?.value) return
-      const digits = String(data.value).replace(/\D/g, '')
+      if (cancelled || error || !data) return
+      const map = new Map(data.map(item => [item.key, item.value || '']))
+      const resolvedWhatsapp =
+        map.get('whatsapp_number_primary') ||
+        map.get('whatsapp_number') ||
+        map.get('whatsapp_number_secondary') ||
+        ''
+      if (!resolvedWhatsapp) return
+      const digits = String(resolvedWhatsapp).replace(/\D/g, '')
       if (!digits) return
       setWhatsappHref(`https://wa.me/${digits}`)
     }

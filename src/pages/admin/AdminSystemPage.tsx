@@ -9,7 +9,8 @@ export function AdminSystemPage() {
 
   const settingsMap = new Map(settings.map(s => [s.key, s.value || '']))
   const googleWebhook = settingsMap.get('google_webhook_url')
-  const whatsappNumber = settingsMap.get('whatsapp_number')
+  const whatsappPrimary = settingsMap.get('whatsapp_number_primary') || settingsMap.get('whatsapp_number') || ''
+  const whatsappSecondary = settingsMap.get('whatsapp_number_secondary') || ''
 
   return (
     <div className="p-6 lg:p-8 bg-surface-base min-h-full space-y-6">
@@ -28,9 +29,15 @@ export function AdminSystemPage() {
             <CardDescription>Canal principal de contact client.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-lg border p-3 bg-surface-raised">
-              <p className="text-sm font-medium text-on-surface">Numéro configuré</p>
-              <p className="text-sm text-on-surface-subtle mt-1">{whatsappNumber || 'Non configuré'}</p>
+            <div className="rounded-lg border p-3 bg-surface-raised space-y-2">
+              <div>
+                <p className="text-sm font-medium text-on-surface">Numéro principal</p>
+                <p className="text-sm text-on-surface-subtle mt-1">{whatsappPrimary || 'Non configuré'}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-on-surface">Numéro secondaire</p>
+                <p className="text-sm text-on-surface-subtle mt-1">{whatsappSecondary || 'Non configuré'}</p>
+              </div>
             </div>
           </CardContent>
         </Card>

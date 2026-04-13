@@ -287,7 +287,7 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                         </div>
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-1">
                           {/* Instagram posted indicator / button */}
                           {product.instagram_posted_at ? (
                             <span

@@ -19,10 +19,16 @@ const CORE_SETTING_KEYS = [
     description: 'Contact visible dans vos échanges clients.',
   },
   {
-    key: 'whatsapp_number',
-    label: 'Numéro WhatsApp',
+    key: 'whatsapp_number_primary',
+    label: 'Numéro WhatsApp principal',
     placeholder: '212600000000',
     description: 'Format international sans + (utilisé pour wa.me).',
+  },
+  {
+    key: 'whatsapp_number_secondary',
+    label: 'Numéro WhatsApp secondaire',
+    placeholder: '212611111111',
+    description: 'Numéro de secours/alternatif pour votre équipe.',
   },
   {
     key: 'business_hours',
@@ -53,6 +59,9 @@ export function AdminSettingsPage() {
     settings.forEach(item => {
       initial[item.key] = item.value || ''
     })
+    if (!initial.whatsapp_number_primary && initial.whatsapp_number) {
+      initial.whatsapp_number_primary = initial.whatsapp_number
+    }
     setDraft(initial)
   }, [settings])
 

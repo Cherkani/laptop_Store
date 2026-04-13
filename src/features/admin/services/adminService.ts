@@ -162,8 +162,18 @@ export const adminService = {
     return data as unknown as ProductImage
   },
 
-  async deleteProductImage(imageId: string, imagePath: string) {
-    await supabase.storage.from('product-images').remove([imagePath])
+  async updateProductImage(imageId: string, patch: { display_order?: number; is_primary?: boolean }) {
+    const { error } = await supabase
+      .from('product_images')
+      .update(patch as never)
+      .eq('id', imageId)
+    if (error) throw error
+  },
+
+  async deleteProductImage(imageId: string, imagePath?: string | null) {
+    if (imagePath) {
+      await supabase.storage.from('product-images').remove([imagePath])
+    }
     const { error } = await supabase.from('product_images').delete().eq('id', imageId)
     if (error) throw error
   },

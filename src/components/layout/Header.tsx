@@ -105,18 +105,26 @@ export function Header() {
       const { data, error } = await supabase
         .from('app_settings')
         .select('key, value')
-        .in('key', ['whatsapp_number', 'business_hours'])
+        .in('key', ['whatsapp_number_primary', 'whatsapp_number_secondary', 'whatsapp_number', 'business_hours'])
 
       if (error || !data) return
 
       setContact(prev => {
         let next = { ...prev }
+        const map = new Map(data.map(item => [item.key, item.value || '']))
+        const resolvedWhatsapp =
+          map.get('whatsapp_number_primary') ||
+          map.get('whatsapp_number') ||
+          map.get('whatsapp_number_secondary') ||
+          ''
+
+        if (resolvedWhatsapp) {
+          const digits = resolvedWhatsapp.replace(/\D/g, '')
+          next.whatsappRaw = digits || prev.whatsappRaw
+          next.whatsappDisplay = formatWhatsapp(digits || prev.whatsappRaw)
+        }
+
         for (const item of data) {
-          if (item.key === 'whatsapp_number' && item.value) {
-            const digits = item.value.replace(/\D/g, '')
-            next.whatsappRaw = digits || prev.whatsappRaw
-            next.whatsappDisplay = formatWhatsapp(digits || prev.whatsappRaw)
-          }
           if (item.key === 'business_hours' && item.value) {
             next.businessHours = item.value
           }

@@ -73,12 +73,19 @@ async function getChannelSettings() {
   const { data, error } = await supabase
     .from('app_settings')
     .select('key, value')
-    .in('key', ['whatsapp_number', 'google_webhook_url'])
+    .in('key', ['whatsapp_number_primary', 'whatsapp_number_secondary', 'whatsapp_number', 'google_webhook_url'])
 
   if (error || !data) return settings
 
+  const map = new Map(data.map(item => [item.key, item.value || '']))
+  const resolvedWhatsapp =
+    map.get('whatsapp_number_primary') ||
+    map.get('whatsapp_number') ||
+    map.get('whatsapp_number_secondary') ||
+    ''
+  if (resolvedWhatsapp) settings.whatsappNumber = resolvedWhatsapp
+
   for (const item of data) {
-    if (item.key === 'whatsapp_number' && item.value) settings.whatsappNumber = item.value
     if (item.key === 'google_webhook_url' && item.value) settings.googleWebhookUrl = item.value
   }
 

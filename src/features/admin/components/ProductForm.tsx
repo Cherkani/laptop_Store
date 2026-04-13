@@ -69,6 +69,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   )
 }
 
+function getStoragePathFromPublicUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const marker = '/storage/v1/object/public/product-images/'
+  const idx = url.indexOf(marker)
+  if (idx < 0) return null
+  const path = url.slice(idx + marker.length)
+  return path || null
+}
+
 export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -234,16 +243,39 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         savedProduct = await adminService.createProduct(productData)
       }
 
-      let displayOrder = images.filter(i => i.id).length
-      for (const img of images.filter(i => i.file)) {
-        const url = await adminService.uploadImage(img.file!, savedProduct.id)
-        await adminService.addProductImage(savedProduct.id, url, displayOrder++, img.isPrimary)
+      if (product) {
+        const original = product.product_images ?? []
+        const originalById = new Map(original.map(img => [img.id, img]))
+        const keptIds = new Set(images.filter(img => img.id).map(img => img.id as string))
+        const removed = original.filter(img => !keptIds.has(img.id))
+
+        for (const img of removed) {
+          const path = getStoragePathFromPublicUrl(img.image_url)
+          await adminService.deleteProductImage(img.id, path)
+        }
+
+        for (const [index, img] of images.entries()) {
+          if (!img.id) continue
+          const old = originalById.get(img.id)
+          if (!old) continue
+          if (old.display_order !== index || old.is_primary !== img.isPrimary) {
+            await adminService.updateProductImage(img.id, { display_order: index, is_primary: img.isPrimary })
+          }
+        }
+      }
+
+      for (const [index, img] of images.entries()) {
+        if (!img.file) continue
+        const url = await adminService.uploadImage(img.file, savedProduct.id)
+        await adminService.addProductImage(savedProduct.id, url, index, img.isPrimary)
       }
 
       await adminService.upsertSpecifications(savedProduct.id, specs.filter(s => s.key && s.value))
 
       queryClient.invalidateQueries({ queryKey: ['admin-products'] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
+      queryClient.invalidateQueries({ queryKey: ['product', savedProduct.id] })
+      queryClient.invalidateQueries({ queryKey: ['product'] })
 
       toast({ title: product ? 'Product updated!' : 'Product created!', variant: 'default' })
       onSuccess?.()

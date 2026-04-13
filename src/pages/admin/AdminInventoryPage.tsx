@@ -63,7 +63,7 @@ function InlineStockEditor({ product, onDone }: { product: AdminProduct; onDone:
   )
 }
 
-export function AdminInventoryPage() {
+export function AdminInventoryPage({ embedded = false }: { embedded?: boolean }) {
   const { data: rawProducts = [], isLoading } = useAdminProducts()
   const products = rawProducts as AdminProduct[]
   const [search, setSearch] = useState('')
@@ -87,16 +87,23 @@ export function AdminInventoryPage() {
     )
 
   return (
-    <div className="p-6 lg:p-8 space-y-8 bg-surface-base min-h-full">
+    <div className={embedded ? 'space-y-8' : 'p-6 lg:p-8 space-y-8 bg-surface-base min-h-full'}>
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-on-surface">Gestion du stock</h1>
-        <p className="text-on-surface-subtle mt-1">Modifiez les quantités directement sans quitter cette page</p>
-      </div>
+      {embedded ? (
+        <div className="rounded-2xl border border-border-faint bg-surface-raised p-5">
+          <h2 className="text-xl font-bold text-on-surface">Gestion du stock</h2>
+          <p className="text-on-surface-subtle mt-1">Modifiez les quantités directement sans quitter cette page</p>
+        </div>
+      ) : (
+        <div>
+          <h1 className="text-2xl font-bold text-on-surface">Gestion du stock</h1>
+          <p className="text-on-surface-subtle mt-1">Modifiez les quantités directement sans quitter cette page</p>
+        </div>
+      )}
 
       {/* Ad check heatmap — sourced products only */}
-      <AdCheckHeatmap />
+      {!embedded && <AdCheckHeatmap />}
 
       {/* Stock overview cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -185,118 +192,120 @@ export function AdminInventoryPage() {
       </div>
 
       {/* Inventory Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            {filtered.length} produit{filtered.length !== 1 ? 's' : ''}
-            {filter !== 'all' && ` · ${filter === 'out' ? 'Rupture' : filter === 'low' ? 'Stock faible' : 'Stock sain'}`}
-          </CardTitle>
-          <CardDescription>Cliquez sur l'icône crayon pour modifier la quantité directement</CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          {isLoading
-            ? (
-              <div className="p-6 space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-14 bg-surface-sunken rounded animate-pulse" />
-                ))}
-              </div>
-            )
-            : filtered.length === 0
-            ? (
-              <div className="flex flex-col items-center justify-center py-14 text-center">
-                <Package className="h-10 w-10 text-on-surface-faint mb-3" />
-                <p className="text-sm font-medium text-on-surface">Aucun produit trouvé</p>
-                <p className="text-xs text-on-surface-subtle mt-1">Modifiez votre recherche ou le filtre</p>
-              </div>
-            )
-            : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-surface-sunken text-xs uppercase tracking-wide text-on-surface-subtle">
-                    <tr>
-                      <th className="text-left px-6 py-3">Produit</th>
-                      <th className="text-left px-4 py-3">Marque</th>
-                      <th className="text-left px-4 py-3">Prix</th>
-                      <th className="text-left px-4 py-3">Stock</th>
-                      <th className="text-left px-4 py-3">Valeur</th>
-                      <th className="text-left px-4 py-3">Statut</th>
-                      <th className="text-right px-6 py-3">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border-faint">
-                    {filtered.map(product => {
-                      const img = product.product_images?.find(x => x.is_primary) ?? product.product_images?.[0]
-                      const isEditing = editingId === product.id
-                      return (
-                        <tr
-                          key={product.id}
-                          className={`transition-colors ${
-                            isEditing
-                              ? 'bg-blue-50/50 dark:bg-blue-900/10'
-                              : 'hover:bg-surface-sunken'
-                          }`}
-                        >
-                          <td className="px-6 py-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-surface-sunken overflow-hidden shrink-0">
-                                {img && (
-                                  <img
-                                    src={getImageSrc(img) ?? ''}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                  />
-                                )}
+      {!embedded && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {filtered.length} produit{filtered.length !== 1 ? 's' : ''}
+              {filter !== 'all' && ` · ${filter === 'out' ? 'Rupture' : filter === 'low' ? 'Stock faible' : 'Stock sain'}`}
+            </CardTitle>
+            <CardDescription>Cliquez sur l'icône crayon pour modifier la quantité directement</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            {isLoading
+              ? (
+                <div className="p-6 space-y-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-14 bg-surface-sunken rounded animate-pulse" />
+                  ))}
+                </div>
+              )
+              : filtered.length === 0
+              ? (
+                <div className="flex flex-col items-center justify-center py-14 text-center">
+                  <Package className="h-10 w-10 text-on-surface-faint mb-3" />
+                  <p className="text-sm font-medium text-on-surface">Aucun produit trouvé</p>
+                  <p className="text-xs text-on-surface-subtle mt-1">Modifiez votre recherche ou le filtre</p>
+                </div>
+              )
+              : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-surface-sunken text-xs uppercase tracking-wide text-on-surface-subtle">
+                      <tr>
+                        <th className="text-left px-6 py-3">Produit</th>
+                        <th className="text-left px-4 py-3">Marque</th>
+                        <th className="text-left px-4 py-3">Prix</th>
+                        <th className="text-left px-4 py-3">Stock</th>
+                        <th className="text-left px-4 py-3">Valeur</th>
+                        <th className="text-left px-4 py-3">Statut</th>
+                        <th className="text-right px-6 py-3">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-faint">
+                      {filtered.map(product => {
+                        const img = product.product_images?.find(x => x.is_primary) ?? product.product_images?.[0]
+                        const isEditing = editingId === product.id
+                        return (
+                          <tr
+                            key={product.id}
+                            className={`transition-colors ${
+                              isEditing
+                                ? 'bg-blue-50/50 dark:bg-blue-900/10'
+                                : 'hover:bg-surface-sunken'
+                            }`}
+                          >
+                            <td className="px-6 py-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-surface-sunken overflow-hidden shrink-0">
+                                  {img && (
+                                    <img
+                                      src={getImageSrc(img) ?? ''}
+                                      alt=""
+                                      className="w-full h-full object-cover"
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-on-surface truncate max-w-[180px]">{product.name}</p>
+                                  <p className="text-xs text-on-surface-subtle">{product.processor} · {product.ram}</p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-medium text-on-surface truncate max-w-[180px]">{product.name}</p>
-                                <p className="text-xs text-on-surface-subtle">{product.processor} · {product.ram}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-on-surface-subtle">{product.brand}</td>
-                          <td className="px-4 py-3 font-semibold text-on-surface">{formatPrice(product.price)}</td>
-                          <td className="px-4 py-3">
-                            {isEditing ? (
-                              <InlineStockEditor product={product} onDone={() => setEditingId(null)} />
-                            ) : (
-                              <StockQuantity quantity={product.stock_quantity} />
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-on-surface-subtle text-sm">
-                            {formatPrice(product.price * product.stock_quantity)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <StockBadge quantity={product.stock_quantity} />
-                          </td>
-                          <td className="px-6 py-3">
-                            <div className="flex items-center justify-end gap-1">
-                              {!isEditing && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  title="Modifier la quantité"
-                                  onClick={() => setEditingId(product.id)}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
+                            </td>
+                            <td className="px-4 py-3 text-on-surface-subtle">{product.brand}</td>
+                            <td className="px-4 py-3 font-semibold text-on-surface">{formatPrice(product.price)}</td>
+                            <td className="px-4 py-3">
+                              {isEditing ? (
+                                <InlineStockEditor product={product} onDone={() => setEditingId(null)} />
+                              ) : (
+                                <StockQuantity quantity={product.stock_quantity} />
                               )}
-                              <Button variant="ghost" size="sm" className="h-8 text-xs" asChild>
-                                <Link to={`/admin/products/${product.id}/edit`}>Modifier</Link>
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )
-          }
-        </CardContent>
-      </Card>
+                            </td>
+                            <td className="px-4 py-3 text-on-surface-subtle text-sm">
+                              {formatPrice(product.price * product.stock_quantity)}
+                            </td>
+                            <td className="px-4 py-3">
+                              <StockBadge quantity={product.stock_quantity} />
+                            </td>
+                            <td className="px-6 py-3">
+                              <div className="flex items-center justify-end gap-1">
+                                {!isEditing && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    title="Modifier la quantité"
+                                    onClick={() => setEditingId(product.id)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                <Button variant="ghost" size="sm" className="h-8 text-xs" asChild>
+                                  <Link to={`/admin/products/${product.id}/edit`}>Modifier</Link>
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            }
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

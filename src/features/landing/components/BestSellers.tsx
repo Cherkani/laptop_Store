@@ -72,7 +72,7 @@ export function BestSellers() {
                   'rounded-lg px-5 py-2 text-sm font-semibold transition-all duration-200',
                   activeOS === os
                     ? 'bg-brand-blue text-white shadow-[0_2px_10px_rgba(15,93,207,0.4)]'
-                    : 'text-on-surface-subtle hover:text-on-surface-muted',
+                    : 'text-slate-700 hover:text-slate-900 dark:text-on-surface-subtle dark:hover:text-on-surface',
                 )}
               >
                 {os}
