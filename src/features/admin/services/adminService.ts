@@ -5,6 +5,7 @@ export type ProductInsert = {
   name: string
   description?: string | null
   price: number
+  condition?: string | null
   brand: string
   processor: string
   ram: string

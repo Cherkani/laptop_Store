@@ -31,8 +31,8 @@ const dictionaries: Record<Locale, Dict> = {
     'theme.light': 'Light',
     'theme.dark': 'Dark',
 
-    'footer.disclaimer': 'Prices shown are for refurbished products and may vary based on configuration and availability.',
-    'footer.about': 'Premium refurbished laptops with verified quality and dependable support.',
+    'footer.disclaimer': 'Prices shown may vary based on configuration and availability.',
+    'footer.about': 'Premium laptops with verified quality and dependable support.',
     'footer.shop': 'Shop',
     'footer.services': 'Services',
     'footer.company': 'Company',
@@ -117,8 +117,8 @@ const dictionaries: Record<Locale, Dict> = {
     'theme.light': 'Clair',
     'theme.dark': 'Sombre',
 
-    'footer.disclaimer': 'Les prix affichés concernent des produits reconditionnés et peuvent varier selon la configuration et la disponibilité.',
-    'footer.about': 'Laptops reconditionnés premium avec qualité vérifiée et support fiable.',
+    'footer.disclaimer': 'Les prix affichés peuvent varier selon la configuration et la disponibilité.',
+    'footer.about': 'Laptops premium avec qualité vérifiée et support fiable.',
     'footer.shop': 'Boutique',
     'footer.services': 'Services',
     'footer.company': 'Entreprise',

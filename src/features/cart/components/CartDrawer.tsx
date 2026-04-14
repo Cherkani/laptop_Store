@@ -101,7 +101,7 @@ export function CartDrawer() {
               <div>
                 <h3 className="text-base font-bold text-on-surface">Votre panier est vide</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-on-surface-faint">
-                  Découvrez notre sélection de laptops premium reconditionnés.
+                  Découvrez notre sélection de laptops premium.
                 </p>
               </div>
               <Button

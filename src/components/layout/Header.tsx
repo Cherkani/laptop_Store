@@ -183,7 +183,7 @@ export function Header() {
             {contact.businessHours}
           </span>
           <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
-            {t('header.promo') ?? 'Premium laptops reconditionnés'}
+            {t('header.promo') ?? 'Premium laptops'}
           </span>
         </div>
       </div>

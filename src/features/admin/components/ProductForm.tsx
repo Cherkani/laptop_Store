@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import { BRANDS, PROCESSORS, RAM_OPTIONS, STORAGE_OPTIONS, GRAPHICS_OPTIONS, SCREEN_SIZES } from '@/features/products/types'
 import type { ProductWithImages } from '@/types/database.types'
 import { getImageSrc } from '@/lib/utils'
+import { PRODUCT_CONDITIONS } from '@/lib/constants'
 import { parseListing, ParsedListing, ParsedSpec } from '@/features/admin/utils/listingParser'
 
 interface ProductFormProps {
@@ -32,6 +33,7 @@ type FormState = {
   name: string
   description: string
   price: string
+  condition: string
   brand: string
   processor: string
   ram: string
@@ -78,6 +80,15 @@ function getStoragePathFromPublicUrl(url: string | null | undefined): string | n
   return path || null
 }
 
+function normalizeCondition(condition: string | null | undefined): string {
+  if (!condition) return 'Neuf'
+  if (condition === 'Neuf' || condition === 'Comme neuf') return condition
+  if (condition === 'Like New' || condition === 'Excellent' || condition === 'Good' || condition === 'Fair') {
+    return 'Comme neuf'
+  }
+  return 'Neuf'
+}
+
 export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -90,6 +101,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     name: product?.name ?? '',
     description: product?.description ?? '',
     price: product?.price?.toString() ?? '',
+    condition: normalizeCondition(product?.condition),
     brand: product?.brand ?? '',
     processor: product?.processor ?? '',
     ram: product?.ram ?? '',
@@ -218,6 +230,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         name: formData.name,
         description: formData.description || null,
         price: parsedPrice ?? 0,
+        condition: formData.condition || null,
         brand: formData.brand,
         processor: formData.processor,
         ram: formData.ram,
@@ -383,6 +396,20 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             />
           </Field>
         </div>
+        <Field label="État">
+          <Select value={formData.condition} onValueChange={v => update('condition', v)}>
+            <SelectTrigger className="max-w-xs">
+              <SelectValue placeholder="Choisir un état" />
+            </SelectTrigger>
+            <SelectContent>
+              {PRODUCT_CONDITIONS.map(condition => (
+                <SelectItem key={condition} value={condition}>
+                  {condition}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
         <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
           <input
             type="checkbox"

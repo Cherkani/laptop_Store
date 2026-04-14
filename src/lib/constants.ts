@@ -9,7 +9,7 @@
 export const BRAND = {
   name: 'CASALAPTOPS.COM',
   shortName: 'Casa By Tech',
-  tagline: 'Premium laptops reconditionnés',
+  tagline: 'Premium laptops',
 } as const
 
 const formatWhatsapp = (raw: string) => {
@@ -76,8 +76,12 @@ export const STOCK = {
 
 // ── Condition badge styles (used in ProductCard + ProductDetailPage) ──
 export const CONDITION_STYLES: Record<string, { label: string; className: string }> = {
-  'Like New': { label: 'Reconditionné+', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
-  Excellent:  { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
-  Good:       { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
-  Fair:       { label: 'Reconditionné',  className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Neuf:        { label: 'Neuf',       className: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 backdrop-blur-sm' },
+  'Comme neuf': { label: 'Comme neuf', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  'Like New':  { label: 'Comme neuf', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Excellent:   { label: 'Comme neuf', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Good:        { label: 'Comme neuf', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
+  Fair:        { label: 'Comme neuf', className: 'bg-orange-500/8 text-orange-400 border-orange-500/15 backdrop-blur-sm' },
 }
+
+export const PRODUCT_CONDITIONS = ['Neuf', 'Comme neuf'] as const

@@ -159,10 +159,12 @@ export function ProductDetailPage() {
       : null
 
   const CONDITION_STYLES: Record<string, { label: string; color: string; bg: string }> = {
-    'Like New': { label: 'Like New', color: 'text-emerald-700', bg: 'bg-emerald-500/15 border-emerald-100' },
-    Excellent: { label: 'Excellent', color: 'text-blue-700', bg: 'bg-amber-500/150/10 border-blue-100' },
-    Good: { label: 'Good', color: 'text-amber-700', bg: 'bg-amber-500/15 border-amber-100' },
-    Fair: { label: 'Fair', color: 'text-on-surface-muted', bg: 'bg-muted/50 border-border' },
+    Neuf: { label: 'Neuf', color: 'text-emerald-700', bg: 'bg-emerald-500/15 border-emerald-100' },
+    'Comme neuf': { label: 'Comme neuf', color: 'text-orange-700', bg: 'bg-orange-500/15 border-orange-100' },
+    'Like New': { label: 'Comme neuf', color: 'text-orange-700', bg: 'bg-orange-500/15 border-orange-100' },
+    Excellent: { label: 'Comme neuf', color: 'text-orange-700', bg: 'bg-orange-500/15 border-orange-100' },
+    Good: { label: 'Comme neuf', color: 'text-orange-700', bg: 'bg-orange-500/15 border-orange-100' },
+    Fair: { label: 'Comme neuf', color: 'text-orange-700', bg: 'bg-orange-500/15 border-orange-100' },
   }
   const conditionStyle = product.condition ? CONDITION_STYLES[product.condition] : null
 
@@ -311,7 +313,7 @@ export function ProductDetailPage() {
               </div>
               {product.original_price && product.original_price > product.price && (
                 <p className="text-sm text-on-surface-subtle">
-                  Vous gagnez {formatPrice(product.original_price - product.price)} par rapport au prix neuf.
+                  Vous économisez {formatPrice(product.original_price - product.price)} sur ce produit.
                 </p>
               )}
             </div>
