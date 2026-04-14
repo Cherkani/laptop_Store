@@ -230,7 +230,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         name: formData.name,
         description: formData.description || null,
         price: parsedPrice ?? 0,
-        condition: formData.condition || null,
+        condition: formData.condition || 'Comme Neuf',
         brand: formData.brand,
         processor: formData.processor,
         ram: formData.ram,
