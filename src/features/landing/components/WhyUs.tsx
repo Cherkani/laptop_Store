@@ -79,7 +79,7 @@ export function WhyUs() {
             <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight tracking-tight text-on-surface sm:text-4xl">
               La différence{' '}
               <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                TechFiable.
+                Casa By Tech.
               </span>
             </h2>
             <p className="mt-4 text-base leading-relaxed text-on-surface-subtle">

@@ -87,7 +87,7 @@ export function HeroSection() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <p className="text-slate-400 text-sm">TechFiable</p>
+                    <p className="text-slate-400 text-sm">Casa By Tech</p>
                   </div>
                 </div>
                 <div className="mt-4 h-2 bg-slate-700 rounded-full" />

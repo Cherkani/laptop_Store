@@ -216,7 +216,6 @@ export function ProductCard({ product }: ProductCardProps) {
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-on-surface-faint">TVA incluse · Paiement en 3x</p>
           </div>
 
           {/* Screen size */}

@@ -31,7 +31,7 @@ export function SignupForm() {
       await authService.signup(formData)
       toast({
         title: 'Account created!',
-        description: 'Welcome to TechFiable.',
+        description: 'Welcome to Casa By Tech.',
         variant: 'default',
       })
       navigate('/')
@@ -70,7 +70,7 @@ export function SignupForm() {
             <img src="/logo.png" alt="Logo" className="h-16 w-auto object-contain" />
           </div>
           <h2 className="text-4xl font-bold text-on-surface tracking-tight mb-4">
-            Join TechFiable.
+            Join Casa By Tech.
           </h2>
           <p className="text-lg text-gray-400 leading-relaxed mb-10">
             Create your account and unlock a premium laptop shopping experience.
@@ -104,7 +104,7 @@ export function SignupForm() {
               <Laptop className="w-5 h-5 text-on-surface" />
             </div>
             <span className="text-xl font-bold text-[#1d1d1f]">
-              TechFiable
+              Casa By Tech
             </span>
           </div>
 
@@ -113,7 +113,7 @@ export function SignupForm() {
               Create account
             </h1>
             <p className="text-gray-500">
-              Get started with your free TechFiable account.
+              Get started with your free Casa By Tech account.
             </p>
           </div>
 

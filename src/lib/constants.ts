@@ -8,7 +8,7 @@
 // ── Brand ────────────────────────────────────────────────────
 export const BRAND = {
   name: 'CASALAPTOPS.COM',
-  shortName: 'TechFiable',
+  shortName: 'Casa By Tech',
   tagline: 'Premium laptops reconditionnés',
 } as const
 

@@ -186,7 +186,7 @@ export function AdminLayout() {
         <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
           <img src="/logo.png" alt="Logo" className="h-9 w-auto object-contain" />
           <div>
-            <p className="text-sm font-bold text-on-surface leading-none">TechFiable Pro</p>
+            <p className="text-sm font-bold text-on-surface leading-none">Casa By Tech Pro</p>
             <p className="text-xs text-on-surface-faint mt-0.5">
               {locale === 'fr' ? 'Espace administrateur' : 'Admin workspace'}
             </p>

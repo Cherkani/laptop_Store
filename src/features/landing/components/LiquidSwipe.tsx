@@ -160,7 +160,7 @@ function SlideContent({ slide }: { slide: SlideData }) {
             className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] mb-4 sm:mb-6"
             style={{ color: slide.accentColor }}
           >
-            TechFiable
+            Casa By Tech
           </p>
 
           <h2 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tight mb-4 sm:mb-6">

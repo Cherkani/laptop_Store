@@ -380,9 +380,7 @@ export function FeaturedProducts() {
                       </>
                     )}
                   </div>
-                  <p className="mt-1 text-[11px] text-on-surface-faint">
-                    TVA incluse · Paiement en 3x
-                  </p>
+             
 
                   {/* Divider */}
                   <div className="my-5 h-px w-full bg-border-faint" />
