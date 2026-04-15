@@ -27,6 +27,64 @@ export type ProductInsert = {
 export type ProductUpdate = Partial<ProductInsert>
 
 export const adminService = {
+  async addCheckLog(productId: string, status: 'online' | 'unavailable', note?: string | null) {
+    const { error } = await supabase
+      .from('product_check_logs')
+      .insert({ product_id: productId, status, note: note ?? null } as never)
+    if (error) throw error
+  },
+
+  async getTodayVerificationCounts(productIds?: string[]) {
+    const start = new Date()
+    start.setHours(0, 0, 0, 0)
+    const end = new Date(start)
+    end.setDate(end.getDate() + 1)
+
+    let query = supabase
+      .from('product_check_logs')
+      .select('product_id')
+      .gte('checked_at', start.toISOString())
+      .lt('checked_at', end.toISOString())
+
+    if (productIds && productIds.length > 0) {
+      query = query.in('product_id', productIds)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+
+    const counts: Record<string, number> = {}
+    for (const row of data ?? []) {
+      counts[row.product_id] = (counts[row.product_id] ?? 0) + 1
+    }
+    return counts
+  },
+
+  async getVerificationActivity() {
+    const { data, error } = await supabase
+      .from('product_check_logs')
+      .select('checked_at')
+      .order('checked_at', { ascending: true })
+    if (error) throw error
+    return data ?? []
+  },
+
+  async getRecentCheckLogs(productIds?: string[], limit = 400) {
+    let query = supabase
+      .from('product_check_logs')
+      .select('id, product_id, checked_at, status, note')
+      .order('checked_at', { ascending: false })
+      .limit(limit)
+
+    if (productIds && productIds.length > 0) {
+      query = query.in('product_id', productIds)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+    return data ?? []
+  },
+
   async getProducts() {
     const { data, error } = await supabase
       .from('products')
@@ -34,6 +92,16 @@ export const adminService = {
       .order('created_at', { ascending: false })
     if (error) throw error
     return (data ?? []) as Array<Product & { product_images: ProductImage[] }>
+  },
+
+  async getProductById(id: string) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, product_images(*), specifications(*)')
+      .eq('id', id)
+      .single()
+    if (error) throw error
+    return data as unknown as Product & { product_images: ProductImage[]; specifications: Specification[] }
   },
 
   async createProduct(product: ProductInsert): Promise<Product> {
@@ -72,45 +140,52 @@ export const adminService = {
 
   // Mark as checked today (still available) — updates last_checked_at
   async markChecked(id: string) {
+    const now = new Date().toISOString()
     const { error } = await supabase
       .from('products')
       .update({
-        last_checked_at: new Date().toISOString(),
+        last_checked_at: now,
         is_available: true,
         availability_note: null,
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       } as never)
       .eq('id', id)
     if (error) throw error
+    await this.addCheckLog(id, 'online')
   },
 
   // Mark as sold/gone on the source — hide from catalog (legacy, no reason)
   async markUnavailable(id: string, note?: string) {
+    const now = new Date().toISOString()
+    const finalNote = note ?? 'Vendu chez la source'
     const { error } = await supabase
       .from('products')
       .update({
         is_available: false,
-        last_checked_at: new Date().toISOString(),
-        availability_note: note ?? 'Vendu chez la source',
-        updated_at: new Date().toISOString(),
+        last_checked_at: now,
+        availability_note: finalNote,
+        updated_at: now,
       } as never)
       .eq('id', id)
     if (error) throw error
+    await this.addCheckLog(id, 'unavailable', finalNote)
   },
 
   // Mark unavailable with a structured reason
   async markUnavailableWithReason(id: string, reason: string, note?: string) {
+    const now = new Date().toISOString()
     const { error } = await supabase
       .from('products')
       .update({
         is_available: false,
         unavailable_reason: reason,
-        last_checked_at: new Date().toISOString(),
+        last_checked_at: now,
         availability_note: note ?? null,
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       } as never)
       .eq('id', id)
     if (error) throw error
+    await this.addCheckLog(id, 'unavailable', note ?? reason)
   },
 
   // Set or unset Instagram posted state
@@ -138,6 +213,14 @@ export const adminService = {
       } as never)
       .in('id', ids)
     if (error) throw error
+
+    if (ids.length > 0) {
+      const logs = ids.map(id => ({ product_id: id, status: 'online' as const }))
+      const { error: logError } = await supabase
+        .from('product_check_logs')
+        .insert(logs as never)
+      if (logError) throw logError
+    }
   },
 
   async uploadImage(file: File, productId: string): Promise<string> {

@@ -175,6 +175,11 @@ function HeatmapGrid({ counts, label, totalLabel, total, weeks, colorClass, tool
 function CatalogueHeatmap() {
   const { data: rawProducts = [], isLoading } = useAdminProducts()
   const products = rawProducts as AdminProduct[]
+  const { data: verificationLogs = [], isLoading: isLoadingVerifications } = useQuery({
+    queryKey: ['verification-activity'],
+    queryFn: () => adminService.getVerificationActivity(),
+    staleTime: 60 * 1000,
+  })
 
   const { addCounts, verifCounts, weeks, totalAdds, totalVerifs } = useMemo(() => {
     const addMap: Record<string, number> = {}
@@ -185,15 +190,17 @@ function CatalogueHeatmap() {
         const k = toDateKey(p.created_at)
         addMap[k] = (addMap[k] ?? 0) + 1
       }
-      if ((p as any).last_checked_at) {
-        const k = toDateKey((p as any).last_checked_at)
-        verifMap[k] = (verifMap[k] ?? 0) + 1
-      }
+    })
+
+    ;(verificationLogs as Array<{ checked_at: string }>).forEach(log => {
+      if (!log.checked_at) return
+      const k = toDateKey(log.checked_at)
+      verifMap[k] = (verifMap[k] ?? 0) + 1
     })
 
     const allDates = [
       ...products.map(p => p.created_at).filter(Boolean),
-      ...products.map(p => (p as any).last_checked_at).filter(Boolean),
+      ...(verificationLogs as Array<{ checked_at: string }>).map(l => l.checked_at).filter(Boolean),
     ] as string[]
 
     const earliest = allDates.length > 0
@@ -207,9 +214,9 @@ function CatalogueHeatmap() {
       totalAdds: Object.values(addMap).reduce((s, n) => s + n, 0),
       totalVerifs: Object.values(verifMap).reduce((s, n) => s + n, 0),
     }
-  }, [products])
+  }, [products, verificationLogs])
 
-  if (isLoading) {
+  if (isLoading || isLoadingVerifications) {
     return (
       <div className="grid sm:grid-cols-2 gap-5">
         {[0, 1].map(i => (

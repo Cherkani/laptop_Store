@@ -9,6 +9,15 @@ export function useAdminProducts() {
   })
 }
 
+export function useAdminProduct(id: string | undefined) {
+  return useQuery({
+    queryKey: ['admin-product', id],
+    queryFn: () => adminService.getProductById(id!),
+    enabled: !!id,
+    staleTime: 0,
+  })
+}
+
 export function useDeleteProduct() {
   const queryClient = useQueryClient()
   return useMutation({

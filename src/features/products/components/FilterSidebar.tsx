@@ -5,19 +5,20 @@ import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { cn, formatPrice } from '@/lib/utils'
 import type { ProductFilters } from '../types'
-import {
-  BRANDS,
-  OPERATING_SYSTEMS,
-  PROCESSORS,
-  RAM_OPTIONS,
-  STORAGE_OPTIONS,
-  GRAPHICS_OPTIONS,
-  SCREEN_SIZES,
-  DEFAULT_FILTERS,
-} from '../types'
+import { OPERATING_SYSTEMS, DEFAULT_FILTERS } from '../types'
+
+export interface FilterOptions {
+  brands: string[]
+  processors: string[]
+  rams: string[]
+  storages: string[]
+  graphicsCards: string[]
+  screenSizes: string[]
+}
 
 interface FilterSidebarProps {
   filters: ProductFilters
+  options: FilterOptions
   onToggle: (
     key:
       | 'brands'
@@ -98,6 +99,7 @@ function CheckboxGroup({
 
 export function FilterSidebar({
   filters,
+  options,
   onToggle,
   onFilterChange,
   onClear,
@@ -218,7 +220,7 @@ export function FilterSidebar({
       {/* Brand */}
       <FilterSection title="Marque">
         <div className="space-y-1 max-h-48 overflow-y-auto scrollbar-hide">
-          {BRANDS.map(brand => (
+          {options.brands.map(brand => (
             <label
               key={brand}
               className={cn(
@@ -255,7 +257,7 @@ export function FilterSidebar({
       {/* Processor */}
       <FilterSection title="Processeur">
         <CheckboxGroup
-          items={PROCESSORS}
+          items={options.processors}
           selected={filters.processors}
           onToggle={v => onToggle('processors', v)}
         />
@@ -266,7 +268,7 @@ export function FilterSidebar({
       {/* RAM */}
       <FilterSection title="Mémoire (RAM)">
         <CheckboxGroup
-          items={RAM_OPTIONS}
+          items={options.rams}
           selected={filters.rams}
           onToggle={v => onToggle('rams', v)}
         />
@@ -277,7 +279,7 @@ export function FilterSidebar({
       {/* Storage */}
       <FilterSection title="Stockage" hint="SSD NVMe conseillé pour la vitesse">
         <CheckboxGroup
-          items={STORAGE_OPTIONS}
+          items={options.storages}
           selected={filters.storages}
           onToggle={v => onToggle('storages', v)}
         />
@@ -288,7 +290,7 @@ export function FilterSidebar({
       {/* Graphics Card */}
       <FilterSection title="Carte graphique" hint="RTX pour gaming/vidéo, intégrée pour bureautique">
         <CheckboxGroup
-          items={GRAPHICS_OPTIONS}
+          items={options.graphicsCards}
           selected={filters.graphicsCards}
           onToggle={v => onToggle('graphicsCards', v)}
         />
@@ -299,7 +301,7 @@ export function FilterSidebar({
       {/* Screen Size */}
       <FilterSection title="Taille d'écran" hint={'13-14" ultraportable / 15-17" confort visuel'}>
         <CheckboxGroup
-          items={SCREEN_SIZES}
+          items={options.screenSizes}
           selected={filters.screenSizes}
           onToggle={v => onToggle('screenSizes', v)}
         />

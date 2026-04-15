@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import { ProductForm } from '@/features/admin/components/ProductForm'
-import { useProduct } from '@/features/products/hooks/useProducts'
+import { useAdminProduct } from '@/features/admin/hooks/useAdminProducts'
 
 export function AdminEditProductPage() {
   const { id } = useParams<{ id: string }>()
-  const { data: product, isLoading, error } = useProduct(id)
+  const { data: product, isLoading, error } = useAdminProduct(id)
 
   if (isLoading) {
     return (

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select'
 import { FilterSidebar } from '@/features/products/components/FilterSidebar'
 import { ProductGrid } from '@/features/products/components/ProductGrid'
-import { useProducts } from '@/features/products/hooks/useProducts'
+import { useProducts, useFilterOptions } from '@/features/products/hooks/useProducts'
 import { useFilters } from '@/features/products/hooks/useFilters'
 import { cn } from '@/lib/utils'
 import type { SortOption } from '@/features/products/types'
@@ -26,6 +26,7 @@ export function ProductsPage() {
     activeFilterCount,
   } = useFilters()
   const { data: products = [], isLoading, error } = useProducts(filters)
+  const { data: filterOptions } = useFilterOptions()
 
   return (
     <div className="bg-surface-base min-h-screen text-on-surface">
@@ -121,6 +122,7 @@ export function ProductsPage() {
           {/* Desktop sidebar */}
           <FilterSidebar
             filters={filters}
+            options={filterOptions!}
             onToggle={toggleArrayFilter}
             onFilterChange={setFilters}
             onClear={clearFilters}
@@ -162,6 +164,7 @@ export function ProductsPage() {
             <div className="p-5">
               <FilterSidebar
                 filters={filters}
+                options={filterOptions!}
                 onToggle={toggleArrayFilter}
                 onFilterChange={setFilters}
                 onClear={() => {

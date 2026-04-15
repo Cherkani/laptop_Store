@@ -281,6 +281,15 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                             ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-500">● Visible</span>
                             : <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-500">● Masqué</span>
                           }
+                          {product.condition && (
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                              product.condition === 'Neuf'
+                                ? 'bg-sky-500/10 text-sky-600'
+                                : 'bg-violet-500/10 text-violet-600'
+                            }`}>
+                              {product.condition}
+                            </span>
+                          )}
                           {product.is_featured && <Badge className="text-[10px] h-5 bg-amber-500/10 text-amber-500 hover:bg-amber-500/10">⭐</Badge>}
                           {product.instagram_posted_at && <Badge className="text-[10px] h-5 bg-pink-500/10 text-pink-500 hover:bg-pink-500/10 gap-0.5"><Share2 className="h-2.5 w-2.5" />IG</Badge>}
                           <StockBadge quantity={product.stock_quantity} />
@@ -441,7 +450,18 @@ export function AdminProductList({ onAdd, onEdit }: AdminProductListProps) {
                       </a>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 mb-2">{product.ram} · {product.storage}</p>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <p className="text-xs text-slate-400">{product.ram} · {product.storage}</p>
+                    {product.condition && (
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                        product.condition === 'Neuf'
+                          ? 'bg-sky-100 text-sky-600'
+                          : 'bg-violet-100 text-violet-600'
+                      }`}>
+                        {product.condition}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-bold text-slate-900">{formatPrice(product.price)}</p>

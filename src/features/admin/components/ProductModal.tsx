@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { X, Loader2 } from 'lucide-react'
-import { useProduct } from '@/features/products/hooks/useProducts'
+import { useAdminProduct } from '@/features/admin/hooks/useAdminProducts'
 import { ProductForm } from './ProductForm'
 import type { ProductWithImages } from '@/types/database.types'
 
@@ -12,7 +12,7 @@ interface ProductModalProps {
 
 export function ProductModal({ open, productId, onClose }: ProductModalProps) {
   const isEdit = !!productId
-  const { data: product, isLoading } = useProduct(productId)
+  const { data: product, isLoading } = useAdminProduct(productId)
 
   // Prevent body scroll while open
   useEffect(() => {
@@ -63,6 +63,7 @@ export function ProductModal({ open, productId, onClose }: ProductModalProps) {
             </div>
           ) : (
             <ProductForm
+              key={productId ?? 'new-product'}
               product={isEdit ? (product as ProductWithImages) : undefined}
               onSuccess={onClose}
               onCancel={onClose}

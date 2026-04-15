@@ -117,6 +117,48 @@ export interface Database {
         }
         Relationships: []
       }
+      product_check_logs: {
+        Row: {
+          id: string
+          product_id: string
+          checked_at: string
+          checked_by: string | null
+          status: 'online' | 'unavailable'
+          note: string | null
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          checked_at?: string
+          checked_by?: string | null
+          status?: 'online' | 'unavailable'
+          note?: string | null
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          checked_at?: string
+          checked_by?: string | null
+          status?: 'online' | 'unavailable'
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_check_logs_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_check_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       deliveries: {
         Row: {
           id: string

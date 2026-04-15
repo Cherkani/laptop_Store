@@ -1,7 +1,24 @@
 import { supabase } from '@/lib/supabase'
 import type { ProductWithImages } from '@/types/database.types'
 import type { ProductFilters } from '../types'
-import { BRANDS } from '../types'
+import { BRANDS, PROCESSORS, RAM_OPTIONS, STORAGE_OPTIONS, GRAPHICS_OPTIONS, SCREEN_SIZES } from '../types'
+import { normalizeGpu, normalizeScreenSize, normalizeRam, normalizeStorage } from '@/lib/normalizeSpecs'
+
+/** Sort values by their position in a reference list; unknowns go last, sorted numerically then alphabetically */
+function sortByRef(values: string[], ref: string[]): string[] {
+  return [...values].sort((a, b) => {
+    const ia = ref.indexOf(a)
+    const ib = ref.indexOf(b)
+    if (ia !== -1 && ib !== -1) return ia - ib
+    if (ia !== -1) return -1
+    if (ib !== -1) return 1
+    // Both unknown — extract leading number for numeric sort
+    const na = parseFloat(a)
+    const nb = parseFloat(b)
+    if (!isNaN(na) && !isNaN(nb)) return na - nb
+    return a.localeCompare(b)
+  })
+}
 
 export const productsService = {
   async getProducts(filters: ProductFilters): Promise<ProductWithImages[]> {
@@ -88,6 +105,26 @@ export const productsService = {
 
     if (error) throw error
     return data as ProductWithImages
+  },
+
+  async getFilterOptions() {
+    const { data, error } = await supabase
+      .from('products')
+      .select('brand, processor, ram, storage, graphics_card, screen_size')
+      .eq('is_available', true)
+    if (error) throw error
+    const rows = data ?? []
+    const present = (v: string | null | undefined): v is string =>
+      v !== null && v !== undefined && v.trim() !== ''
+    const distinct = (arr: string[]): string[] => [...new Set(arr)]
+    return {
+      brands:        sortByRef(distinct(rows.map(r => r.brand).filter(present)), BRANDS),
+      processors:    sortByRef(distinct(rows.map(r => r.processor).filter(present)), PROCESSORS),
+      rams:          sortByRef(distinct(rows.map(r => r.ram).filter(present).map(normalizeRam)), RAM_OPTIONS),
+      storages:      sortByRef(distinct(rows.map(r => r.storage).filter(present).map(normalizeStorage)), STORAGE_OPTIONS),
+      graphicsCards: sortByRef(distinct(rows.map(r => r.graphics_card).filter(present).map(normalizeGpu)), GRAPHICS_OPTIONS),
+      screenSizes:   sortByRef(distinct(rows.map(r => r.screen_size).filter(present).map(normalizeScreenSize)), SCREEN_SIZES),
+    }
   },
 
   async getFeaturedProducts(): Promise<ProductWithImages[]> {

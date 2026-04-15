@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Upload, X, Plus, Trash2, Loader2, GripVertical, ExternalLink, Lock, Wand2, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,9 +10,93 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
 import { BRANDS, PROCESSORS, RAM_OPTIONS, STORAGE_OPTIONS, GRAPHICS_OPTIONS, SCREEN_SIZES } from '@/features/products/types'
 import type { ProductWithImages } from '@/types/database.types'
-import { getImageSrc } from '@/lib/utils'
+import { formatPrice, getImageSrc } from '@/lib/utils'
 import { PRODUCT_CONDITIONS } from '@/lib/constants'
 import { parseListing, ParsedListing, ParsedSpec } from '@/features/admin/utils/listingParser'
+
+/** Strip emoji and trademark symbols from a raw listing name */
+function cleanName(raw: string): string {
+  return raw
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[®™©]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
+ * Ordered section definitions for the description.
+ * Each entry: [icon, canonical label, keyword matchers against spec keys]
+ * Sections are rendered in this exact order; unknown specs go last.
+ */
+const DESC_SECTIONS: Array<{ icon: string; label: string; keys: RegExp }> = [
+  { icon: '⚡', label: 'Processeur',      keys: /proc[ée]ss|cpu|chip/i },
+  { icon: '🧠', label: 'RAM',             keys: /\bram\b|m[eé]moire|memory/i },
+  { icon: '💾', label: 'Stockage',        keys: /stock|storage|ssd|hdd|disque|nvme/i },
+  { icon: '🎮', label: 'Carte graphique', keys: /graph|gpu|vid[eé]o/i },
+  { icon: '🖥️', label: 'Écran',           keys: /[eé]cran|screen|display|dalle/i },
+  { icon: '🔋', label: 'Batterie',        keys: /batt[eé]r/i },
+  { icon: '📡', label: 'Connectivité',    keys: /wi.?fi|wifi|bluetooth|lan|r[eé]seau|connect/i },
+  { icon: '🔌', label: 'Ports',           keys: /\bport[s]?\b|usb|thunderbolt|hdmi|jack/i },
+  { icon: '📸', label: 'Webcam',          keys: /webcam|cam[eé]ra|cam\b/i },
+  { icon: '🎧', label: 'Audio',           keys: /audio|son\b|speaker|haut.parleur|dolby|dts/i },
+  { icon: '⌨️', label: 'Clavier',         keys: /clavier|keyboard/i },
+  { icon: '🔐', label: 'Sécurité',        keys: /s[eé]curit|tpm|empreinte|fingerprint|hello|lock/i },
+  { icon: '🪟', label: 'Système',         keys: /syst[eè]me|windows|macos|os\b/i },
+  { icon: '📦', label: 'État',            keys: /[eé]tat|condition|emballage/i },
+]
+
+/** Build a consistent, icon-based description from parsed structured fields + spec lines */
+function buildDescription(s: ParsedListing): string {
+  // Start with the 5 structured fields as seed entries
+  const structured: Array<{ section: typeof DESC_SECTIONS[number]; value: string }> = []
+  const push = (_icon: string, label: string, value: string) => {
+    const section = DESC_SECTIONS.find(d => d.label === label)!
+    structured.push({ section, value })
+  }
+  if (s.processor)     push('⚡', 'Processeur',      s.processor)
+  if (s.ram)           push('🧠', 'RAM',             s.ram)
+  if (s.storage)       push('💾', 'Stockage',        s.storage)
+  if (s.graphics_card) push('🎮', 'Carte graphique', s.graphics_card)
+  if (s.screen_size)   push('🖥️', 'Écran',           s.screen_size)
+  if (s.condition)     push('📦', 'État',            s.condition)
+
+  // Collect labels already covered so we don't duplicate from specs
+  const usedLabels = new Set(structured.map(e => e.section.label))
+
+  // Extra entries from spec lines, matched to sections by keyword
+  const extras: Array<{ section: typeof DESC_SECTIONS[number] | null; key: string; value: string }> = []
+  for (const spec of s.specs ?? []) {
+    const section = DESC_SECTIONS.find(d => d.keys.test(spec.key))
+    if (section && usedLabels.has(section.label)) continue // already have this from structured fields
+    if (section) usedLabels.add(section.label)
+    extras.push({ section: section ?? null, key: spec.key, value: spec.value })
+  }
+
+  // Sort extras by section order index; unknown sections go last
+  extras.sort((a, b) => {
+    const ia = a.section ? DESC_SECTIONS.indexOf(a.section) : 999
+    const ib = b.section ? DESC_SECTIONS.indexOf(b.section) : 999
+    return ia - ib
+  })
+
+  // Merge: structured entries in section order, extras fill gaps
+  const allSectionEntries = [
+    ...structured.map(e => ({ section: e.section, label: e.section.label, value: e.value })),
+    ...extras.map(e => ({
+      section: e.section,
+      label: e.section?.label ?? e.key,
+      value: e.value,
+    })),
+  ].sort((a, b) => {
+    const ia = a.section ? DESC_SECTIONS.indexOf(a.section) : 999
+    const ib = b.section ? DESC_SECTIONS.indexOf(b.section) : 999
+    return ia - ib
+  })
+
+  return allSectionEntries
+    .map(e => `${e.section?.icon ?? '•'} ${e.label} : ${e.value}`)
+    .join('\n')
+}
 
 interface ProductFormProps {
   product?: ProductWithImages
@@ -60,6 +144,7 @@ type SuggestionField =
   | 'storage'
   | 'graphics_card'
   | 'screen_size'
+  | 'condition'
   | 'description'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -89,15 +174,8 @@ function normalizeCondition(condition: string | null | undefined): string {
   return 'Neuf'
 }
 
-export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
-  const queryClient = useQueryClient()
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [pasteText, setPasteText] = useState('')
-  const [draftSuggestions, setDraftSuggestions] = useState<ParsedListing>({})
-  const [applyEmptyOnly, setApplyEmptyOnly] = useState(true)
-
-  const [formData, setFormData] = useState<FormState>({
+function toFormState(product?: ProductWithImages): FormState {
+  return {
     name: product?.name ?? '',
     description: product?.description ?? '',
     price: product?.price?.toString() ?? '',
@@ -109,42 +187,68 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
     graphics_card: product?.graphics_card ?? '',
     screen_size: product?.screen_size ?? '',
     weight: product?.weight ?? '',
-    stock_quantity: product?.stock_quantity?.toString() ?? '0',
+    stock_quantity: product ? (product.stock_quantity?.toString() ?? '0') : '1',
     is_featured: product?.is_featured ?? false,
     category: product?.category ?? 'laptop',
-    // Sourcing
     source_url: (product as any)?.source_url ?? '',
     source_price: (product as any)?.source_price?.toString() ?? '',
     margin_amount: (product as any)?.margin_amount?.toString() ?? '',
     is_available: (product as any)?.is_available ?? true,
     image_source_url: (product as any)?.image_source_url ?? '',
-  })
+  }
+}
 
-  const [images, setImages] = useState<ImagePreview[]>(
-    product?.product_images?.sort((a, b) => a.display_order - b.display_order).map(img => ({
-      url: getImageSrc(img),
-      id: img.id,
-      isPrimary: img.is_primary,
-    })) ?? []
+function toImagePreviews(product?: ProductWithImages): ImagePreview[] {
+  return (
+    product?.product_images
+      ?.sort((a, b) => a.display_order - b.display_order)
+      .map(img => ({
+        url: getImageSrc(img),
+        id: img.id,
+        isPrimary: img.is_primary,
+      })) ?? []
   )
+}
 
-  const [specs, setSpecs] = useState<SpecField[]>(
-    product?.specifications?.map(s => ({ key: s.spec_key, value: s.spec_value })) ?? []
-  )
+function toSpecs(product?: ProductWithImages): SpecField[] {
+  return product?.specifications?.map(s => ({ key: s.spec_key, value: s.spec_value })) ?? []
+}
+
+export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
+  const queryClient = useQueryClient()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [pasteText, setPasteText] = useState('')
+  const [draftSuggestions, setDraftSuggestions] = useState<ParsedListing>({})
+  const [applyEmptyOnly, setApplyEmptyOnly] = useState(true)
+
+  const [formData, setFormData] = useState<FormState>(() => toFormState(product))
+
+  const [images, setImages] = useState<ImagePreview[]>(() => toImagePreviews(product))
+
+  const [specs, setSpecs] = useState<SpecField[]>(() => toSpecs(product))
+
+  useEffect(() => {
+    setFormData(toFormState(product))
+    setImages(toImagePreviews(product))
+    setSpecs(toSpecs(product))
+    setDraftSuggestions({})
+    setPasteText('')
+  }, [product?.id])
 
   const update = <K extends keyof FormState>(key: K, val: FormState[K]) =>
     setFormData(p => ({ ...p, [key]: val }))
 
   const canonicalizeProcessor = (val: string): string | undefined => {
     const v = val.toLowerCase()
+    if (v.includes('core ultra')) {
+      if (v.includes('ultra 9')) return 'Intel Core Ultra 9'
+      if (v.includes('ultra 7')) return 'Intel Core Ultra 7'
+      if (v.includes('ultra 5')) return 'Intel Core Ultra 5'
+    }
     if (v.includes('ryzen 9')) return 'AMD Ryzen 9'
     if (v.includes('ryzen 7')) return 'AMD Ryzen 7'
     if (v.includes('ryzen 5')) return 'AMD Ryzen 5'
-    if (v.includes('core ultra') || v.includes('ultra')) {
-      if (v.includes('9')) return 'Intel Core i9'
-      if (v.includes('7')) return 'Intel Core i7'
-      if (v.includes('5')) return 'Intel Core i5'
-    }
     if (v.includes('i9')) return 'Intel Core i9'
     if (v.includes('i7')) return 'Intel Core i7'
     if (v.includes('i5')) return 'Intel Core i5'
@@ -159,22 +263,50 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   const applySuggestions = () => {
     if (!Object.keys(draftSuggestions).length) return
     const next = { ...formData }
-    const fields: SuggestionField[] = ['name','price','brand','processor','ram','storage','graphics_card','screen_size','description']
+    const fields: SuggestionField[] = ['price','brand','processor','ram','storage','graphics_card','screen_size']
     for (const key of fields) {
       const val = (draftSuggestions as any)[key]
       if (val === undefined || val === null || val === '') continue
-      const shouldApply = applyEmptyOnly ? !next[key] : true
+      const currentVal = (next as any)[key]
+      const shouldApply = applyEmptyOnly ? !currentVal : true
       if (shouldApply) {
         if (key === 'processor') {
-          next[key] = canonicalizeProcessor(String(val)) ?? String(val)
+          (next as any)[key] = canonicalizeProcessor(String(val)) ?? String(val)
         } else {
-          next[key] = String(val)
+          (next as any)[key] = String(val)
         }
       }
     }
+    // Condition — always apply if detected, because the default 'Neuf' is never truly "empty"
+    if (draftSuggestions.condition) {
+      if (!applyEmptyOnly || next.condition === 'Neuf') {
+        next.condition = draftSuggestions.condition
+      }
+    }
+    // Name — strip raw emoji/symbols then prepend consistent 💻
+    if (draftSuggestions.name && (!applyEmptyOnly || !next.name)) {
+      const cleaned = cleanName(draftSuggestions.name)
+      next.name = cleaned ? `💻 ${cleaned}` : next.name
+    }
+    // Description — build with consistent icons using the already-resolved next values
+    if (!applyEmptyOnly || !next.description) {
+      const resolvedSuggestions = {
+        ...draftSuggestions,
+        processor: next.processor || draftSuggestions.processor,
+        ram:           next.ram       || draftSuggestions.ram,
+        storage:       next.storage   || draftSuggestions.storage,
+        graphics_card: next.graphics_card || draftSuggestions.graphics_card,
+        screen_size:   next.screen_size   || draftSuggestions.screen_size,
+        condition:     next.condition || draftSuggestions.condition,
+      }
+      const desc = buildDescription(resolvedSuggestions)
+      if (desc) next.description = desc
+    }
     setFormData(next)
-    if (draftSuggestions.specs && draftSuggestions.specs.length > 0 && (!applyEmptyOnly || specs.length === 0)) {
-      setSpecs(prev => prev.length ? prev : draftSuggestions.specs!)
+    if (draftSuggestions.specs && draftSuggestions.specs.length > 0) {
+      if (!applyEmptyOnly || specs.length === 0) {
+        setSpecs(applyEmptyOnly ? draftSuggestions.specs! : prev => [...prev, ...draftSuggestions.specs!])
+      }
     }
     toast({ title: 'Champs préremplis depuis le texte' })
   }
@@ -213,10 +345,42 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
 
   const parseNumber = (val: string | null | undefined) => {
     if (!val) return null
-    const cleaned = val.replace(',', '.')
+    const cleaned = val.trim().replace(/\s+/g, '').replace(',', '.')
     const n = Number(cleaned)
     return Number.isFinite(n) ? n : null
   }
+
+  const parsedPrice = parseNumber(formData.price)
+  const parsedSourcePrice = parseNumber(formData.source_price)
+  const parsedMarginAmount = parseNumber(formData.margin_amount)
+  const previewImage = images.find(img => img.isPrimary)?.url ?? images[0]?.url ?? null
+  const previewSpecs = [formData.processor, formData.ram, formData.storage].filter(Boolean).join(' · ')
+
+  const marginConfig =
+    formData.condition === 'Comme neuf'
+      ? { minPct: 0.12, maxPct: 0.25 }
+      : { minPct: 0.08, maxPct: 0.15 }
+
+  const pricingGuidance = (() => {
+    if (!parsedSourcePrice || parsedSourcePrice <= 0) return null
+    const minMargin = Math.round(parsedSourcePrice * marginConfig.minPct)
+    const maxMargin = Math.round(parsedSourcePrice * marginConfig.maxPct)
+    const minSellPrice = parsedSourcePrice + minMargin
+    const maxSellPrice = parsedSourcePrice + maxMargin
+    const currentMargin =
+      parsedMarginAmount !== null
+        ? parsedMarginAmount
+        : parsedPrice !== null
+          ? parsedPrice - parsedSourcePrice
+          : null
+    let status: 'low' | 'ok' | 'high' | 'unknown' = 'unknown'
+    if (currentMargin !== null) {
+      if (currentMargin < minMargin) status = 'low'
+      else if (currentMargin > maxMargin) status = 'high'
+      else status = 'ok'
+    }
+    return { minMargin, maxMargin, minSellPrice, maxSellPrice, currentMargin, status }
+  })()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -230,7 +394,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         name: formData.name,
         description: formData.description || null,
         price: parsedPrice ?? 0,
-        condition: formData.condition || 'Comme Neuf',
+        condition: formData.condition || 'Neuf',
         brand: formData.brand,
         processor: formData.processor,
         ram: formData.ram,
@@ -286,9 +450,9 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
       await adminService.upsertSpecifications(savedProduct.id, specs.filter(s => s.key && s.value))
 
       queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-product', savedProduct.id] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['product', savedProduct.id] })
-      queryClient.invalidateQueries({ queryKey: ['product'] })
 
       toast({ title: product ? 'Product updated!' : 'Product created!', variant: 'default' })
       onSuccess?.()
@@ -334,11 +498,11 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
           </div>
           {Object.keys(draftSuggestions).length > 0 && (
             <div className="grid grid-cols-2 gap-3 text-xs text-slate-700">
-              {(['name','price','brand','processor','ram','storage','graphics_card','screen_size'] as const).map(key => (
+              {(['name','price','brand','processor','ram','storage','graphics_card','screen_size','condition'] as const).map(key => (
                 (draftSuggestions as any)[key] && (
                   <div key={key} className="bg-white border rounded-lg px-3 py-2 shadow-sm">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold capitalize">{key.replace('_',' ')}</p>
+                      <p className="font-semibold capitalize">{key.replace(/_/g,' ')}</p>
                       {((applyEmptyOnly && !(formData as any)[key]) || !applyEmptyOnly) && (
                         <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
                       )}
@@ -363,15 +527,19 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         </div>
 
         <Field label="Product Name">
-          <Input
-            value={formData.name}
-            onChange={e => update('name', e.target.value)}
-            placeholder="e.g. MacBook Pro 16-inch M4 Pro"
-          />
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base select-none pointer-events-none">💻</span>
+            <Input
+              value={formData.name.replace(/^💻\s*/, '')}
+              onChange={e => update('name', e.target.value ? `💻 ${e.target.value.replace(/^💻\s*/, '')}` : '')}
+              placeholder="Dell Precision 7670 — Station de travail mobile"
+              className="pl-9"
+            />
+          </div>
         </Field>
         <Field label="Description">
           <textarea
-            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
             value={formData.description}
             onChange={e => update('description', e.target.value)}
             placeholder="Describe the laptop..."
@@ -383,7 +551,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             <Input
               type="text"
               inputMode="decimal"
-              defaultValue={formData.price}
+              value={formData.price}
               onChange={e => update('price', e.target.value)}
               placeholder="9999"
             />
@@ -438,36 +606,61 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             </Select>
           </Field>
           <Field label="Processor">
-            <Select value={formData.processor} onValueChange={v => update('processor', v)}>
-              <SelectTrigger><SelectValue placeholder="Select processor" /></SelectTrigger>
-              <SelectContent>{PROCESSORS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
-            </Select>
+            <Input
+              list="processor-options"
+              value={formData.processor}
+              onChange={e => update('processor', e.target.value)}
+              placeholder="e.g. Intel Core Ultra 7 155H"
+            />
           </Field>
           <Field label="RAM">
-            <Select value={formData.ram} onValueChange={v => update('ram', v)}>
-              <SelectTrigger><SelectValue placeholder="Select RAM" /></SelectTrigger>
-              <SelectContent>{RAM_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
-            </Select>
+            <Input
+              list="ram-options"
+              value={formData.ram}
+              onChange={e => update('ram', e.target.value)}
+              placeholder="e.g. 16GB"
+            />
           </Field>
           <Field label="Storage">
-            <Select value={formData.storage} onValueChange={v => update('storage', v)}>
-              <SelectTrigger><SelectValue placeholder="Select storage" /></SelectTrigger>
-              <SelectContent>{STORAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
+            <Input
+              list="storage-options"
+              value={formData.storage}
+              onChange={e => update('storage', e.target.value)}
+              placeholder="e.g. 512GB SSD"
+            />
           </Field>
           <Field label="Graphics Card">
-            <Select value={formData.graphics_card} onValueChange={v => update('graphics_card', v)}>
-              <SelectTrigger><SelectValue placeholder="Select GPU" /></SelectTrigger>
-              <SelectContent>{GRAPHICS_OPTIONS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
-            </Select>
+            <Input
+              list="gpu-options"
+              value={formData.graphics_card}
+              onChange={e => update('graphics_card', e.target.value)}
+              placeholder="e.g. NVIDIA RTX 5050"
+            />
           </Field>
           <Field label="Screen Size">
-            <Select value={formData.screen_size} onValueChange={v => update('screen_size', v)}>
-              <SelectTrigger><SelectValue placeholder="Select size" /></SelectTrigger>
-              <SelectContent>{SCREEN_SIZES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
+            <Input
+              list="screen-size-options"
+              value={formData.screen_size}
+              onChange={e => update('screen_size', e.target.value)}
+              placeholder="e.g. 18&quot;"
+            />
           </Field>
         </div>
+        <datalist id="processor-options">
+          {PROCESSORS.map(p => <option key={p} value={p} />)}
+        </datalist>
+        <datalist id="ram-options">
+          {RAM_OPTIONS.map(r => <option key={r} value={r} />)}
+        </datalist>
+        <datalist id="storage-options">
+          {STORAGE_OPTIONS.map(s => <option key={s} value={s} />)}
+        </datalist>
+        <datalist id="gpu-options">
+          {GRAPHICS_OPTIONS.map(g => <option key={g} value={g} />)}
+        </datalist>
+        <datalist id="screen-size-options">
+          {SCREEN_SIZES.map(s => <option key={s} value={s} />)}
+        </datalist>
         <Field label="Weight">
           <Input
             value={formData.weight}
@@ -632,7 +825,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             <Input
               type="text"
               inputMode="decimal"
-              defaultValue={formData.source_price}
+              value={formData.source_price}
               onChange={e => update('source_price', e.target.value)}
               placeholder="ex: 3200"
             />
@@ -641,7 +834,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             <Input
               type="text"
               inputMode="decimal"
-              defaultValue={formData.margin_amount}
+              value={formData.margin_amount}
               onChange={e => update('margin_amount', e.target.value)}
               placeholder="ex: 500"
             />
@@ -664,6 +857,79 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
             </span>
           </div>
         )}
+
+        {pricingGuidance && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-900">
+              Guidance marge ({formData.condition})
+            </p>
+            <p className="mt-1 text-xs text-amber-800">
+              Marge conseillée: {pricingGuidance.minMargin.toLocaleString('fr-MA')} à {pricingGuidance.maxMargin.toLocaleString('fr-MA')} MAD
+              {' · '}
+              Prix conseillé: {pricingGuidance.minSellPrice.toLocaleString('fr-MA')} à {pricingGuidance.maxSellPrice.toLocaleString('fr-MA')} MAD
+            </p>
+            {pricingGuidance.currentMargin !== null && (
+              <p
+                className={`mt-2 text-xs font-medium ${
+                  pricingGuidance.status === 'ok'
+                    ? 'text-emerald-700'
+                    : pricingGuidance.status === 'low'
+                      ? 'text-red-700'
+                      : pricingGuidance.status === 'high'
+                        ? 'text-orange-700'
+                        : 'text-amber-800'
+                }`}
+              >
+                Marge actuelle: {pricingGuidance.currentMargin.toLocaleString('fr-MA')} MAD
+                {pricingGuidance.status === 'ok' && ' (dans la plage conseillée)'}
+                {pricingGuidance.status === 'low' && ' (en dessous de la plage conseillée)'}
+                {pricingGuidance.status === 'high' && ' (au-dessus de la plage conseillée)'}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <Separator />
+
+      {/* Preview card before publish */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Preview avant publication</h3>
+        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-raised shadow-sm">
+          <div className="grid gap-0 sm:grid-cols-[180px_1fr]">
+            <div className="aspect-square sm:aspect-auto sm:h-full bg-slate-100">
+              {previewImage ? (
+                <img src={previewImage} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-xs text-slate-400">No image</div>
+              )}
+            </div>
+            <div className="space-y-2 p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                  {formData.brand || 'Marque'}
+                </span>
+                <span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+                  formData.condition === 'Comme neuf'
+                    ? 'border-orange-200 bg-orange-50 text-orange-700'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                }`}>
+                  {formData.condition || 'Neuf'}
+                </span>
+              </div>
+              <p className="text-sm font-bold text-slate-900">{formData.name || 'Nom du produit'}</p>
+              <p className="text-xs text-slate-500">{previewSpecs || 'Processeur · RAM · Stockage'}</p>
+              <p className="text-lg font-extrabold text-slate-900">
+                {parsedPrice !== null ? formatPrice(parsedPrice) : 'Prix non défini'}
+              </p>
+              {formData.description && (
+                <p className="text-xs text-slate-600 whitespace-pre-line leading-relaxed">
+                  {formData.description}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer actions */}

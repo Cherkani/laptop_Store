@@ -320,7 +320,7 @@ export function ProductDetailPage() {
 
             {/* Description */}
             {product.description && (
-              <p className="text-on-surface-subtle leading-relaxed text-[15px]">
+              <p className="text-on-surface-subtle leading-relaxed text-[15px] whitespace-pre-line">
                 {product.description}
               </p>
             )}
