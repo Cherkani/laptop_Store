@@ -125,11 +125,7 @@ export function HeroSection() {
       {/* Bottom features bar */}
       <div className="relative border-t border-border-subtle bg-muted/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex items-center gap-3 text-sm text-slate-300">
-              <Zap className="h-5 w-5 text-blue-400 shrink-0" />
-              <span>Free same-day shipping on orders over $999</span>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center gap-3 text-sm text-slate-300">
               <Shield className="h-5 w-5 text-blue-400 shrink-0" />
               <span>30-day hassle-free returns</span>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft, ShoppingCart, Minus, Plus, Cpu, MemoryStick, HardDrive,
-  Monitor, Weight, Check, Truck, RotateCcw, Shield, ChevronRight,
+  Monitor, Weight, Check, RotateCcw, Shield, ChevronRight,
   Tag, Star, MessageCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -146,7 +146,6 @@ export function ProductDetailPage() {
   ].filter(spec => Boolean(spec.value))
 
   const perks = [
-    { icon: Truck, text: t('product.perk.shipping') },
     { icon: RotateCcw, text: t('product.perk.returns') },
     { icon: Shield, text: t('product.perk.warranty') },
   ]

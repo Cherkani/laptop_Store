@@ -14,7 +14,7 @@ const STORAGE_KEY = 'laptopstore-locale'
 
 const dictionaries: Record<Locale, Dict> = {
   en: {
-    'header.promo': 'Free shipping on orders over $999. 30-day returns included.',
+    'header.promo': '30-day hassle-free returns included.',
     'nav.store': 'Store',
     'nav.laptops': 'Laptops',
     'nav.newArrivals': 'New Arrivals',
@@ -89,7 +89,7 @@ const dictionaries: Record<Locale, Dict> = {
     'product.whatsappOpening': 'Opening WhatsApp...',
     'product.techSpecs': 'Technical Specifications',
     'product.backAll': 'Back to all laptops',
-    'product.perk.shipping': 'Free express shipping',
+    'product.perk.shipping': '',
     'product.perk.returns': '30-day hassle-free returns',
     'product.perk.warranty': '90-day warranty included',
     'toast.addedToCart': 'Added to cart',
@@ -100,7 +100,7 @@ const dictionaries: Record<Locale, Dict> = {
     'toast.runMigration': 'Please run the latest database migration.',
   },
   fr: {
-    'header.promo': 'Livraison offerte. Retours sous 30 jours inclus.',
+    'header.promo': 'Retours sous 30 jours inclus.',
     'nav.store': 'Boutique',
     'nav.laptops': 'Ordinateurs',
     'nav.newArrivals': 'Nouveautés',
@@ -175,7 +175,7 @@ const dictionaries: Record<Locale, Dict> = {
     'product.whatsappOpening': 'Ouverture WhatsApp...',
     'product.techSpecs': 'Caractéristiques techniques',
     'product.backAll': 'Retour à tous les laptops',
-    'product.perk.shipping': 'Livraison express offerte',
+    'product.perk.shipping': '',
     'product.perk.returns': 'Retour facile sous 30 jours',
     'product.perk.warranty': 'Garantie 90 jours incluse',
     'toast.addedToCart': 'Ajouté au panier',
