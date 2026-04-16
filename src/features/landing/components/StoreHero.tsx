@@ -28,7 +28,7 @@ const SLIDES = [
     headlineTop: 'Performant,',
     headlineBottom: 'abordable.',
     sub: 'Des laptops haut de gamme — testés et garantis, accessibles à tous les budgets.',
-    cta: { label: 'Voir les promotions', to: '/products?sale=true' },
+    cta: { label: 'Voir les promotions', to: '/products?featured=true' },
     ctaSecondary: { label: 'PC Windows', to: '/products?os=Windows' },
     overlayStrength: 'from-black/75 via-black/45 to-black/15',
   },

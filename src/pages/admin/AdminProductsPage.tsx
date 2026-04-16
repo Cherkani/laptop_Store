@@ -14,12 +14,15 @@ export function AdminProductsPage() {
   useEffect(() => {
     const action = searchParams.get('action')
     const id = searchParams.get('id')
+
     if (action === 'new') {
       setModalState({ open: true })
     } else if (action === 'edit' && id) {
       setModalState({ open: true, productId: id })
+    } else {
+      setModalState({ open: false, productId: undefined })
     }
-  }, [])
+  }, [searchParams])
 
   const openAdd = () => {
     setModalState({ open: true })

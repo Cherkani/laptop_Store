@@ -194,9 +194,6 @@ export function Header() {
           {/* Logo */}
           <Link
             to="/"
-            onClick={() => {
-              window.location.href = '/'
-            }}
             className="flex shrink-0 items-center gap-2.5 text-foreground"
           >
             <img
@@ -273,13 +270,13 @@ export function Header() {
             ))}
 
             <Link
-              to="/products?sortBy=newest"
+              to="/products?sort=newest"
               className="rounded-full px-3 py-2 text-sm font-semibold text-foreground/80 transition hover:bg-foreground/10 hover:text-foreground"
             >
               Nouveautés
             </Link>
             <Link
-              to="/products?sale=true"
+              to="/products?featured=true"
               className="rounded-full px-3 py-2 text-sm font-semibold text-foreground/80 transition hover:bg-foreground/10 hover:text-foreground"
             >
               Promotions
@@ -476,14 +473,14 @@ export function Header() {
                 Mac & MacBook
               </Link>
               <Link
-                to="/products?sortBy=newest"
+                to="/products?sort=newest"
                 className="rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/70 hover:bg-muted hover:text-foreground"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Nouveautés
               </Link>
               <Link
-                to="/products?sale=true"
+                to="/products?featured=true"
                 className="rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/70 hover:bg-muted hover:text-foreground"
                 onClick={() => setIsMenuOpen(false)}
               >

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import { AuthContext, useAuthState } from '@/features/auth/hooks/useAuth'
@@ -21,6 +21,7 @@ import { AdminDailyPage } from '@/pages/admin/AdminDailyPage'
 import { AdminSystemPage } from '@/pages/admin/AdminSystemPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
 import { AdminMonitoringPage } from '@/pages/admin/AdminMonitoringPage'
+import { AdminEditProductPage } from '@/pages/admin/AdminEditProductPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,11 +70,13 @@ export default function App() {
               <Route path="systeme" element={<AdminSystemPage />} />
               <Route path="parametres" element={<AdminSettingsPage />} />
               <Route path="products" element={<AdminProductsPage />} />
+              <Route path="products/:id/edit" element={<AdminEditProductPage />} />
               <Route path="inventory" element={<AdminInventoryPage />} />
               <Route path="daily" element={<AdminDailyPage />} />
               <Route path="reports" element={<AdminReportsPage />} />
               <Route path="monitoring" element={<AdminMonitoringPage />} />
             </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Toaster />
         </AuthProvider>

@@ -54,7 +54,7 @@ export function HeroSection() {
                 asChild
                 className="border-border text-on-surface hover:bg-muted backdrop-blur"
               >
-                <Link to="/products?sortBy=newest">View New Arrivals</Link>
+                <Link to="/products?sort=newest">View New Arrivals</Link>
               </Button>
             </div>
 

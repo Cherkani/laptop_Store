@@ -8,6 +8,12 @@ export function useFilters() {
   const [filters, setFiltersState] = useState<ProductFilters>(() => {
     const priceMin = searchParams.get('priceMin')
     const priceMax = searchParams.get('priceMax')
+    const sort = searchParams.get('sort') ?? searchParams.get('sortBy')
+    const featuredOnly =
+      searchParams.get('featured') === 'true' ||
+      searchParams.get('sale') === 'true' ||
+      searchParams.get('filter') === 'promo'
+
     return {
       search: searchParams.get('q') ?? '',
       brands: searchParams.getAll('brand'),
@@ -22,7 +28,8 @@ export function useFilters() {
         priceMax ? parseInt(priceMax) : DEFAULT_FILTERS.priceRange[1],
       ],
       inStockOnly: searchParams.get('inStock') === 'true',
-      sortBy: (searchParams.get('sort') as SortOption) ?? DEFAULT_FILTERS.sortBy,
+      featuredOnly,
+      sortBy: (sort as SortOption) ?? DEFAULT_FILTERS.sortBy,
     }
   })
 
@@ -41,6 +48,7 @@ export function useFilters() {
       if (next.priceRange[0] > 0) params.set('priceMin', String(next.priceRange[0]))
       if (next.priceRange[1] < DEFAULT_FILTERS.priceRange[1]) params.set('priceMax', String(next.priceRange[1]))
       if (next.inStockOnly) params.set('inStock', 'true')
+      if (next.featuredOnly) params.set('featured', 'true')
       if (next.sortBy !== 'newest') params.set('sort', next.sortBy)
       setSearchParams(params, { replace: true })
       return next
@@ -74,6 +82,7 @@ export function useFilters() {
     filters.screenSizes.length,
     filters.priceRange[0] > 0 || filters.priceRange[1] < DEFAULT_FILTERS.priceRange[1] ? 1 : 0,
     filters.inStockOnly ? 1 : 0,
+    filters.featuredOnly ? 1 : 0,
   ].reduce((a, b) => a + b, 0)
 
   return { filters, setFilters, clearFilters, toggleArrayFilter, activeFilterCount }

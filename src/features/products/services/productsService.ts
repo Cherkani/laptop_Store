@@ -71,6 +71,9 @@ export const productsService = {
     if (filters.inStockOnly) {
       query = query.gt('stock_quantity', 0)
     }
+    if (filters.featuredOnly) {
+      query = query.eq('is_featured', true)
+    }
 
     switch (filters.sortBy) {
       case 'price_asc':

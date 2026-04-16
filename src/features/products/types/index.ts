@@ -9,6 +9,7 @@ export interface ProductFilters {
   screenSizes: string[]
   priceRange: [number, number]
   inStockOnly: boolean
+  featuredOnly: boolean
   sortBy: SortOption
 }
 
@@ -48,5 +49,6 @@ export const DEFAULT_FILTERS: ProductFilters = {
   screenSizes: [],
   priceRange: [0, 35000],
   inStockOnly: false,
+  featuredOnly: false,
   sortBy: 'newest',
 }

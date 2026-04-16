@@ -82,7 +82,7 @@ export function PromoBanner() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/products?filter=promo"
+                to="/products?featured=true"
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/50 transition hover:text-white"
               >
                 Promotions du jour →
